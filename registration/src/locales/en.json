@@ -1,0 +1,109 @@
+{
+        "nav": {
+                "home": "Home",
+                "about": "About Us",
+                "faq": "FAQ",
+                "register": "Register"
+        },
+        "footer": {
+                "sponsors": "Sponsors",
+                "tagline": "Hack the Future"
+        },
+        "register": {
+                "title": "Register Now",
+                "subtitle": "Fill out the form below to join the TeenAIgers Hackathon and start your innovation journey",
+                "form": {
+                        "schoolinfo": "School Info",
+                        "schoolName": {
+                                "label": "Full Name of School*",
+                                "placeholder": "Enter school name",
+                                "error": "School name is required"
+                        },
+                        "teacherName": {
+                                "label": "Name of Teacher in Charge*",
+                                "placeholder": "Enter teacher name",
+                                "error": "Teacher name is required"
+                        },
+                        "contact": {
+                                "email": {
+                                        "label": "Email*",
+                                        "placeholder": "Enter email",
+                                        "error": "Valid email is required"
+                                },
+                                "phone": {
+                                        "label": "Phone Number*",
+                                        "placeholder": "Enter phone number",
+                                        "error": "Phone number is required"
+                                },
+                                "wechat": {
+                                        "label": "WeChat ID (Optional)",
+                                        "placeholder": "Enter WeChat ID"
+                                }
+                        },
+                        "studentCount": {
+                                "label": "Number of Students*",
+                                "placeholder": "Enter number of students",
+                                "error": "Number of students is required"
+                        },
+                        "students": {
+                                "error": "At least one student is required",
+                                "add": "Add Student"
+                        },
+                        "student": {
+                                "stu": "Student",
+                                "count": "students",
+                                "name": {
+                                        "label": "Student Name*",
+                                        "placeholder": "Enter student name",
+                                        "error": "Student name is required"
+                                },
+                                "age": {
+                                        "label": "Age*",
+                                        "placeholder": "Enter age",
+                                        "error": "Age must be between 12 and 19"
+                                },
+                                "gender": {
+                                        "label": "Gender*",
+                                        "placeholder": "Select gender",
+                                        "error": "Gender is required",
+                                        "options": {
+                                                "male": "Male",
+                                                "female": "Female",
+                                                "other": "Other"
+                                        }
+                                },
+                                "skills": {
+                                        "label": "Skills*",
+                                        "placeholder": "Select or enter skills",
+                                        "error": "At least one skill is required",
+                                        "options": {
+                                                "programming": "Programming",
+                                                "uiux": "UI/UX Design",
+                                                "presentation": "Presentation",
+                                                "prompt": "Prompt Engineering",
+                                                "product": "Product Design",
+                                                "business": "Business"
+                                        }
+                                },
+                                "extra": {
+                                        "label": "Extra Information",
+                                        "placeholder": "Enter extra information, eg. special skills that are not listed, previous hackathon experience."
+                                },
+                                "hackathonExperience": {
+                                        "label": "Hackathon Experience",
+                                        "yes": "Yes",
+                                        "no": "No"
+                                }
+                        }
+                },
+                "submit": {
+                        "button": "Submit",
+                        "processing": "Processing...",
+                        "success": {
+                                "title": "Registration Successful!",
+                                "message": "Thanks for filling our form, we'll be in touch soon!",
+                                "close": "Close"
+                        }
+                }
+        }
+}

@@ -1,0 +1,531 @@
+{
+        "nav": {
+                "home": "Home",
+                "about": "About Us",
+                "timeline": "Timeline",
+                "faq": "FAQ",
+                "register": "Register"
+        },
+        "footer": {
+                "sponsors": "Sponsored by",
+                "tagline": "Hack the Future"
+        },
+        "hero": {
+                "subtitle": "Hack the Future",
+                "description": "Build your creative project from 0 to 1 in a week with like-minded partners. Whether you're a tech expert or creative genius, this is your stage to shine.",
+                "register": "Register Now",
+                "learnMore": "Learn More"
+        },
+        "features": {
+                "title": "Hackathon Features",
+                "innovation": {
+                        "title": "Innovative Projects",
+                        "description": "Complete the product development process from ideation to prototype in 48 hours."
+                },
+                "teamwork": {
+                        "title": "Team Collaboration",
+                        "description": "Meet professional mentors, like-minded students and form interdisciplinary teams to solve challenges together."
+                },
+                "rewards": {
+                        "title": "Valuable Rewards",
+                        "description": "Winning teams will receive generous prizes, corporate mentorship, and startup support resources."
+                }
+        },
+        "venue": {
+                "title": "Hosted at",
+                "subtitle": "Q-plex in Shenzhen Nanshan"
+        },
+        "timeline": {
+                "title": "Event Schedule",
+                "registration": {
+                        "title": "Registration Phase",
+                        "date": "From now until May 15, 2025",
+                        "description": "Submit your registration form online. We will review and notify results within 3 working days."
+                },
+                "hackathon": {
+                        "title": "Main Hackathon",
+                        "date": "June 1 to June 3, 2025",
+                        "description": "A week of non-stop creative marathon, from concept to prototype presentation."
+                },
+                "final": {
+                        "title": "Final Presentation",
+                        "date": "June 3, 2025",
+                        "description": "Present your project to judges and audience, compete for the grand prize."
+                },
+                "intro": {
+                        "title": "Your TeenAIgers Journey",
+                        "description": "Follow our detailed timeline to understand every step of this exciting hackathon experience"
+                },
+                "events": {
+                        "title": "Event Timeline"
+                },
+                "conclusion": {
+                        "title": "What's Next?",
+                        "description": "After completing all these stages, you'll have developed your project from concept to reality, gained valuable experience in technology and innovation, and hopefully made some great connections along the way. Remember, this is just the beginning of your journey in technology and innovation!"
+                },
+                "detailed": {
+                        "title": "Detailed Schedule",
+                        "description": "A comprehensive timeline of the TeenAIgers Hackathon",
+                        "offline1": {
+                                "title": "Offline Day 1",
+                                "events": [
+                                        "9:30 - 9:45 Check-in",
+                                        "9:45 - 10:30 Opening Ceremony",
+                                        "10:30 - 12:00 Networking + Team Formation",
+                                        "12:00 - 12:45 Lunch",
+                                        "13:00 - 15:30 Workshop + Ideation",
+                                        "15:30 - 16:45 Product Pitching + Idea Refine / Building",
+                                        "16:45 - 17:00 Briefing"
+                                ]
+                        },
+                        "offline2": {
+                                "title": "Offline Day 2",
+                                "events": [
+                                        "9:30 - 9:45 Check-in",
+                                        "10:00 - 12:00 Product Pitching + Mentoring",
+                                        "12:00 - 18:00 Building + Workshops",
+                                        "Dinner Provided"
+                                ]
+                        },
+                        "offline3": {
+                                "title": "Offline Day 3",
+                                "events": [
+                                        "9:30 - 9:45 Check-in",
+                                        "10:00 - 18:00 Building + Mentoring + Workshops",
+                                        "Lunch & Dinner Provided",
+                                        "18:00 - 18:30 Briefing"
+                                ]
+                        },
+                        "online": {
+                                "title": "BUILD 5 Days",
+                                "events": [
+                                        "Daily Checkins"
+                                ]
+                        },
+                        "offline4": {
+                                "title": "Offline Day 4",
+                                "events": [
+                                        "9:00 - 9:20 Check in",
+                                        "9:20 - 10:00 Travelling (~30 minutes)",
+                                        "10:00 - 5:30 Field Trip",
+                                        "5:30 - 6:00 Travelling",
+                                        "Dinner Provided"
+                                ]
+                        },
+                        "offline5": {
+                                "title": "Offline Day 5",
+                                "events": [
+                                        "9:30 - 9:45 Check in",
+                                        "10:15 - 12:00 Pitch + Judging",
+                                        "12:30 - 1:30 Lunch",
+                                        "1:30 - 2:30 Guest Speaker",
+                                        "2:30 - 3:30 Award + Closing Ceremony"
+                                ]
+                        }
+                }
+        },
+        "cta": {
+                "title": "Ready to Take the Challenge?",
+                "description": "Join TeenAIgers Hackathon and create the future together with hundreds of high school students!",
+                "register": "Register Now"
+        },
+        "prizes": {
+                "title": "$ PRIZES $",
+                "amount": "¥17,500",
+                "description": "Prize Pool"
+        },
+        "team": {
+                "checkOut": "CHECK OUT OUR",
+                "title": "< TEAM OF TEENS >",
+                "roles": {
+                        "founder": "Founder",
+                        "cofounder": "Co-founder",
+                        "developer": "Developer",
+                        "designer": "Designer"
+                }
+        },
+        "about": {
+                "hero": {
+                        "title1": "The foundation of tomorrow awaits the youth of today to",
+                        "title2": "Dream big, dream different"
+                },
+                "intro": {
+                        "title": "The teenAIgers Hackathon",
+                        "subtitle": "A stage for every teenager to shine their spark",
+                        "text": "Let us help you turn your dreams into reality"
+                },
+                "manifesto": {
+                        "line1": "Don't just adapt to the age of AI—define its future with your own hands",
+                        "line2": "Don't just copy practice questions tenfold—create the next answer"
+                },
+                "what": {
+                        "title": "What is TEENAIGERS",
+                        "description": "The teenAIgers Hackathon is a hybrid competition ",
+                        "highlight1": "designed for teenagers whose eye's light up with light when they're chasing their dreams. ",
+                        "middle": "Students will develop AI-driven solutions within a week, transforming their unique ideas into real products.",
+                        "extra": "Through exploring real-world problems and project-based learning, students will gain hands-on experience in technology ",
+                        "highlight2": "systematically cultivating their ability to identify and solve problems."
+                },
+                "event": {
+                        "title": "Event Information",
+                        "intro": "Students will complete their projects under a ",
+                        "highlight1": "compact yet flexible single week timeline,",
+                        "middle1": "balancing school with project development.",
+                        "theme": "The theme of this hackathon is ",
+                        "highlight2": "\"How to use AI, not used by AI?\" ",
+                        "middle2": "Teams can create solutions for several tracks; EdTech, Gamification, Social communities, or a problem they relate to.",
+                        "teams": "Students can form teams freely based on common interests and skills, encouraging a ",
+                        "highlight3": "collision of different ideas and perspectives."
+                },
+                "timeline": {
+                        "title": "Event Timeline",
+                        "offline1": {
+                                "title": "Day 1",
+                                "events": [
+                                        "Check-in+Opening Ceremony",
+                                        "Networking+Team Formation",
+                                        "Workshop",
+                                        "Countdown Begins+Ideation"
+                                ]
+                        },
+                        "offline2": {
+                                "title": "Day 2",
+                                "events": [
+                                        "Project Design",
+                                        "Product Refinement+Feedback",
+                                        "Workshop",
+                                        "BUILD"
+                                ]
+                        },
+                        "offline3": {
+                                "title": "Day 3",
+                                "events": [
+                                        "BUILD",
+                                        "Progress Check-ins",
+                                        "Mentor Feedback",
+                                        "Workshops"
+                                ]
+                        },
+                        "online": {
+                                "title": "5 Days Online Building",
+                                "events": [
+                                        "Daily Checkins"
+                                ]
+                        },
+                        "offline4": {
+                                "title": "Day 4",
+                                "events": [
+                                        "Product Refinement + Feedback",
+                                        "Demo Rehearsal",
+                                        "Mystery Activity—Headquarters Visit"
+                                ]
+                        },
+                        "offline5": {
+                                "title": "Day 5",
+                                "events": [
+                                        "Check-in",
+                                        "Pitching + Judging",
+                                        "Guest Speech",
+                                        "Award Ceremony + Closing"
+                                ]
+                        }
+                },
+                "experience": {
+                        "title": "The Experience",
+                        "workshops": {
+                                "title": "Workshops",
+                                "description": "During the Hackathon we will provide a series of workshops with a focus on ",
+                                "highlight": "project development and artificial intelligence. ",
+                                "suffix": "Students may choose to attend these workshops to streamline their product development process."
+                        },
+                        "mentors": {
+                                "title": "Expert Mentors",
+                                "description": "We will provide a team of mentors specialized in various disciplines, such as AI engineering and business, to aid participants during the competition. They will guide students through",
+                                "highlight1": " creative ideation, technical questions and optimizing presentation",
+                                "middle": "to ensure they produce the ",
+                                "highlight2": "best possible versions of their solution."
+                        },
+                        "prizes": {
+                                "title": "Prizes",
+                                "description": "Participants can claim cash prizes of ",
+                                "highlight1": "¥10,000, ¥5,000, and ¥2,500 ",
+                                "middle": "respectively. The top three teams also receive the opportunity to showcase their work through the media. Criteria specific awards, such as \"Most Innovative\", will also be given out, and ",
+                                "highlight2": "all participants will receive a certificate."
+                        },
+                        "free": {
+                                "title": "Cost-Free Event",
+                                "description": "This hackathon is completely free of any participation fee, to encourage more students who are passionate about innovation and tech to participate."
+                        },
+                        "accommodation": {
+                                "title": "Accommodation",
+                                "description": "We will provide ",
+                                "highlight": "overnight options for any non-local participants",
+                                "suffix": " to ensure the optimal hackathon experience. There are several restaurants and canteens near the hackathon venue to ensure a variety of quality options for students and teachers. There are also charging stations, snacks and water within the venue during offline hackathon days."
+                        }
+                },
+                "inclusivity": {
+                        "title": "Inclusivity & Flexibility",
+                        "text1": {
+                                "prefix": "We encourage projects to be showcased through github repositories, demo videos, or other formats, breaking free from traditional whitepaper/PPT formats. Our competition prioritizes the ",
+                                "highlight1": "creativity and perspective unique to teenagers",
+                                "middle": ",",
+                                "highlight2": " and how well their solution solves the problem",
+                                "suffix": "."
+                        },
+                        "text2": {
+                                "prefix": "No coding experience required! Our goal is to empower students to optimize their use AI to create projects that have ",
+                                "highlight": "never been done, never been seen, never been done.",
+                                "suffix": ""
+                        }
+                },
+                "organizations": {
+                        "title": "Organizations",
+                        "text1": {
+                                "prefix": "teenAIgers Hackathon is Co-hosted by ",
+                                "highlight1": "VAMOS Labs",
+                                "middle": ", with support from ",
+                                "highlight2": "Chinasoft International Education, Futian District Government of Shenzhen and the Hong Kong STEMEducation Alliance",
+                                "suffix": "."
+                        },
+                        "text2": {
+                                "prefix": "",
+                                "highlight": "Q-plex",
+                                "suffix": " in ShenZhen Nanshan is the venue for this hackathon, offering sustainable collaborative spaces for technological exploration, aligning perfectly with the hackathon's pioneering spirit."
+                        }
+                }
+        },
+        "register": {
+                "roleSelection": {
+                        "title": "I am a...",
+                        "student": "Student",
+                        "teacher": "Teacher"
+                },
+                "title": "Register Now",
+                "subtitle": "Fill out the form below to join the TeenAIgers Hackathon and start your innovation journey",
+                "form": {
+                        "schoolinfo": "School Info",
+                        "schoolName": {
+                                "label": "Full Name of School*",
+                                "placeholder": "Enter school name",
+                                "error": "School name is required"
+                        },
+                        "teacherName": {
+                                "label": "Name of Teacher in Charge*",
+                                "placeholder": "Enter teacher name",
+                                "error": "Teacher name is required"
+                        },
+                        "contact": {
+                                "email": {
+                                        "label": "Email*",
+                                        "placeholder": "Enter email",
+                                        "error": "Valid email is required"
+                                },
+                                "phone": {
+                                        "label": "Phone Number*",
+                                        "placeholder": "Enter phone number",
+                                        "error": "Phone number is required"
+                                },
+                                "wechat": {
+                                        "label": "WeChat ID (Optional)",
+                                        "placeholder": "Enter WeChat ID"
+                                }
+                        },
+                        "studentCount": {
+                                "label": "Number of Students*",
+                                "placeholder": "Enter number of students",
+                                "error": "Number of students is required"
+                        },
+                        "students": {
+                                "error": "At least one student is required",
+                                "add": "Add Student"
+                        },
+                        "studentForm": {
+                                "basic": "Basic Info",
+                                "realName": {
+                                        "label": "Real Name + Surname",
+                                        "placeholder": "Enter your full name",
+                                        "error": "Full name is required"
+                                },
+                                "preferredName": {
+                                        "label": "Preferred Name",
+                                        "placeholder": "Enter your preferred name",
+                                        "error": "Preferred name is required"
+                                },
+                                "age": {
+                                        "label": "Age",
+                                        "placeholder": "Enter your age",
+                                        "error": "Age is required"
+                                },
+                                "gender": {
+                                        "label": "Gender",
+                                        "placeholder": "Select your gender",
+                                        "error": "Gender is required",
+                                        "options": {
+                                                "male": "Male",
+                                                "female": "Female",
+                                                "other": "Other"
+                                        }
+                                },
+                                "contact": {
+                                        "label": "Contact Information",
+                                        "sublabel": "Please leave your contact information for notification of updates",
+                                        "email": {
+                                                "label": "Email*",
+                                                "placeholder": "Enter your email",
+                                                "error": "Valid email is required"
+                                        },
+                                        "phone": {
+                                                "label": "Phone Number*",
+                                                "placeholder": "Enter your phone number",
+                                                "error": "Phone number is required"
+                                        },
+                                        "wechat": {
+                                                "label": "WeChat ID (Optional)",
+                                                "placeholder": "Enter your WeChat ID"
+                                        }
+                                },
+                                "school": {
+                                        "label": "School",
+                                        "placeholder": "Enter your school name",
+                                        "error": "School is required"
+                                },
+                                "grade": {
+                                        "label": "Grade/Year Level",
+                                        "placeholder": "Enter your grade",
+                                        "error": "Grade is required"
+                                },
+                                "skills": {
+                                        "label": "Skills",
+                                        "placeholder": "Select",
+                                        "placeholder2": "or enter skills",
+                                        "error": "At least one skill is required"
+                                },
+                                "experience": {
+                                        "label": "Any Hackathon or project experience? If yes, please explain",
+                                        "placeholder": "Describe your experience",
+                                        "error": "This field is required"
+                                },
+                                "links": {
+                                        "label": "Links",
+                                        "sublabel": "Any work, websites, social accounts, etc. that represent your abilities",
+                                        "placeholder": "Enter relevant links",
+                                        "error": "At least one link is recommended"
+                                }
+                        },
+                        "student": {
+                                "stu": "Student",
+                                "count": "students",
+                                "name": {
+                                        "label": "Student Name*",
+                                        "placeholder": "Enter student name",
+                                        "error": "Student name is required"
+                                },
+                                "age": {
+                                        "label": "Age*",
+                                        "placeholder": "Enter age",
+                                        "error": "Age must be between 12 and 19"
+                                },
+                                "gender": {
+                                        "label": "Gender*",
+                                        "placeholder": "Select gender",
+                                        "error": "Gender is required",
+                                        "options": {
+                                                "male": "Male",
+                                                "female": "Female",
+                                                "other": "Other"
+                                        }
+                                },
+                                "skills": {
+                                        "label": "Skills*",
+                                        "placeholder": "Select",
+                                        "placeholder2": "or enter skills",
+                                        "error": "At least one skill is required",
+                                        "options": {
+                                                "programming": "Programming",
+                                                "uiux": "UI/UX Design",
+                                                "presentation": "Presentation",
+                                                "prompt": "Prompt Engineering",
+                                                "product": "Product Design",
+                                                "business": "Business"
+                                        }
+                                },
+                                "extra": {
+                                        "label": "Extra Information",
+                                        "placeholder": "Enter extra information, eg. special skills that are not listed, previous hackathon experience."
+                                },
+                                "hackathonExperience": {
+                                        "label": "Hackathon Experience",
+                                        "yes": "Yes",
+                                        "no": "No"
+                                }
+                        }
+                },
+                "submit": {
+                        "button": "Submit",
+                        "processing": "Processing...",
+                        "success": {
+                                "title": "Registration Successful!",
+                                "message": "Thanks for filling our form, we'll be in touch soon!",
+                                "close": "Close"
+                        },
+                        "error": {
+                                "title": "Error",
+                                "close": "Close",
+                                "rateLimit": "Too many registration attempts. Please wait {{minutes}} minutes before trying again."
+                        }
+                }
+        },
+        "faq": {
+                "title": "FAQ",
+                "subtitle": "About the TeenAIgers Hackathon",
+                "contact": {
+                        "title": "Any other questions? Contact us:",
+                        "email": "Email: carriemcrena@gmail.com",
+                        "wechat": "WeChat: carrii_yy29"
+                },
+                "1": {
+                        "q": "What is a Hackathon?",
+                        "a": "A hackathon is a combination of the words 'hack' and 'marathon'. In TeenAIgers, participants will complete a full project development process from idea to prototype with their team."
+                },
+                "2": {
+                        "q": "Do I need programming skills to participate?",
+                        "a": "Not necessarily. Although preferred, we welcome high school students with various skillsets, including but not limited to UI/UX design, product design, business, presentation. The only requirement is a enthusiam for technology and AI."
+                },
+                "3": {
+                        "q": "Is the event online or offline?",
+                        "a": "TeenAIgers is a hybrid hackathon with both offline days to the full hackathon experience and online sessions to ensure flexibility for non-local students."
+                },
+                "4": {
+                        "q": "Are there any participation fees?",
+                        "a": "TeenAIgers is free for all participants. We aim to eliminate economic barriers to allow more talented students to participate in this event."
+                },
+                "5": {
+                        "q": "What rewards do winning teams receive?",
+                        "a": "Winning teams will receive cash prizes, media exposure opportunities, and chances to connect with investors. Specific awards will be announced before the event."
+                },
+                "6": {
+                        "q": "How will submissions be assessed?",
+                        "a": "Projects will be judged on how well AI is utilized, innovation and creativity, and how effectively does it solve the problem. Check the judging rubric for more specific metrics :)"
+                },
+                "7": {
+                        "q": "How do I register for TeenAIgers?",
+                        "a": "If you are a student with one of our partnering schools, please find the teacher in charge to sign up. If you aren't, please fill out and submit the registration form on the 'Register' page of this website. We will review and notify results within 2 working days via email."
+                },
+                "8": {
+                        "q": "Is there a theme?",
+                        "a": "Yes, the theme for this hackathon is \"How to use technology, not used by technology.\""
+                },
+                "9": {
+                        "q": "Will there be another hackathon?",
+                        "a": "Yes, there will be several more hackathons that follow :D"
+                },
+                "10": {
+                        "q": "How will I receive info during the hackathon?",
+                        "a": "You will be informed through the organizing teacher of your school and through updates on our website."
+                },
+                "11": {
+                        "q": "When is the hackathon?",
+                        "a": "The hackathon dates are still TBD"
+                }
+        }
+}

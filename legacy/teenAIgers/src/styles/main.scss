@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  overflow: scroll;
+}
+
+:root {
+  --primary: #00ffc2;
+  --secondary: #ffffff;
+  --tertiary: #ff0099;
+  --glitchshadow: #ff00ff;
+  --background: #000000;
+  --font: "Retropix", "Arial", sans-serif;
+  --title-font: "Retropix", "Arial", sans-serif;
+  --text-font: 'scr nsevex reg', "Arial", sans-serif;
+  --ti-cursor-color: #ffffff;
+  height: 100vh;
+  min-height: 100vh;
+  //background: linear-gradient(to bottom, #000000 0%, #000001 80%,  var(--primary) 95%, var(--primary) 100%) no-repeat fixed;
+}
+
+.chinese-locale {
+  * {
+    //everything if locale is in chinese
+    font-family: 'unifont jp', sans-serif !important;
+  }
+
+  .chinese {
+    // for specific styling
+    font-size: large;
+  }
+}
+
+//single chinese class
+.chinese {
+  font-family: 'unifont jp' !important;
+  font-size: large;
+}
+
+
+$glitch-color-1: #00ffff; // Cyan
+$glitch-color-2: #ff00ff; // Magenta
+$glitch-offset: -2px;
+
+.glitch {
+  font-size: 84rpx;
+  font-weight: bold;
+  color: white;
+  position: relative;
+  display: inline-block;
+  text-shadow: 0 $glitch-offset $glitch-color-1, // Down
+    0 (-$glitch-offset) $glitch-color-2; // Up
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  /* duplicate content */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  clip: rect(0, 900px, 0, 0);
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 magenta;
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: 2px 0 cyan;
+}
+
+.layout {
+  height: 100%; // min-height: 100vh; caused some problems
+  background: linear-gradient(to bottom, #000000 0%, #000000 55%, var(--primary) 90%, var(--primary) 100%);
+  position: relative;
+  overflow-x: hidden;
+
+
+  //include?
+  transition: all 0.25s ease; //faq items open resulting in bg gradient change cuz percentage
+
+
+  &--transparent {
+    background: transparent;
+  }
+
+  &--slowgradient {
+    background: linear-gradient(to bottom, #000000 0%, #000000 85%, #013527 100%);
+  }
+
+  &--gradient-only {
+    background: linear-gradient(to bottom, #000000 0%, #000c09 12%, var(--primary) 40%, var(--primary) 100%);
+  }
+
+  &--gradient-index {
+    background: linear-gradient(to bottom, #000000 0%, #000c09 40%, var(--primary) 70%, var(--primary) 100%);
+  }
+}
+
+.header-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 60rpx;
+
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.info-area {
+  font-family: var(--text-font);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30rpx;
+  padding: 60rpx 40rpx;
+  margin-top: 40rpx;
+  padding-bottom: 100rpx;
+
+}
+
+.content-text {
+  font-family: var(--text-font);
+}
+
+.info {
+  font: var(--text-font);
+  font-size: 26rpx;
+  color: var(--primary);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 60rpx;
+  padding: 20rpx;
+  //background: rgba(0, 0, 0, 0.1);
+  //border-radius: 10rpx;
+  //backdrop-filter: blur(5px);
+}
+
+.accent {
+  color: var(--tertiary);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  padding-top: 40rpx;
+}
+
+.logo {
+  height: 200rpx;
+  width: 200rpx;
+  margin-top: 200rpx;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 50rpx;
+}
+
+.text-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--text-font);
+}
+
+.title {
+  font: var(--title-font);
+  font-size: 64rpx;
+  color: var(--primary);
+
+  &--accent {
+    color: var(--tertiary);
+  }
+}
+
+.subtitle {
+  font: var(--title-font);
+  font-size: 48rpx;
+  color: var(--secondary);
+}
+
+.smoltitle {
+  font: var(--title-font);
+  font-size: 25rpx;
+  color: var(--primary);
+}

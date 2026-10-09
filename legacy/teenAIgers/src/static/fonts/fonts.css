@@ -1,0 +1,19 @@
+@font-face {
+        font-family: 'Retropix';
+        src: url('/static/fonts/Retropix.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+}
+
+@font-face {
+        font-family: 'scr nsevex reg';
+        src: url('/static/fonts/scr-nsevex-reg.cc84742826640e5b5cd314a6f.3358169bd9d1190df243e5f30486e23c.woff2') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+}
+@font-face {
+        font-family: 'unifont jp';
+        src: url('/static/fonts/unifont_jp.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+}

@@ -1,0 +1,61 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {}
+		},
+		{
+			"path": "pages/calendar/calendar",
+			"style": {}
+		},
+		{
+			"path": "pages/game/game",
+			"style": {}
+		},
+		{
+			"path": "pages/info/info",
+			"style": {}
+		},
+		{
+			"path": "pages/default/error",
+			"style": {}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarBackgroundColor": "black",
+		"backgroundColor": "black"
+	},
+	"tabBar": {
+		"color": "#fff",
+		"selectedColor": "#00ffc2",
+		"backgroundColor": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "",
+				"iconPath": "static/icon/home.svg",
+				"selectedIconPath": "static/icon/home.svg",
+				"iconfont": {}
+			},
+			{
+				"pagePath": "pages/calendar/calendar",
+				"text": "",
+				"iconPath": "static/icon/calendar.svg",
+				"selectedIconPath": "static/icon/calendar.svg"
+			},
+			{
+				"pagePath": "pages/game/game",
+				"text": "",
+				"iconPath": "static/icon/game.svg",
+				"selectedIconPath": "static/icon/game.svg"
+			},
+			{
+				"pagePath": "pages/info/info",
+				"text": "",
+				"iconPath": "static/icon/s.svg",
+				"selectedIconPath": "static/icon/s.svg"
+			}
+		]
+	}
+}

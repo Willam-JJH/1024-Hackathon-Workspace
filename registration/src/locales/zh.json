@@ -1,0 +1,109 @@
+{
+        "nav": {
+                "home": "首页",
+                "about": "关于我们",
+                "faq": "常见问题",
+                "register": "注册报名"
+        },
+        "footer": {
+                "sponsors": "合作伙伴",
+                "tagline": "用AI打造下一个伟大的作品"
+        },
+        "register": {
+                "title": "注册报名",
+                "subtitle": "填写以下表格参加TeenAIgers黑客松，开启你的创新之旅",
+                "form": {
+                        "schoolinfo": "学校信息",
+                        "schoolName": {
+                                "label": "学校全称*",
+                                "placeholder": "请输入学校名称",
+                                "error": "请填写学校名称"
+                        },
+                        "teacherName": {
+                                "label": "负责老师名字*",
+                                "placeholder": "请输入老师姓名",
+                                "error": "请填写负责老师姓名"
+                        },
+                        "contact": {
+                                "email": {
+                                        "label": "电子邮箱*",
+                                        "placeholder": "请输入电子邮箱",
+                                        "error": "请输入有效的电子邮箱"
+                                },
+                                "phone": {
+                                        "label": "手机号*",
+                                        "placeholder": "请输入手机号",
+                                        "error": "请输入手机号"
+                                },
+                                "wechat": {
+                                        "label": "微信ID（选填）",
+                                        "placeholder": "请输入微信ID"
+                                }
+                        },
+                        "studentCount": {
+                                "label": "学生人数*",
+                                "placeholder": "请输入学生人数",
+                                "error": "请填写学生人数"
+                        },
+                        "students": {
+                                "error": "至少需要一名学生",
+                                "add": "添加学生"
+                        },
+                        "student": {
+                                "stu": "学生",
+                                "count": "名学生",
+                                "name": {
+                                        "label": "学生姓名*",
+                                        "placeholder": "请输入学生姓名",
+                                        "error": "请填写学生姓名"
+                                },
+                                "age": {
+                                        "label": "年龄*",
+                                        "placeholder": "请输入年龄",
+                                        "error": "年龄必须在12至19岁之间"
+                                },
+                                "gender": {
+                                        "label": "性别*",
+                                        "placeholder": "请选择性别",
+                                        "error": "请选择性别",
+                                        "options": {
+                                                "male": "男",
+                                                "female": "女",
+                                                "other": "其他"
+                                        }
+                                },
+                                "skills": {
+                                        "label": "技能*",
+                                        "placeholder": "请选择或输入技能",
+                                        "error": "至少选择一项技能",
+                                        "options": {
+                                                "programming": "编程",
+                                                "uiux": "UI/UX设计",
+                                                "presentation": "演讲",
+                                                "prompt": "AI提示工程",
+                                                "product": "产品设计",
+                                                "business": "商业"
+                                        }
+                                },
+                                "extra": {
+                                        "label": "额外信息",
+                                        "placeholder": "请输入额外信息. 例如：以前是否参加过黑客松，是否有任何特殊技能等"
+                                },
+                                "hackathonExperience": {
+                                        "label": "参加过黑客松吗",
+                                        "yes": "是",
+                                        "no": "否"
+                                }
+                        }
+                },
+                "submit": {
+                        "button": "提交",
+                        "processing": "处理中...",
+                        "success": {
+                                "title": "提交成功!",
+                                "message": "感谢您填写我们的表格，我们将尽快与您联系！",
+                                "close": "返回"
+                        }
+                }
+        }
+}

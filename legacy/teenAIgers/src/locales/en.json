@@ -1,0 +1,93 @@
+{
+        "languageSwitch": "中文",
+        "slogan": {
+                "hackathon": "hackathon"
+        },
+        "main": {
+                "buildThe": "BUILD THE",
+                "nextBigThing": "NEXT BIG THING",
+                "withAi": "WITH AI",
+                "hackTheFuture": "HACK THE FUTURE",
+                "description": "The TEENAIGERS HACKATHON IS AN ARTIFICIAL INTELLIGENCE COMPETITION FOCUSED SOLELY ON TECHNOLOGY, TEENAGERS AND TALENT."
+        },
+        "mainDescription": {
+                "prefix": "The",
+                "teen": "TEEN",
+                "ai": "AI",
+                "gers": "GERS",
+                "middle": "HACKATHON IS AN ARTIFICIAL INTELLIGENCE COMPETITION FOCUSED SOLELY ON",
+                "emphasis": "TECHNOLOGY, TEENAGERS",
+                "conjunction": "AND",
+                "suffix": "TALENT."
+        },
+        "prizes": {
+                "title": "$ PRIZES $",
+                "amount": "¥100,000",
+                "description": "Prize Pool"
+        },
+        "team": {
+                "checkOut": "CHECK OUT OUR",
+                "title": "< TEAM OF TEENS > "
+        },
+        "partners": {
+                "title": "\\ PARTNERS /"
+        },
+        "intro": {
+                "text1": "We launched the Teen",
+                "accent1": "AI",
+                "text2": "gers Hackathon because we believe the future of technology should be defined by the next generation — Us."
+        },
+        "section1": {
+                "text": "In the era of Technology, Teenagers are the ones who will change the world — but only if we know how."
+        },
+        "theme": {
+                "line1": "How to use Technology,",
+                "line2": "not used by Technology.",
+                "subtitle": "That's our theme."
+        },
+        "section2": {
+                "text1": "Our schools teach us the",
+                "text2": "knowledge we could need, but",
+                "text3": "most of us never think about how or where we use it.",
+                "text4": "We want to break away from traditional education systems, and guide Teenagers to develop",
+                "accent": "actually practical skills."
+        },
+        "section3": {
+                "text1": "It's about solving problems that truly matter. To you, to friends, to society.",
+                "text2": "It's also your chance to think",
+                "accent1": "big",
+                "text3": ", think",
+                "accent2": "different",
+                "text4": "and earn some cash."
+        },
+        "section4": {
+                "text1": "Build something that",
+                "accent": "pushes boundaries",
+                "text2": "— a new game, an aI application, or an innovative solution to revolutionize the industry.",
+                "text3": "And We're here to give you everything you need to",
+                "accent2": "turn your ideas into something real."
+        },
+        "section5": {
+                "text1": "Whether you're an Expert Developer or just someone who likes to think,",
+                "accent": "we have a stage for everyone to shine."
+        },
+        "section6": {
+                "text1": "THIS HACKATHON IS JUST THE BEGINNING OF SOMETHING BIGGER. BETTER. REVOLUTIONARY, EVEN.",
+                "accent": "(: %\\So Let's begin building/% :)"
+        },
+        "faq": {
+                "title": "FAQ",
+                "q1": "What is a Hackathon?",
+                "a1": "A hackathon is an event where people engage in rapid and collaborative engineering to solve a problem.",
+                "q2": "Is there a theme?",
+                "a2": "Yes, the theme for this hackathon is \"How to use technology, not used by technology.\"",
+                "q3": "How will submissions be assessed?",
+                "a3": "Projects will be judged on how well AI is utilized, innovation and creativity, and how effectively does it solve the problem. Check the judging rubic for more specific metrics :)",
+                "q4": "Will there be another hackathon?",
+                "a4": "Yes, there will be several more hackathons that follow :D",
+                "q5": "How will I receive info during the hackathon?",
+                "a5": "You will be informed through the organizing teacher of your school and through updates on our mini program.",
+                "q6": "When is the hackathon?",
+                "a6": "specific date not confirmed yet"
+        }
+}

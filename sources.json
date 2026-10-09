@@ -1,0 +1,24 @@
+{
+  "import_date": "2026-10-09",
+  "method": "Source snapshots exported from the specified Git commits; upstream history remains in original repositories",
+  "repositories": [
+    {
+      "repository": "teensparkr/teenaigers-web",
+      "url": "https://github.com/teensparkr/teenaigers-web",
+      "commit": "e5bcf63ab95a500a0a5b541523c992bb9ff682cf",
+      "imported_directory": "website"
+    },
+    {
+      "repository": "teensparkr/teenaigers-form",
+      "url": "https://github.com/teensparkr/teenaigers-form",
+      "commit": "dd230be3ac18ad884152723803da84ec2d8a531a",
+      "imported_directory": "registration"
+    },
+    {
+      "repository": "teensparkr/teenAIgers",
+      "url": "https://github.com/teensparkr/teenAIgers",
+      "commit": "c59aef2d5c3da0dcbd4ba627c146bf5c5575f715",
+      "imported_directory": "legacy/teenAIgers"
+    }
+  ]
+}

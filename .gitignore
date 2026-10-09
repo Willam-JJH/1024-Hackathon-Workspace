@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+dist/
+build/
+unpackage/
+.env
+.env.*
+!.env.example
+*.local
+*.log
+*.tsbuildinfo
+.netlify/
+.vercel/

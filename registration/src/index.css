@@ -1,0 +1,174 @@
+@font-face {
+  font-family: 'Retropix';
+  src: url('/fonts/Retropix.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TschicholdArchiType';
+  src: url('/fonts/TschicholdArchiType Normal.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'scr nsevex reg';
+  src: url('/fonts/scr-nsevex-reg.cc84742826640e5b5cd314a6f.3358169bd9d1190df243e5f30486e23c.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'unifont jp';
+  src: url('/fonts/unifont_jp.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+  font-family: 'scr nsevex reg', Arial, sans-serif;
+  background-color: #000;
+  color: #00ffc2;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'TschicholdArchiType', sans-serif;
+}
+
+:lang(zh) {
+  font-family: 'unifont jp', sans-serif;
+}
+
+:root {
+  --background: 0 0% 0%;
+  --foreground: 166 100% 50%;
+  --card: 0 0% 0%;
+  --card-foreground: 166 100% 50%;
+  --popover: 0 0% 0%;
+  --popover-foreground: 166 100% 50%;
+  --primary: 72 100% 58%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 240 100% 57%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 0%;
+  --muted-foreground: 240 100% 57%;
+  --accent: 240 100% 57%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 100%;
+  --input: 0 0% 100%;
+  --ring: 166 100% 50%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 72 100% 58%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 240 100% 57%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 0%;
+  --muted-foreground: 240 100% 57%;
+  --accent: 240 100% 57%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+/* Custom form styles */
+input,
+select {
+  background-color: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  font-weight: normal;
+  height: 40px;
+  transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus {
+  border-color: #00ffc2;
+  outline: none;
+}
+
+input::placeholder,
+select::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+select option {
+  background-color: #000;
+  color: #fff;
+}
+
+.hackathon-logo {
+  font-weight: 200;
+  letter-spacing: 1px;
+}
+
+
+label,
+p,
+span {
+  font-family: 'scr nsevex reg', Arial, sans-serif;
+}
+
+select,
+input,
+textarea {
+  font-family: 'scr nsevex reg', Arial, sans-serif !important;
+}
+
+.btn-submit {
+  background-color: rgba(40, 40, 40, 0.8);
+  transition: all 0.3s ease;
+  height: 48px;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.btn-submit:hover {
+  background-color: rgba(60, 60, 60, 0.8);
+}
+
+
+.moon-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 30%, #000 90%);
+  z-index: 1;
+}
