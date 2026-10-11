@@ -259,61 +259,22 @@ function exportTable<T extends { id: string }>(
 
 /* --------------------------------------------------------------- 页面 */
 
-const StaffPage = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [authReady, setAuthReady] = useState(false);
+/**
+ * 看板主体。**只在已登录时才挂载** —— 这一点很关键。
+ *
+ * 数据请求和 Realtime 订阅都在 useLiveTable 的挂载副作用里发起。
+ * 如果这个组件在未登录时就渲染，请求会以匿名身份发出，被数据库直接拒绝，
+ * 报 "permission denied for table participants"；而且 Realtime 频道也会用
+ * 匿名身份订阅，登录后收不到推送。
+ *
+ * 所以认证门（下面的 StaffPage）必须先挡住，登录成功再挂载这里。
+ */
+const StaffDashboard = ({ session }: { session: Session }) => {
   const [tab, setTab] = useState<Tab>("participants");
-
-  // 看板不进搜索引擎。robots.txt 挡不住被别处链接的情况，这里再加一道。
-  useEffect(() => {
-    const meta = document.createElement("meta");
-    meta.name = "robots";
-    meta.content = "noindex, nofollow";
-    document.head.appendChild(meta);
-    return () => {
-      document.head.removeChild(meta);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!supabase) {
-      setAuthReady(true);
-      return;
-    }
-
-    void supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setAuthReady(true);
-    });
-
-    const { data } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next);
-    });
-
-    return () => data.subscription.unsubscribe();
-  }, []);
 
   const participants = useLiveTable<Participant>("participants", fetchParticipants);
   const volunteers = useLiveTable<Volunteer>("volunteers", fetchVolunteers);
   const projects = useLiveTable<Project>("projects", fetchProjects);
-
-  if (!isSupabaseConfigured) {
-    return (
-      <div className="mx-auto max-w-screen-2xl px-5 py-[var(--s120)] sm:px-8 lg:px-12">
-        <h1 className="text-3xl text-white">筹备组看板</h1>
-        <p className="mt-4 text-sm text-white/50">
-          数据库还没接上。先配置 <code className="text-acid">.env.local</code>，
-          再执行 <code className="text-acid">supabase/migrations/0001_init.sql</code>。
-        </p>
-      </div>
-    );
-  }
-
-  if (!authReady) {
-    return <div className="px-5 py-[var(--s120)] text-sm text-white/40">加载中…</div>;
-  }
-
-  if (!session) return <StaffSignIn />;
 
   const tabs: { value: Tab; label: string; count: number; loading: boolean }[] = [
     { value: "participants", label: "参加者", count: participants.rows.length, loading: participants.loading },
@@ -363,6 +324,17 @@ const StaffPage = () => {
 
         <div className="flex items-center gap-4">
           <span className="hidden text-xs text-white/35 sm:inline">{session.user.email}</span>
+          <button
+            type="button"
+            onClick={() => {
+              void participants.refresh();
+              void volunteers.refresh();
+              void projects.refresh();
+            }}
+            className="btn-ghost !px-4 !py-2.5 text-xs"
+          >
+            重新加载
+          </button>
           <button type="button" onClick={exportCurrent} className="btn-ghost !px-4 !py-2.5 text-xs">
             导出 CSV
           </button>
@@ -455,5 +427,64 @@ const ErrorNote = ({ text }: { text: string }) => (
     {text}
   </div>
 );
+
+/**
+ * 认证门。职责只有两件：确认登录状态、决定渲染登录页还是看板。
+ * 数据相关的 hook 全在 StaffDashboard 里，登录成功后才挂载。
+ */
+const StaffPage = () => {
+  const [session, setSession] = useState<Session | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+
+  // 看板不进搜索引擎。robots.txt 挡不住被别处链接的情况，这里再加一道。
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!supabase) {
+      setAuthReady(true);
+      return;
+    }
+
+    void supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setAuthReady(true);
+    });
+
+    const { data } = supabase.auth.onAuthStateChange((_event, next) => {
+      setSession(next);
+    });
+
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="mx-auto max-w-screen-2xl px-5 py-[var(--s120)] sm:px-8 lg:px-12">
+        <h1 className="text-3xl text-white">筹备组看板</h1>
+        <p className="mt-4 text-sm text-white/50">
+          数据库还没接上。先配置 <code className="text-acid">.env.local</code>，
+          再执行 <code className="text-acid">supabase/migrations/0001_init.sql</code>。
+        </p>
+      </div>
+    );
+  }
+
+  if (!authReady) {
+    return <div className="px-5 py-[var(--s120)] text-sm text-white/40">加载中…</div>;
+  }
+
+  if (!session) return <StaffSignIn />;
+
+  // key 用 user id：换账号时强制重新挂载，避免沿用上一个账号的数据与订阅
+  return <StaffDashboard key={session.user.id} session={session} />;
+};
 
 export default StaffPage;

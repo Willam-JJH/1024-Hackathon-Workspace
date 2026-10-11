@@ -214,6 +214,10 @@ function friendlyError(message: string): string {
   if (message.includes("VISIBILITY_REQUIRED")) {
     return "请选择作品要不要公开、要不要署名。";
   }
+  // 匿名身份查需要登录的表时会收到这个 —— 通常是登录态没带上或已失效
+  if (/permission denied for table/i.test(message)) {
+    return "没有读取权限。多半是登录状态失效了，请退出后重新登录；如果重新登录后仍然如此，说明这个账号还没被加入筹备组名单。";
+  }
   if (/row-level security|violates row-level/i.test(message)) {
     return "提交被数据库策略拒绝，请检查填写内容是否完整。";
   }
