@@ -38,7 +38,8 @@ export function useLiveTable<T>(
       setRows(data);
       setError("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "读取失败");
+      // 留原始报错，界面用 describeError 翻成当前语言
+      setError(err instanceof Error ? err.message : "");
     } finally {
       setLoading(false);
     }

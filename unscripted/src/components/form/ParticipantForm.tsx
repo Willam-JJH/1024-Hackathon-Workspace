@@ -10,25 +10,8 @@ import {
 import SubmitBlock from "./SubmitBlock";
 import { useSubmit } from "../../lib/useSubmit";
 import { submitParticipant } from "../../lib/api";
-import type { ParticipationType } from "../../lib/types";
-
-const ParticipationOptions = [
-  {
-    value: "individual" as const,
-    label: "个人",
-    description: "自己一个人做一个项目，也可以带着已有的作品来。",
-  },
-  {
-    value: "team" as const,
-    label: "团队",
-    description: "和几个同学一起，报名时写清团队名称和大致人数。",
-  },
-  {
-    value: "club" as const,
-    label: "社团",
-    description: "社团组织成员围绕自身方向一起做，后续可另谈协办。",
-  },
-];
+import { PARTICIPATION_VALUES, type ParticipationType } from "../../lib/types";
+import { useT } from "../../i18n/core";
 
 interface FormState {
   name: string;
@@ -65,9 +48,11 @@ const initialState: FormState = {
 };
 
 const ParticipantForm = () => {
+  const t = useT();
+  const f = t.forms;
   const [form, setForm] = useState<FormState>(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { state, message, run, reset } = useSubmit();
+  const { state, message, run, reset } = useSubmit(t.errors);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -81,15 +66,15 @@ const ParticipantForm = () => {
 
   const validate = (): boolean => {
     const next: Record<string, string> = {};
-    if (!form.name.trim()) next.name = "请填写姓名";
-    if (!form.contact.trim()) next.contact = "请留一个能联系到你的方式";
-    if (!form.direction.trim()) next.direction = "写一句你的创作方向或已有的内容";
-    if (!form.day1 && !form.day2) next.days = "至少选一天能到场的时段";
+    if (!form.name.trim()) next.name = f.shared.errName;
+    if (!form.contact.trim()) next.contact = f.shared.errContact;
+    if (!form.direction.trim()) next.direction = f.participant.errDirection;
+    if (!form.day1 && !form.day2) next.days = f.shared.errDays;
     if (form.participationType !== "individual" && !form.groupName.trim()) {
-      next.groupName = "请填写团队或社团名称";
+      next.groupName = f.participant.errGroupName;
     }
     if (form.hasExisting && !form.existingDetail.trim()) {
-      next.existingDetail = "简单说一下已有的是什么";
+      next.existingDetail = f.participant.errExistingDetail;
     }
     setErrors(next);
     if (Object.keys(next).length > 0) scrollToFirstError();
@@ -133,23 +118,31 @@ const ParticipantForm = () => {
   };
 
   const isGroup = form.participationType !== "individual";
+  const isClub = form.participationType === "club";
+
+  // 选项的 value 是存进数据库的键，label / description 跟着语言走
+  const identityOptions = PARTICIPATION_VALUES.map((value) => ({
+    value,
+    label: t.enums.participation[value],
+    description: t.enums.participationDesc[value],
+  }));
 
   return (
     <form onSubmit={handleSubmit} className="space-y-[var(--s24)]">
       <div className="grid gap-[var(--s20)] sm:grid-cols-2">
         <TextField
-          label="姓名"
+          label={f.shared.name}
           required
-          placeholder="你的名字"
+          placeholder={f.participant.namePlaceholder}
           value={form.name}
           error={errors.name}
           onChange={(e) => set("name", e.target.value)}
         />
         <TextField
-          label="联系方式"
+          label={f.shared.contact}
           required
-          hint="微信号或手机号"
-          placeholder="方便我们联系你"
+          hint={f.shared.contactHint}
+          placeholder={f.participant.contactPlaceholder}
           value={form.contact}
           error={errors.contact}
           onChange={(e) => set("contact", e.target.value)}
@@ -157,18 +150,18 @@ const ParticipantForm = () => {
       </div>
 
       <TextField
-        label="邮箱"
-        hint="选填"
+        label={f.shared.email}
+        hint={f.shared.optional}
         type="email"
-        placeholder="用于接收活动通知"
+        placeholder={f.participant.emailPlaceholder}
         value={form.email}
         onChange={(e) => set("email", e.target.value)}
       />
 
       <ChoiceRow
-        label="以什么身份参加"
+        label={f.participant.identity}
         required
-        options={ParticipationOptions}
+        options={identityOptions}
         value={form.participationType}
         onChange={(v) => set("participationType", v)}
       />
@@ -176,19 +169,23 @@ const ParticipantForm = () => {
       {isGroup && (
         <div className="grid gap-[var(--s20)] sm:grid-cols-2">
           <TextField
-            label={form.participationType === "club" ? "社团名称" : "团队名称"}
+            label={isClub ? f.participant.groupNameClub : f.participant.groupNameTeam}
             required
-            placeholder={form.participationType === "club" ? "你的社团" : "你们的队名"}
+            placeholder={
+              isClub
+                ? f.participant.groupNameClubPlaceholder
+                : f.participant.groupNameTeamPlaceholder
+            }
             value={form.groupName}
             error={errors.groupName}
             onChange={(e) => set("groupName", e.target.value)}
           />
           <TextField
-            label="大致人数"
-            hint="选填"
+            label={f.participant.memberCount}
+            hint={f.shared.optional}
             type="number"
             min={1}
-            placeholder="包括你自己"
+            placeholder={f.participant.memberCountPlaceholder}
             value={form.memberCount}
             onChange={(e) => set("memberCount", e.target.value)}
           />
@@ -196,26 +193,26 @@ const ParticipantForm = () => {
       )}
 
       <TextAreaField
-        label="创作方向或已有内容"
+        label={f.participant.direction}
         required
-        hint="可以只是几句话"
-        placeholder="比如：想做一个小工具，帮社团找大家都有空的时间。"
+        hint={f.participant.directionHint}
+        placeholder={f.participant.directionPlaceholder}
         value={form.direction}
         error={errors.direction}
         onChange={(e) => set("direction", e.target.value)}
       />
 
       <SwitchField
-        label="我是带着已有项目或未完成的作品来的"
+        label={f.participant.hasExisting}
         value={form.hasExisting}
         onChange={(v) => set("hasExisting", v)}
       />
 
       {form.hasExisting && (
         <TextAreaField
-          label="已有的是什么"
+          label={f.participant.existingDetail}
           required
-          placeholder="项目做到哪一步了，现在缺什么。"
+          placeholder={f.participant.existingDetailPlaceholder}
           value={form.existingDetail}
           error={errors.existingDetail}
           onChange={(e) => set("existingDetail", e.target.value)}
@@ -223,7 +220,7 @@ const ParticipantForm = () => {
       )}
 
       <DayPicker
-        label="两天能到场的时段"
+        label={f.shared.days}
         value={{ day1: form.day1, day2: form.day2 }}
         error={errors.days}
         onChange={(v) => {
@@ -233,24 +230,24 @@ const ParticipantForm = () => {
       />
 
       <TextAreaField
-        label="时段补充说明"
-        hint="选填"
-        placeholder="比如周六只能下午到。"
+        label={f.shared.timeNote}
+        hint={f.shared.optional}
+        placeholder={f.shared.timeNotePlaceholder}
         value={form.timeNote}
         onChange={(e) => set("timeNote", e.target.value)}
       />
 
       <TextAreaField
-        label="设备或工具需求"
-        hint="选填"
-        placeholder="需要借用电脑、网络、投屏，或者希望提前拿到某个工具的权限。"
+        label={f.participant.equipment}
+        hint={f.shared.optional}
+        placeholder={f.participant.equipmentPlaceholder}
         value={form.equipmentNeeds}
         onChange={(e) => set("equipmentNeeds", e.target.value)}
       />
 
       <TextAreaField
-        label="其他想告诉我们的"
-        hint="选填"
+        label={f.shared.more}
+        hint={f.shared.optional}
         value={form.notes}
         onChange={(e) => set("notes", e.target.value)}
       />

@@ -5,9 +5,19 @@ import { fetchPublicProjects, publicFileUrl } from "../lib/api";
 import { isSupabaseConfigured } from "../lib/supabase";
 import type { PublicProject, StoredFile } from "../lib/types";
 import NotConfigured from "../components/NotConfigured";
+import { useT, fill, type Dict } from "../i18n/core";
 
 /** 卡片：封面 + 缩略图切换 */
-const ProjectCard = ({ project, index }: { project: PublicProject; index: number }) => {
+const ProjectCard = ({
+  project,
+  index,
+  t,
+}: {
+  project: PublicProject;
+  index: number;
+  t: Dict;
+}) => {
+  const p = t.pages.projects;
   const [active, setActive] = useState(0);
   const images = project.public_images ?? [];
   const cover = images[active];
@@ -36,7 +46,9 @@ const ProjectCard = ({ project, index }: { project: PublicProject; index: number
         </a>
       ) : (
         <div className="flex aspect-[4/3] items-center justify-center border border-dashed border-white/10 bg-white/[0.02]">
-          <span className="font-pixel text-xs tracking-widest text-white/20">NO IMAGE</span>
+          <span className="font-pixel text-xs tracking-widest text-white/20">
+            {p.noImage}
+          </span>
         </div>
       )}
 
@@ -51,7 +63,7 @@ const ProjectCard = ({ project, index }: { project: PublicProject; index: number
               className={`h-12 w-12 shrink-0 overflow-hidden border transition-colors ${
                 i === active ? "border-acid" : "border-white/15 hover:border-white/40"
               }`}
-              aria-label={`查看第 ${i + 1} 张图`}
+              aria-label={fill(p.imageAlt, { n: i + 1 })}
             >
               <img
                 src={publicFileUrl(img.path)}
@@ -71,24 +83,28 @@ const ProjectCard = ({ project, index }: { project: PublicProject; index: number
         {project.credit_display ? (
           <p className="mt-1.5 text-xs text-acid/80">{project.credit_display}</p>
         ) : (
-          <p className="mt-1.5 text-xs text-white/25">未署名</p>
+          <p className="mt-1.5 text-xs text-white/25">{p.uncredited}</p>
         )}
 
         <p className="mt-3 text-sm leading-relaxed text-white/60">{project.summary}</p>
 
         {project.problem && (
           <p className="mt-3 text-xs leading-relaxed text-white/40">
-            <span className="text-white/55">关注的问题：</span>
+            <span className="text-white/55">{p.problemLabel}: </span>
             {project.problem}
           </p>
         )}
 
         {project.direction && (
-          <p className="mt-1.5 text-xs text-white/35">方向：{project.direction}</p>
+          <p className="mt-1.5 text-xs text-white/35">
+            {p.directionLabel}: {project.direction}
+          </p>
         )}
 
         {project.members_display && (
-          <p className="mt-1.5 text-xs text-white/35">成员：{project.members_display}</p>
+          <p className="mt-1.5 text-xs text-white/35">
+            {p.membersLabel}: {project.members_display}
+          </p>
         )}
 
         {project.link && (
@@ -98,7 +114,7 @@ const ProjectCard = ({ project, index }: { project: PublicProject; index: number
             rel="noreferrer noopener"
             className="mt-4 inline-flex items-center gap-1.5 self-start text-sm text-acid underline decoration-acid/40 transition-colors hover:decoration-acid"
           >
-            打开作品
+            {p.open}
             <span aria-hidden="true">↗</span>
           </a>
         )}
@@ -108,25 +124,30 @@ const ProjectCard = ({ project, index }: { project: PublicProject; index: number
 };
 
 const ProjectsPage = () => {
+  const t = useT();
+  const p = t.pages.projects;
   const [projects, setProjects] = useState<PublicProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const load = useCallback(async (showSpinner = false) => {
-    if (!isSupabaseConfigured) {
-      setLoading(false);
-      return;
-    }
-    if (showSpinner) setLoading(true);
-    try {
-      setProjects(await fetchPublicProjects());
-      setError("");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "读取失败");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const load = useCallback(
+    async (showSpinner = false) => {
+      if (!isSupabaseConfigured) {
+        setLoading(false);
+        return;
+      }
+      if (showSpinner) setLoading(true);
+      try {
+        setProjects(await fetchPublicProjects());
+        setError("");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : p.errLoad);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [p.errLoad]
+  );
 
   useEffect(() => {
     void load(true);
@@ -149,20 +170,21 @@ const ProjectsPage = () => {
     <div className="mx-auto max-w-screen-2xl px-5 py-[var(--s48)] sm:px-8 lg:px-12">
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="max-w-2xl">
-          <div className="section-index">[ 04 ]</div>
-          <h1 className="mt-4 text-4xl text-white">作品墙</h1>
-          <p className="mt-4 text-base leading-relaxed text-white/60">
-            这届 Unscripted 已经提交的作品。作品可以还在早期阶段 ——
-            重点是让别人能试到核心想法。
-          </p>
+          <div className="section-index">{p.index}</div>
+          <h1 className="mt-4 text-4xl text-white">{p.title}</h1>
+          <p className="mt-4 text-base leading-relaxed text-white/60">{p.intro}</p>
         </div>
 
         <div className="flex items-center gap-4">
           <span className="text-xs text-white/35">
-            {loading ? "加载中…" : `共 ${projects.length} 件`}
+            {loading ? t.common.loading : fill(p.count, { count: projects.length })}
           </span>
-          <button type="button" onClick={() => void load(true)} className="btn-ghost !px-4 !py-2.5 text-xs">
-            刷新
+          <button
+            type="button"
+            onClick={() => void load(true)}
+            className="btn-ghost !px-4 !py-2.5 text-xs"
+          >
+            {p.refresh}
           </button>
         </div>
       </div>
@@ -178,24 +200,21 @@ const ProjectsPage = () => {
 
         {!loading && projects.length === 0 && !error && isSupabaseConfigured && (
           <div className="border border-dashed border-white/15 px-6 py-20 text-center">
-            <p className="text-white/45">还没有作品提交。</p>
+            <p className="text-white/45">{p.empty}</p>
             <Link to="/submit" className="btn-primary mt-8">
-              提交第一件作品
+              {p.emptyCta}
             </Link>
           </div>
         )}
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
+            <ProjectCard key={project.id} project={project} index={index} t={t} />
           ))}
         </div>
       </div>
 
-      <p className="mt-12 max-w-3xl text-xs leading-relaxed text-white/30">
-        署名由作者在提交时自己选择，没同意的作品只展示作品本身。
-        作品墙上不出现任何联系方式。
-      </p>
+      <p className="mt-12 max-w-3xl text-xs leading-relaxed text-white/30">{p.footnote}</p>
     </div>
   );
 };

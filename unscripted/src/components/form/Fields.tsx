@@ -4,6 +4,7 @@ import {
   type InputHTMLAttributes,
   type TextareaHTMLAttributes,
 } from "react";
+import { useT } from "../../i18n/core";
 
 /* ---------------------------------------------------------------- 外壳 */
 
@@ -152,7 +153,8 @@ interface ChipMultiSelectProps {
   required?: boolean;
   hint?: string;
   error?: string;
-  options: readonly string[];
+  /** value 是存进数据库的稳定键，label 是当前语言的显示名 */
+  options: readonly { value: string; label: string }[];
   value: string[];
   onChange: (value: string[]) => void;
 }
@@ -166,29 +168,27 @@ export const ChipMultiSelect = ({
   value,
   onChange,
 }: ChipMultiSelectProps) => {
-  const toggle = (option: string) => {
-    onChange(
-      value.includes(option) ? value.filter((v) => v !== option) : [...value, option]
-    );
+  const toggle = (key: string) => {
+    onChange(value.includes(key) ? value.filter((v) => v !== key) : [...value, key]);
   };
 
   return (
     <FieldShell label={label} required={required} hint={hint} error={error}>
       <div className="flex flex-wrap gap-3">
         {options.map((option) => {
-          const active = value.includes(option);
+          const active = value.includes(option.value);
           return (
             <button
-              key={option}
+              key={option.value}
               type="button"
-              onClick={() => toggle(option)}
+              onClick={() => toggle(option.value)}
               className={`border px-4 py-2.5 text-sm transition-colors ${
                 active
                   ? "border-acid bg-acid/15 text-acid"
                   : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
               }`}
             >
-              {option}
+              {option.label}
             </button>
           );
         })}
@@ -206,15 +206,17 @@ interface DayPickerProps {
   error?: string;
 }
 
-export const DayPicker = ({ label, value, onChange, error }: DayPickerProps) => (
-  <FieldShell label={label} required hint="两天都可选，按实际情况勾" error={error}>
+export const DayPicker = ({ label, value, onChange, error }: DayPickerProps) => {
+  const t = useT();
+  const days = [
+    { key: "day1" as const, text: t.forms.shared.day1 },
+    { key: "day2" as const, text: t.forms.shared.day2 },
+  ];
+
+  return (
+  <FieldShell label={label} required hint={t.forms.shared.daysHint} error={error}>
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      {(
-        [
-          { key: "day1" as const, text: "周六 · 集中制作" },
-          { key: "day2" as const, text: "周日 · 交换与评议" },
-        ]
-      ).map((day) => {
+      {days.map((day) => {
         const active = value[day.key];
         return (
           <button
@@ -244,7 +246,8 @@ export const DayPicker = ({ label, value, onChange, error }: DayPickerProps) => 
       })}
     </div>
   </FieldShell>
-);
+  );
+};
 
 /* --------------------------------------------------------------- 开关 */
 

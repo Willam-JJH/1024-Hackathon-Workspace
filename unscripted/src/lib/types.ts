@@ -1,12 +1,13 @@
 /** 与 supabase/migrations/0001_init.sql 中的表结构对应 */
 
+/**
+ * 身份、可见性、岗位、演示形式这几组值都**以稳定的英文键存进数据库**，
+ * 显示名放在词典里（zh.ts / en.ts 的 enums 段）。
+ *
+ * 早先版本直接存中文显示串，加英文之后就不成立了 ——
+ * 英文用户选 "Reception" 会往库里写"到场接待"，看板上就成了中英混杂。
+ */
 export type ParticipationType = "individual" | "team" | "club";
-
-export const PARTICIPATION_LABEL: Record<ParticipationType, string> = {
-  individual: "个人",
-  team: "团队",
-  club: "社团",
-};
 
 export interface Participant {
   id: string;
@@ -93,12 +94,13 @@ export interface Project {
  */
 export type WallVisibility = "named" | "group_only" | "anonymous" | "hidden";
 
-export const WALL_VISIBILITY_LABEL: Record<WallVisibility, string> = {
-  named: "公开 · 署名",
-  group_only: "公开 · 只显示团体名",
-  anonymous: "公开 · 不署名",
-  hidden: "不上墙",
-};
+/** 作品墙可见性的四种取值，顺序即展示顺序 */
+export const WALL_VISIBILITY_VALUES = [
+  "named",
+  "group_only",
+  "anonymous",
+  "hidden",
+] as const satisfies readonly WallVisibility[];
 
 /**
  * 公开作品墙上能看到的内容。
@@ -139,17 +141,15 @@ export const PUBLIC_PROJECT_COLUMNS = [
 ].join(",");
 
 /** 志愿者可选岗位 —— 来自 05 宣传文案里的四类工作 */
-export const VOLUNTEER_ROLES = [
-  "到场接待",
-  "作品交换与展示",
-  "布场与收场",
-  "工具帮助",
-] as const;
+export const VOLUNTEER_ROLES = ["reception", "swap", "setup", "tools"] as const;
+export type VolunteerRole = (typeof VOLUNTEER_ROLES)[number];
 
 /** 作品演示形式 —— 来自活动构想"表达方式"一节 */
-export const DEMO_FORMATS = [
-  "现场演示",
-  "图示",
-  "短视频",
-  "口头讲述",
-] as const;
+export const DEMO_FORMATS = ["live", "diagram", "video", "spoken"] as const;
+export type DemoFormat = (typeof DEMO_FORMATS)[number];
+
+export const PARTICIPATION_VALUES = [
+  "individual",
+  "team",
+  "club",
+] as const satisfies readonly ParticipationType[];

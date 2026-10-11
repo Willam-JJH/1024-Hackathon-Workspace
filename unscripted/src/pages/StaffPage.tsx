@@ -11,202 +11,243 @@ import {
   downloadCsv,
 } from "../lib/api";
 import {
-  PARTICIPATION_LABEL,
-  WALL_VISIBILITY_LABEL,
   type Participant,
   type Project,
   type StoredFile,
   type Volunteer,
 } from "../lib/types";
+import { describeError } from "../lib/errors";
 import StaffSignIn from "../components/staff/StaffSignIn";
 import StaffTable, { Bool, Time, type Column } from "../components/staff/StaffTable";
+import { useT, useLang, fill, type Dict } from "../i18n/core";
 
 type Tab = "participants" | "volunteers" | "projects";
 
+const TAB_VALUES: Tab[] = ["participants", "volunteers", "projects"];
+
 /* ------------------------------------------------------------ 列定义 */
 
-const participantColumns: Column<Participant>[] = [
-  { key: "created_at", label: "提交时间", render: (r) => <Time value={r.created_at} /> },
-  { key: "name", label: "姓名", primary: true },
-  { key: "contact", label: "联系方式" },
-  { key: "email", label: "邮箱", render: (r) => r.email || "—" },
-  {
-    key: "participation_type",
-    label: "身份",
-    render: (r) => PARTICIPATION_LABEL[r.participation_type],
-    csv: (r) => PARTICIPATION_LABEL[r.participation_type],
-  },
-  { key: "group_name", label: "团队／社团", render: (r) => r.group_name || "—" },
-  { key: "member_count", label: "人数", render: (r) => r.member_count ?? "—" },
-  {
-    key: "direction",
-    label: "创作方向／已有内容",
-    render: (r) => <span className="block max-w-[22rem] whitespace-pre-wrap">{r.direction}</span>,
-  },
-  {
-    key: "has_existing",
-    label: "已有项目",
-    render: (r) => (
-      <span>
-        <Bool value={r.has_existing} yes="是" no="否" />
-        {r.has_existing && r.existing_detail && (
-          <span className="mt-1 block max-w-[18rem] whitespace-pre-wrap text-xs text-white/45">
-            {r.existing_detail}
-          </span>
-        )}
-      </span>
-    ),
-    csv: (r) =>
-      r.has_existing ? `是：${r.existing_detail ?? ""}` : "否",
-  },
-  {
-    key: "day1_available",
-    label: "周六",
-    render: (r) => <Bool value={r.day1_available} />,
-    csv: (r) => (r.day1_available ? "可到" : "不可"),
-  },
-  {
-    key: "day2_available",
-    label: "周日",
-    render: (r) => <Bool value={r.day2_available} />,
-    csv: (r) => (r.day2_available ? "可到" : "不可"),
-  },
-  {
-    key: "time_note",
-    label: "时段说明",
-    render: (r) => (
-      <span className="block max-w-[14rem] whitespace-pre-wrap">{r.time_note || "—"}</span>
-    ),
-  },
-  {
-    key: "equipment_needs",
-    label: "设备需求",
-    render: (r) => (
-      <span className="block max-w-[16rem] whitespace-pre-wrap">{r.equipment_needs || "—"}</span>
-    ),
-  },
-  {
-    key: "notes",
-    label: "备注",
-    render: (r) => (
-      <span className="block max-w-[16rem] whitespace-pre-wrap">{r.notes || "—"}</span>
-    ),
-  },
-];
-
-const volunteerColumns: Column<Volunteer>[] = [
-  { key: "created_at", label: "提交时间", render: (r) => <Time value={r.created_at} /> },
-  { key: "name", label: "姓名", primary: true },
-  { key: "contact", label: "联系方式" },
-  { key: "email", label: "邮箱", render: (r) => r.email || "—" },
-  {
-    key: "roles",
-    label: "岗位意愿",
-    render: (r) => r.roles.join(" · ") || "—",
-    csv: (r) => r.roles.join(" / "),
-  },
-  {
-    key: "day1_available",
-    label: "周六",
-    render: (r) => <Bool value={r.day1_available} />,
-    csv: (r) => (r.day1_available ? "可到" : "不可"),
-  },
-  {
-    key: "day2_available",
-    label: "周日",
-    render: (r) => <Bool value={r.day2_available} />,
-    csv: (r) => (r.day2_available ? "可到" : "不可"),
-  },
-  {
-    key: "time_note",
-    label: "时段说明",
-    render: (r) => (
-      <span className="block max-w-[14rem] whitespace-pre-wrap">{r.time_note || "—"}</span>
-    ),
-  },
-  {
-    key: "experience",
-    label: "经验",
-    render: (r) => (
-      <span className="block max-w-[18rem] whitespace-pre-wrap">{r.experience || "—"}</span>
-    ),
-  },
-  {
-    key: "notes",
-    label: "备注",
-    render: (r) => (
-      <span className="block max-w-[16rem] whitespace-pre-wrap">{r.notes || "—"}</span>
-    ),
-  },
-];
-
-const projectColumns: Column<Project>[] = [
-  { key: "created_at", label: "提交时间", render: (r) => <Time value={r.created_at} /> },
-  { key: "title", label: "项目名", primary: true },
-  {
-    key: "summary",
-    label: "一句话简介",
-    render: (r) => <span className="block max-w-[20rem] whitespace-pre-wrap">{r.summary}</span>,
-  },
-  {
-    key: "problem",
-    label: "关注的问题",
-    render: (r) => (
-      <span className="block max-w-[18rem] whitespace-pre-wrap">{r.problem || "—"}</span>
-    ),
-  },
-  { key: "group_name", label: "团队／社团", render: (r) => r.group_name || "—" },
-  { key: "members", label: "成员", render: (r) => r.members || "—" },
-  {
-    key: "link",
-    label: "作品入口",
-    render: (r) =>
-      r.link ? (
-        <a
-          href={r.link}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="break-all text-acid underline decoration-acid/40 hover:decoration-acid"
-        >
-          {r.link}
-        </a>
-      ) : (
-        "—"
+/*
+ * 列定义做成"接收词典、返回列数组"的函数 —— 因为列名要跟着语言变，
+ * 而且 CSV 的表头也用同一份文案，翻译一处就够。
+ */
+const participantColumns = (t: Dict): Column<Participant>[] => {
+  const c = t.staff.columns;
+  const b = t.staff.bool;
+  return [
+    { key: "created_at", label: c.createdAt, render: (r) => <Time value={r.created_at} /> },
+    { key: "name", label: c.name, primary: true },
+    { key: "contact", label: c.contact },
+    { key: "email", label: c.email, render: (r) => r.email || "—" },
+    {
+      key: "participation_type",
+      label: c.participationType,
+      render: (r) => t.enums.participation[r.participation_type],
+      csv: (r) => t.enums.participation[r.participation_type],
+    },
+    { key: "group_name", label: c.groupName, render: (r) => r.group_name || "—" },
+    { key: "member_count", label: c.memberCount, render: (r) => r.member_count ?? "—" },
+    {
+      key: "direction",
+      label: c.direction,
+      render: (r) => (
+        <span className="block max-w-[22rem] whitespace-pre-wrap">{r.direction}</span>
       ),
-  },
-  {
-    key: "instructions",
-    label: "操作说明",
-    render: (r) => (
-      <span className="block max-w-[20rem] whitespace-pre-wrap">{r.instructions || "—"}</span>
-    ),
-  },
-  {
-    key: "equipment_needs",
-    label: "设备需求",
-    render: (r) => (
-      <span className="block max-w-[16rem] whitespace-pre-wrap">{r.equipment_needs || "—"}</span>
-    ),
-  },
-  { key: "demo_format", label: "演示形式", render: (r) => r.demo_format || "—" },
-  { key: "contact", label: "联系方式", render: (r) => r.contact || "—" },
-  {
-    key: "wall_visibility",
-    label: "作品墙",
-    render: (r) => (
-      <span className={r.wall_visibility === "hidden" ? "text-white/35" : "text-acid"}>
-        {r.wall_visibility ? WALL_VISIBILITY_LABEL[r.wall_visibility] : "未表态"}
-      </span>
-    ),
-    csv: (r) => (r.wall_visibility ? WALL_VISIBILITY_LABEL[r.wall_visibility] : "未表态"),
-  },
-  {
-    key: "files",
-    label: "文件",
-    render: (r) => <FileLinks files={r.files} />,
-    csv: (r) => (r.files ?? []).map((f) => f.name).join(" / "),
-  },
-];
+    },
+    {
+      key: "has_existing",
+      label: c.hasExisting,
+      render: (r) => (
+        <span>
+          <Bool value={r.has_existing} yes={b.yes} no={b.no} />
+          {r.has_existing && r.existing_detail && (
+            <span className="mt-1 block max-w-[18rem] whitespace-pre-wrap text-xs text-white/45">
+              {r.existing_detail}
+            </span>
+          )}
+        </span>
+      ),
+      csv: (r) =>
+        r.has_existing ? `${t.staff.hasExistingPrefix}${r.existing_detail ?? ""}` : b.no,
+    },
+    {
+      key: "day1_available",
+      label: c.day1,
+      render: (r) => <Bool value={r.day1_available} yes={b.canAttend} no={b.cannotAttend} />,
+      csv: (r) => (r.day1_available ? b.canAttend : b.cannotAttend),
+    },
+    {
+      key: "day2_available",
+      label: c.day2,
+      render: (r) => <Bool value={r.day2_available} yes={b.canAttend} no={b.cannotAttend} />,
+      csv: (r) => (r.day2_available ? b.canAttend : b.cannotAttend),
+    },
+    {
+      key: "time_note",
+      label: c.timeNote,
+      render: (r) => (
+        <span className="block max-w-[14rem] whitespace-pre-wrap">{r.time_note || "—"}</span>
+      ),
+    },
+    {
+      key: "equipment_needs",
+      label: c.equipmentNeeds,
+      render: (r) => (
+        <span className="block max-w-[16rem] whitespace-pre-wrap">
+          {r.equipment_needs || "—"}
+        </span>
+      ),
+    },
+    {
+      key: "notes",
+      label: c.notes,
+      render: (r) => (
+        <span className="block max-w-[16rem] whitespace-pre-wrap">{r.notes || "—"}</span>
+      ),
+    },
+  ];
+};
+
+const volunteerColumns = (t: Dict): Column<Volunteer>[] => {
+  const c = t.staff.columns;
+  const b = t.staff.bool;
+  return [
+    { key: "created_at", label: c.createdAt, render: (r) => <Time value={r.created_at} /> },
+    { key: "name", label: c.name, primary: true },
+    { key: "contact", label: c.contact },
+    { key: "email", label: c.email, render: (r) => r.email || "—" },
+    {
+      key: "roles",
+      label: c.roles,
+      // 库里存的是稳定键，显示时翻成当前语言
+      render: (r) =>
+        r.roles.map((role) => t.enums.volunteerRole[role as never] ?? role).join(" · ") ||
+        "—",
+      csv: (r) => r.roles.map((role) => t.enums.volunteerRole[role as never] ?? role).join(" / "),
+    },
+    {
+      key: "day1_available",
+      label: c.day1,
+      render: (r) => <Bool value={r.day1_available} yes={b.canAttend} no={b.cannotAttend} />,
+      csv: (r) => (r.day1_available ? b.canAttend : b.cannotAttend),
+    },
+    {
+      key: "day2_available",
+      label: c.day2,
+      render: (r) => <Bool value={r.day2_available} yes={b.canAttend} no={b.cannotAttend} />,
+      csv: (r) => (r.day2_available ? b.canAttend : b.cannotAttend),
+    },
+    {
+      key: "time_note",
+      label: c.timeNote,
+      render: (r) => (
+        <span className="block max-w-[14rem] whitespace-pre-wrap">{r.time_note || "—"}</span>
+      ),
+    },
+    {
+      key: "experience",
+      label: c.experience,
+      render: (r) => (
+        <span className="block max-w-[18rem] whitespace-pre-wrap">{r.experience || "—"}</span>
+      ),
+    },
+    {
+      key: "notes",
+      label: c.notes,
+      render: (r) => (
+        <span className="block max-w-[16rem] whitespace-pre-wrap">{r.notes || "—"}</span>
+      ),
+    },
+  ];
+};
+
+const projectColumns = (t: Dict): Column<Project>[] => {
+  const c = t.staff.columns;
+  return [
+    { key: "created_at", label: c.createdAt, render: (r) => <Time value={r.created_at} /> },
+    { key: "title", label: c.projectTitle, primary: true },
+    {
+      key: "summary",
+      label: c.projectSummary,
+      render: (r) => (
+        <span className="block max-w-[20rem] whitespace-pre-wrap">{r.summary}</span>
+      ),
+    },
+    {
+      key: "problem",
+      label: c.problem,
+      render: (r) => (
+        <span className="block max-w-[18rem] whitespace-pre-wrap">{r.problem || "—"}</span>
+      ),
+    },
+    { key: "group_name", label: c.groupName, render: (r) => r.group_name || "—" },
+    { key: "members", label: c.members, render: (r) => r.members || "—" },
+    {
+      key: "link",
+      label: c.link,
+      render: (r) =>
+        r.link ? (
+          <a
+            href={r.link}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="break-all text-acid underline decoration-acid/40 hover:decoration-acid"
+          >
+            {r.link}
+          </a>
+        ) : (
+          "—"
+        ),
+    },
+    {
+      key: "instructions",
+      label: c.instructions,
+      render: (r) => (
+        <span className="block max-w-[20rem] whitespace-pre-wrap">{r.instructions || "—"}</span>
+      ),
+    },
+    {
+      key: "equipment_needs",
+      label: c.equipmentNeeds,
+      render: (r) => (
+        <span className="block max-w-[16rem] whitespace-pre-wrap">
+          {r.equipment_needs || "—"}
+        </span>
+      ),
+    },
+    {
+      key: "demo_format",
+      label: c.demoFormat,
+      // 库里存的是稳定键，显示时翻成当前语言
+      render: (r) =>
+        r.demo_format
+          ? (t.enums.demoFormat[r.demo_format as never] ?? r.demo_format)
+          : "—",
+      csv: (r) =>
+        r.demo_format
+          ? (t.enums.demoFormat[r.demo_format as never] ?? r.demo_format)
+          : "",
+    },
+    { key: "contact", label: c.contact, render: (r) => r.contact || "—" },
+    {
+      key: "wall_visibility",
+      label: c.wallVisibility,
+      render: (r) => (
+        <span className={r.wall_visibility === "hidden" ? "text-white/35" : "text-acid"}>
+          {r.wall_visibility ? t.enums.wallVisibility[r.wall_visibility] : t.staff.notStated}
+        </span>
+      ),
+      csv: (r) =>
+        r.wall_visibility ? t.enums.wallVisibility[r.wall_visibility] : t.staff.notStated,
+    },
+    {
+      key: "files",
+      label: c.files,
+      render: (r) => <FileLinks files={r.files} />,
+      csv: (r) => (r.files ?? []).map((f) => f.name).join(" / "),
+    },
+  ];
+};
 
 /** 作品文件的公开链接 */
 const FileLinks = ({ files }: { files: StoredFile[] | null }) => {
@@ -231,7 +272,7 @@ const FileLinks = ({ files }: { files: StoredFile[] | null }) => {
   );
 };
 
-/** 把当前栏目的数据导成 CSV，表头用中文列名 */
+/** 把当前栏目的数据导成 CSV，表头用当前语言的列名 */
 function exportTable<T extends { id: string }>(
   name: string,
   columns: Column<T>[],
@@ -270,27 +311,51 @@ function exportTable<T extends { id: string }>(
  * 所以认证门（下面的 StaffPage）必须先挡住，登录成功再挂载这里。
  */
 const StaffDashboard = ({ session }: { session: Session }) => {
+  const t = useT();
+  const s = t.staff;
+  const { lang } = useLang();
   const [tab, setTab] = useState<Tab>("participants");
 
   const participants = useLiveTable<Participant>("participants", fetchParticipants);
   const volunteers = useLiveTable<Volunteer>("volunteers", fetchVolunteers);
   const projects = useLiveTable<Project>("projects", fetchProjects);
 
+  const columnsByTab = {
+    participants: participantColumns(t),
+    volunteers: volunteerColumns(t),
+    projects: projectColumns(t),
+  };
+
   const tabs: { value: Tab; label: string; count: number; loading: boolean }[] = [
-    { value: "participants", label: "参加者", count: participants.rows.length, loading: participants.loading },
-    { value: "volunteers", label: "志愿者", count: volunteers.rows.length, loading: volunteers.loading },
-    { value: "projects", label: "作品", count: projects.rows.length, loading: projects.loading },
+    {
+      value: "participants",
+      label: s.tabs.participants,
+      count: participants.rows.length,
+      loading: participants.loading,
+    },
+    {
+      value: "volunteers",
+      label: s.tabs.volunteers,
+      count: volunteers.rows.length,
+      loading: volunteers.loading,
+    },
+    {
+      value: "projects",
+      label: s.tabs.projects,
+      count: projects.rows.length,
+      loading: projects.loading,
+    },
   ];
 
-  const active = tabs.find((t) => t.value === tab)!;
+  const active = tabs.find((item) => item.value === tab)!;
 
   const exportCurrent = () => {
     if (tab === "participants") {
-      exportTable("unscripted-participants", participantColumns, participants.rows);
+      exportTable("unscripted-participants", columnsByTab.participants, participants.rows);
     } else if (tab === "volunteers") {
-      exportTable("unscripted-volunteers", volunteerColumns, volunteers.rows);
+      exportTable("unscripted-volunteers", columnsByTab.volunteers, volunteers.rows);
     } else {
-      exportTable("unscripted-projects", projectColumns, projects.rows);
+      exportTable("unscripted-projects", columnsByTab.projects, projects.rows);
     }
   };
 
@@ -300,22 +365,25 @@ const StaffDashboard = ({ session }: { session: Session }) => {
     projects.lastSyncAt ?? 0
   );
 
+  const timeLocale = lang === "zh" ? "zh-CN" : "en-GB";
+
   return (
     <div className="mx-auto max-w-screen-2xl px-5 py-[var(--s48)] sm:px-8 lg:px-12">
       {/* 头部 */}
       <div className="flex flex-wrap items-start justify-between gap-6">
         <div>
-          <div className="section-index">[ STAFF ]</div>
-          <h1 className="mt-4 text-3xl text-white">筹备组看板</h1>
+          <div className="section-index">{s.index}</div>
+          <h1 className="mt-4 text-3xl text-white">{s.title}</h1>
           <p className="mt-2 text-sm text-white/45">
-            报名实时同步，有人提交这里会自动刷新。
+            {s.subtitle}
             {lastSync > 0 && (
               <span className="ml-2 text-acid">
-                最近更新{" "}
-                {new Date(lastSync).toLocaleTimeString("zh-CN", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
+                {fill(s.lastSync, {
+                  time: new Date(lastSync).toLocaleTimeString(timeLocale, {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  }),
                 })}
               </span>
             )}
@@ -333,30 +401,35 @@ const StaffDashboard = ({ session }: { session: Session }) => {
             }}
             className="btn-ghost !px-4 !py-2.5 text-xs"
           >
-            重新加载
+            {s.reload}
           </button>
-          <button type="button" onClick={exportCurrent} className="btn-ghost !px-4 !py-2.5 text-xs">
-            导出 CSV
+          <button
+            type="button"
+            onClick={exportCurrent}
+            className="btn-ghost !px-4 !py-2.5 text-xs"
+          >
+            {s.exportCsv}
           </button>
           <button
             type="button"
             onClick={() => void supabase?.auth.signOut()}
             className="btn-ghost !px-4 !py-2.5 text-xs"
           >
-            退出
+            {s.signOut}
           </button>
         </div>
       </div>
 
       {/* 分栏 */}
       <div className="mt-10 flex flex-wrap gap-3">
-        {tabs.map((item) => {
-          const isActive = item.value === tab;
+        {TAB_VALUES.map((value) => {
+          const item = tabs.find((x) => x.value === value)!;
+          const isActive = value === tab;
           return (
             <button
-              key={item.value}
+              key={value}
               type="button"
-              onClick={() => setTab(item.value)}
+              onClick={() => setTab(value)}
               className={`flex items-center gap-2 border px-5 py-3 text-sm transition-colors ${
                 isActive
                   ? "border-acid bg-acid/15 text-acid"
@@ -376,48 +449,45 @@ const StaffDashboard = ({ session }: { session: Session }) => {
       <div className="mt-6">
         {tab === "participants" && (
           <>
-            {participants.error && <ErrorNote text={participants.error} />}
+            {participants.error && (
+              <ErrorNote text={describeError(participants.error, t.errors)} />
+            )}
             <StaffTable
-              columns={participantColumns}
+              columns={columnsByTab.participants}
               rows={participants.rows}
-              emptyText="还没有人报名。"
+              emptyText={s.empty.participants}
             />
           </>
         )}
 
         {tab === "volunteers" && (
           <>
-            {volunteers.error && <ErrorNote text={volunteers.error} />}
+            {volunteers.error && <ErrorNote text={describeError(volunteers.error, t.errors)} />}
             <StaffTable
-              columns={volunteerColumns}
+              columns={columnsByTab.volunteers}
               rows={volunteers.rows}
-              emptyText="还没有志愿者报名。"
+              emptyText={s.empty.volunteers}
             />
           </>
         )}
 
         {tab === "projects" && (
           <>
-            {projects.error && <ErrorNote text={projects.error} />}
+            {projects.error && <ErrorNote text={describeError(projects.error, t.errors)} />}
             <StaffTable
-              columns={projectColumns}
+              columns={columnsByTab.projects}
               rows={projects.rows}
-              emptyText="还没有作品提交。"
+              emptyText={s.empty.projects}
             />
           </>
         )}
       </div>
 
       <p className="mt-8 text-xs leading-relaxed text-white/30">
-        当前查看的是「{active.label}」，共 {active.count} 条。导出 CSV 会把当前这一栏的
-        全部字段带上，可以直接给 Tommy 做名单。
+        {fill(s.footer, { label: active.label, count: active.count })}
       </p>
 
-      <p className="mt-3 text-xs leading-relaxed text-white/25">
-        只有被加进筹备组名单的账号能看到数据。如果你能登录但三栏都是空的，说明账号还没
-        加入名单 —— 让 William 在 Supabase 的 SQL Editor 里执行{" "}
-        <code className="text-white/40">select public.add_staff('你的邮箱');</code>
-      </p>
+      <p className="mt-3 text-xs leading-relaxed text-white/25">{s.allowlistNote}</p>
     </div>
   );
 };
@@ -433,6 +503,7 @@ const ErrorNote = ({ text }: { text: string }) => (
  * 数据相关的 hook 全在 StaffDashboard 里，登录成功后才挂载。
  */
 const StaffPage = () => {
+  const t = useT();
   const [session, setSession] = useState<Session | null>(null);
   const [authReady, setAuthReady] = useState(false);
 
@@ -468,17 +539,16 @@ const StaffPage = () => {
   if (!isSupabaseConfigured) {
     return (
       <div className="mx-auto max-w-screen-2xl px-5 py-[var(--s120)] sm:px-8 lg:px-12">
-        <h1 className="text-3xl text-white">筹备组看板</h1>
-        <p className="mt-4 text-sm text-white/50">
-          数据库还没接上。先配置 <code className="text-acid">.env.local</code>，
-          再执行 <code className="text-acid">supabase/migrations/0001_init.sql</code>。
-        </p>
+        <h1 className="text-3xl text-white">{t.staff.notConfiguredTitle}</h1>
+        <p className="mt-4 text-sm text-white/50">{t.staff.notConfiguredBody}</p>
       </div>
     );
   }
 
   if (!authReady) {
-    return <div className="px-5 py-[var(--s120)] text-sm text-white/40">加载中…</div>;
+    return (
+      <div className="px-5 py-[var(--s120)] text-sm text-white/40">{t.common.loading}</div>
+    );
   }
 
   if (!session) return <StaffSignIn />;

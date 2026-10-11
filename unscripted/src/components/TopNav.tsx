@@ -18,6 +18,7 @@ export const SECTIONS = [
 /** 中／EN 分段切换 */
 const LanguageSwitch = () => {
   const { lang, setLang } = useLang();
+  const t = useT();
 
   return (
     <div className="flex shrink-0 items-center overflow-hidden rounded border border-white/20">
@@ -28,7 +29,7 @@ const LanguageSwitch = () => {
             key={code}
             type="button"
             aria-pressed={active}
-            aria-label={code === "zh" ? "切换到中文" : "Switch to English"}
+            aria-label={code === "zh" ? t.nav.switchToZh : t.nav.switchToEn}
             onClick={() => setLang(code)}
             className={`px-2 py-1 font-pixel text-[10px] tracking-widest transition-colors ${
               active ? "bg-acid text-black" : "text-white/50 hover:text-white"

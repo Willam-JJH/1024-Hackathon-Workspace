@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useLang } from "../../i18n/core";
 
 export interface Column<T> {
   /** 列标识，同时用作 CSV 的表头字段名 */
@@ -107,27 +108,24 @@ const StaffTable = <T extends { id: string }>({
   );
 };
 
-/** 单元格里显示布尔值 */
-export const Bool = ({
-  value,
-  yes = "可到",
-  no = "不可",
-}: {
-  value: boolean;
-  yes?: string;
-  no?: string;
-}) => <span className={value ? "text-acid" : "text-white/30"}>{value ? yes : no}</span>;
-
-/** 单元格里显示时间 */
-export const Time = ({ value }: { value: string }) => (
-  <span className="whitespace-nowrap text-xs text-white/45">
-    {new Date(value).toLocaleString("zh-CN", {
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    })}
-  </span>
+/** 单元格里显示布尔值。显示文案由调用方从词典传入，不在这里写死。 */
+export const Bool = ({ value, yes, no }: { value: boolean; yes: string; no: string }) => (
+  <span className={value ? "text-acid" : "text-white/30"}>{value ? yes : no}</span>
 );
+
+/** 单元格里显示时间。跟随站点语言决定日期格式。 */
+export const Time = ({ value }: { value: string }) => {
+  const { lang } = useLang();
+  return (
+    <span className="whitespace-nowrap text-xs text-white/45">
+      {new Date(value).toLocaleString(lang === "zh" ? "zh-CN" : "en-GB", {
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}
+    </span>
+  );
+};
 
 export default StaffTable;

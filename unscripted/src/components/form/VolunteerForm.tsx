@@ -10,6 +10,7 @@ import SubmitBlock from "./SubmitBlock";
 import { useSubmit } from "../../lib/useSubmit";
 import { submitVolunteer } from "../../lib/api";
 import { VOLUNTEER_ROLES } from "../../lib/types";
+import { useT } from "../../i18n/core";
 
 interface FormState {
   name: string;
@@ -36,9 +37,11 @@ const initialState: FormState = {
 };
 
 const VolunteerForm = () => {
+  const t = useT();
+  const f = t.forms;
   const [form, setForm] = useState<FormState>(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { state, message, run, reset } = useSubmit();
+  const { state, message, run, reset } = useSubmit(t.errors);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -52,10 +55,10 @@ const VolunteerForm = () => {
 
   const validate = (): boolean => {
     const next: Record<string, string> = {};
-    if (!form.name.trim()) next.name = "请填写姓名";
-    if (!form.contact.trim()) next.contact = "请留一个能联系到你的方式";
-    if (form.roles.length === 0) next.roles = "至少选一项你愿意做的工作";
-    if (!form.day1 && !form.day2) next.days = "至少选一天能到场的时段";
+    if (!form.name.trim()) next.name = f.shared.errName;
+    if (!form.contact.trim()) next.contact = f.shared.errContact;
+    if (form.roles.length === 0) next.roles = f.volunteer.errRoles;
+    if (!form.day1 && !form.day2) next.days = f.shared.errDays;
     setErrors(next);
     if (Object.keys(next).length > 0) scrollToFirstError();
     return Object.keys(next).length === 0;
@@ -87,20 +90,26 @@ const VolunteerForm = () => {
     reset();
   };
 
+  // value 是存进数据库的键，label 跟着语言走
+  const roleOptions = VOLUNTEER_ROLES.map((value) => ({
+    value,
+    label: t.enums.volunteerRole[value],
+  }));
+
   return (
     <form onSubmit={handleSubmit} className="space-y-[var(--s24)]">
       <div className="grid gap-[var(--s20)] sm:grid-cols-2">
         <TextField
-          label="姓名"
+          label={f.shared.name}
           required
           value={form.name}
           error={errors.name}
           onChange={(e) => set("name", e.target.value)}
         />
         <TextField
-          label="联系方式"
+          label={f.shared.contact}
           required
-          hint="微信号或手机号"
+          hint={f.shared.contactHint}
           value={form.contact}
           error={errors.contact}
           onChange={(e) => set("contact", e.target.value)}
@@ -108,25 +117,25 @@ const VolunteerForm = () => {
       </div>
 
       <TextField
-        label="邮箱"
-        hint="选填"
+        label={f.shared.email}
+        hint={f.shared.optional}
         type="email"
         value={form.email}
         onChange={(e) => set("email", e.target.value)}
       />
 
       <ChipMultiSelect
-        label="愿意做哪些工作"
+        label={f.volunteer.roles}
         required
-        hint="可多选"
-        options={VOLUNTEER_ROLES}
+        hint={f.volunteer.rolesHint}
+        options={roleOptions}
         value={form.roles}
         error={errors.roles}
         onChange={(v) => set("roles", v)}
       />
 
       <DayPicker
-        label="两天能到场的时段"
+        label={f.shared.days}
         value={{ day1: form.day1, day2: form.day2 }}
         error={errors.days}
         onChange={(v) => {
@@ -136,29 +145,34 @@ const VolunteerForm = () => {
       />
 
       <TextAreaField
-        label="时段补充说明"
-        hint="选填"
-        placeholder="比如周六下午才能到。"
+        label={f.shared.timeNote}
+        hint={f.shared.optional}
+        placeholder={f.shared.timeNotePlaceholder}
         value={form.timeNote}
         onChange={(e) => set("timeNote", e.target.value)}
       />
 
       <TextAreaField
-        label="熟悉的工具或相关经验"
-        hint="选填"
-        placeholder="比如用过某种编程语言、做过视频、熟悉投影设备。"
+        label={f.volunteer.experience}
+        hint={f.shared.optional}
+        placeholder={f.volunteer.experiencePlaceholder}
         value={form.experience}
         onChange={(e) => set("experience", e.target.value)}
       />
 
       <TextAreaField
-        label="其他想告诉我们的"
-        hint="选填"
+        label={f.shared.more}
+        hint={f.shared.optional}
         value={form.notes}
         onChange={(e) => set("notes", e.target.value)}
       />
 
-      <SubmitBlock state={state} message={message} label="提交志愿者报名" onRetry={handleReset} />
+      <SubmitBlock
+        state={state}
+        message={message}
+        label={f.volunteer.submit}
+        onRetry={handleReset}
+      />
     </form>
   );
 };

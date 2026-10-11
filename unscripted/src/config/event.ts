@@ -17,10 +17,6 @@ export interface EventConfig {
   name: string;
   /** 所属活动 */
   parentEvent: string;
-  /** 标语 */
-  tagline: string;
-  /** 一句话说明 */
-  summary: string;
 
   /** 已确认的信息 */
   confirmed: {
@@ -41,9 +37,6 @@ export interface EventConfig {
 export const event: EventConfig = {
   name: "Unscripted",
   parentEvent: "1024 Challenge",
-  tagline: "做自己的项目，讲别人的作品。",
-  summary:
-    "1024 Challenge 中的 AI 辅助创作活动。带一个想法来，或把做了一半的项目继续做下去。",
 
   confirmed: {
     dates: false,

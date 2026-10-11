@@ -74,6 +74,8 @@ export function useT(): Dict {
 }
 
 export { LANG_LABEL };
+// 让调用方只从 core 引入就够了，不用记词典文件在哪
+export type { Dict } from "./zh";
 
 /* --------------------------------------------------------------- 插值 */
 

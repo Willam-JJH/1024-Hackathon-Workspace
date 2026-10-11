@@ -25,8 +25,9 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
 /** 取到客户端，没配置就抛一个可读的错误 */
 export function requireSupabase(): SupabaseClient {
   if (!supabase) {
+    // 开发者向的报错，只会在控制台出现，不进界面，所以不翻译
     throw new Error(
-      "Supabase 尚未配置：请把 .env.local 里的 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY 填好，然后重启开发服务器。"
+      "Supabase is not configured: set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local, then restart the dev server."
     );
   }
   return supabase;

@@ -1,7 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { supabase } from "../../lib/supabase";
+import { useT } from "../../i18n/core";
 
 const StaffSignIn = () => {
+  const t = useT();
+  const s = t.staff.signIn;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,9 +23,10 @@ const StaffSignIn = () => {
     });
 
     if (signInError) {
+      // Supabase 的原始报错是英文的，认得出的换成当前语言的说法
       setError(
         /invalid login credentials/i.test(signInError.message)
-          ? "邮箱或密码不对。"
+          ? s.errCredentials
           : signInError.message
       );
     }
@@ -31,15 +35,13 @@ const StaffSignIn = () => {
 
   return (
     <div className="mx-auto max-w-md px-5 py-[var(--s120)]">
-      <div className="font-pixel text-xs tracking-[0.3em] text-acid">STAFF ONLY</div>
-      <h1 className="mt-4 text-3xl text-white">筹备组登录</h1>
-      <p className="mt-3 text-sm leading-relaxed text-white/50">
-        报名信息包含学生个人信息，只有筹备组成员可以查看。
-      </p>
+      <div className="font-pixel text-xs tracking-[0.3em] text-acid">{s.badge}</div>
+      <h1 className="mt-4 text-3xl text-white">{s.title}</h1>
+      <p className="mt-3 text-sm leading-relaxed text-white/50">{s.intro}</p>
 
       <form onSubmit={handleSubmit} className="mt-10 space-y-5">
         <label className="block">
-          <span className="text-sm text-white/80">邮箱</span>
+          <span className="text-sm text-white/80">{s.email}</span>
           <input
             type="email"
             required
@@ -51,7 +53,7 @@ const StaffSignIn = () => {
         </label>
 
         <label className="block">
-          <span className="text-sm text-white/80">密码</span>
+          <span className="text-sm text-white/80">{s.password}</span>
           <input
             type="password"
             required
@@ -73,13 +75,11 @@ const StaffSignIn = () => {
           disabled={busy}
           className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {busy ? "登录中…" : "登录"}
+          {busy ? s.submitting : s.submit}
         </button>
       </form>
 
-      <p className="mt-8 text-xs leading-relaxed text-white/30">
-        账号由技术负责人（William）在 Supabase 后台创建。忘记密码或需要新账号，找他。
-      </p>
+      <p className="mt-8 text-xs leading-relaxed text-white/30">{s.accountNote}</p>
     </div>
   );
 };
