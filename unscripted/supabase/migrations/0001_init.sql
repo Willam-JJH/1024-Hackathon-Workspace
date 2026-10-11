@@ -89,16 +89,50 @@ create table if not exists public.projects (
 
   files           jsonb not null default '[]'::jsonb,     -- [{path,name,size,type}]
 
-  -- 作者是否同意在公开的作品墙上署上自己的名字／团队名。
-  -- 故意不给默认值：提交时必须明确选一次，null 一律按"不展示"处理。
-  show_credit     boolean,
+  -- 作品在公开作品墙上的可见性，由作者提交时自己选：
+  --   'named'     公开，署名
+  --   'anonymous' 公开，不署名
+  --   'hidden'    不上墙
+  -- 故意不给默认值：提交时必须明确选一次，null 一律按最保守的 hidden 处理。
+  wall_visibility text
+                  check (wall_visibility in ('named','anonymous','hidden')),
 
   participant_id  uuid references public.participants(id) on delete set null
 );
 
 -- 已经建过表的库，用这句补上（整段脚本可以重复执行）
 alter table public.projects
-  add column if not exists show_credit boolean;
+  add column if not exists wall_visibility text;
+
+alter table public.projects
+  drop constraint if exists projects_wall_visibility_check;
+
+alter table public.projects
+  add constraint projects_wall_visibility_check
+  check (wall_visibility in ('named','anonymous','hidden'));
+
+-- 早期版本用的是布尔字段 show_credit（只区分署不署名）。
+-- 有就迁移过来再删掉：true→named，false→anonymous，
+-- null→hidden（当时没问过"要不要公开"，按最保守处理）。
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'projects'
+      and column_name = 'show_credit'
+  ) then
+    update public.projects
+    set wall_visibility = case
+      when show_credit is true  then 'named'
+      when show_credit is false then 'anonymous'
+      else 'hidden'
+    end
+    where wall_visibility is null;
+
+    alter table public.projects drop column show_credit;
+  end if;
+end $$;
 
 create index if not exists projects_created_at_idx on public.projects (created_at desc);
 create index if not exists projects_participant_idx on public.projects (participant_id);
@@ -197,12 +231,17 @@ drop function if exists public.submit_project(
   text, text, text, text, text, text, text, text, text, text, text, text
 );
 
+-- 中途用过一版 show_credit boolean，一并清掉
+drop function if exists public.submit_project(
+  text, text, text, text, boolean, text, text, text, text, text, text, text, text
+);
+
 create or replace function public.submit_project(
   p_name            text,
   p_contact         text,
   p_title           text,
   p_summary         text,
-  p_show_credit     boolean,
+  p_wall_visibility text,
   p_problem         text default null,
   p_group_name      text default null,
   p_members         text default null,
@@ -231,9 +270,10 @@ begin
     raise exception 'TITLE_OR_SUMMARY_REQUIRED';
   end if;
 
-  -- 署名同意必须明确选一次，不能靠默认值蒙混过去
-  if p_show_credit is null then
-    raise exception 'SHOW_CREDIT_REQUIRED';
+  -- 可见性必须明确选一次，不能靠默认值蒙混过去
+  if p_wall_visibility is null
+     or p_wall_visibility not in ('named','anonymous','hidden') then
+    raise exception 'VISIBILITY_REQUIRED';
   end if;
 
   -- 核对归属：姓名 + 报名时填的联系方式，两者都要对上
@@ -259,11 +299,11 @@ begin
     insert into public.projects (
       title, summary, problem, group_name, members, direction,
       link, instructions, equipment_needs, demo_format,
-      contact, show_credit, participant_id
+      contact, wall_visibility, participant_id
     ) values (
       btrim(p_title), btrim(p_summary), p_problem, p_group_name, p_members, p_direction,
       p_link, p_instructions, p_equipment_needs, p_demo_format,
-      btrim(p_contact), p_show_credit, v_participant
+      btrim(p_contact), p_wall_visibility, v_participant
     )
     returning id into v_project;
   else
@@ -278,7 +318,7 @@ begin
       equipment_needs = p_equipment_needs,
       demo_format     = p_demo_format,
       contact         = btrim(p_contact),
-      show_credit     = p_show_credit,
+      wall_visibility = p_wall_visibility,
       updated_at      = now()
     where id = v_project;
   end if;
@@ -288,7 +328,7 @@ end;
 $$;
 
 grant execute on function public.submit_project(
-  text, text, text, text, boolean, text, text, text, text, text, text, text, text
+  text, text, text, text, text, text, text, text, text, text, text, text, text
 ) to anon, authenticated;
 
 
@@ -365,8 +405,11 @@ create policy "project-files: staff can list"
 -- 所以用一个视图，只挑该公开的列。视图以属主身份执行，
 -- 匿名只被授予这个视图的 select，碰不到原表。
 --
--- 署名规则：只有作者在提交时明确选了"展示"，才带出名字。
--- show_credit 为 null 或 false 一律按不展示处理。
+-- 可见性规则（作者提交时自己选）：
+--   named     上墙并署名
+--   anonymous 上墙但不署名（成员名单也一并隐去，否则等于变相点名）
+--   hidden    完全不上墙，视图里查不到
+-- wall_visibility 为 null（早期数据）按 hidden 处理。
 
 create or replace view public.public_projects as
 select
@@ -378,13 +421,18 @@ select
   p.link,
   p.created_at,
 
-  -- 同意署名的才带名字：团队/社团优先，个人则回退到报名时的姓名
+  -- 只有选了署名的才带名字：团队/社团优先，个人则回退到报名时的姓名
   case
-    when p.show_credit then coalesce(nullif(btrim(p.group_name), ''), pa.name)
+    when p.wall_visibility = 'named'
+      then coalesce(nullif(btrim(p.group_name), ''), pa.name)
     else null
   end as credit_name,
 
-  case when p.show_credit then nullif(btrim(p.members), '') else null end as members,
+  -- 匿名展示时成员名字也隐去
+  case
+    when p.wall_visibility = 'named' then nullif(btrim(p.members), '')
+    else null
+  end as members,
 
   -- 只放图片，别的文件（zip、音频等）不上墙
   coalesce(
@@ -397,7 +445,9 @@ select
   ) as images
 
 from public.projects p
-left join public.participants pa on pa.id = p.participant_id;
+left join public.participants pa on pa.id = p.participant_id
+-- 选了"不上墙"的、以及早期没有表态的，一律不出现在视图里
+where p.wall_visibility in ('named', 'anonymous');
 
 -- 显式声明视图以属主身份执行。
 -- 匿名角色对 projects 表没有 select 权限，如果视图改成以调用者身份执行，

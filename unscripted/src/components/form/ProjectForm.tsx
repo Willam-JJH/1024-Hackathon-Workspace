@@ -4,22 +4,27 @@ import SubmitBlock from "./SubmitBlock";
 import { useSubmit } from "../../lib/useSubmit";
 import { submitProject, uploadProjectFiles, attachProjectFiles, MAX_FILE_BYTES } from "../../lib/api";
 import { compressImage } from "../../lib/imageCompress";
-import { DEMO_FORMATS } from "../../lib/types";
+import { DEMO_FORMATS, type WallVisibility } from "../../lib/types";
 
 const demoOptions = DEMO_FORMATS.map((f) => ({ value: f, label: f }));
 
-const CreditOptions = [
+const VisibilityOptions = [
   {
-    value: true,
-    label: "展示",
-    description: "作品墙上会署上你的团队／社团名；个人参加则用你的名字。",
+    value: "named" as const,
+    label: "公开 + 署名",
+    description: "放上作品墙，并署上你的团队／社团名；个人参加则用你的名字。",
   },
   {
-    value: false,
-    label: "不展示",
-    description: "作品照常出现在作品墙上，但不署名，只有作品本身。",
+    value: "anonymous" as const,
+    label: "公开 + 不署名",
+    description: "放上作品墙，但不署名 —— 成员名单也不会显示。",
   },
-] as const;
+  {
+    value: "hidden" as const,
+    label: "不上墙",
+    description: "作品只在周日现场使用，不放到公开网页上。",
+  },
+];
 
 interface FormState {
   name: string;
@@ -27,7 +32,7 @@ interface FormState {
   title: string;
   summary: string;
   /** null = 还没选。提交前必须明确选一次 */
-  showCredit: boolean | null;
+  wallVisibility: WallVisibility | null;
   problem: string;
   groupName: string;
   members: string;
@@ -43,7 +48,7 @@ const initialState: FormState = {
   contact: "",
   title: "",
   summary: "",
-  showCredit: null,
+  wallVisibility: null,
   problem: "",
   groupName: "",
   members: "",
@@ -120,7 +125,7 @@ const ProjectForm = () => {
     }
     if (!form.title.trim()) next.title = "请填写项目名";
     if (!form.summary.trim()) next.summary = "用一句话说清这个作品是做什么的";
-    if (form.showCredit === null) next.showCredit = "请选一项";
+    if (form.wallVisibility === null) next.wallVisibility = "请选一项";
     setErrors(next);
     if (Object.keys(next).length > 0) scrollToFirstError();
     return Object.keys(next).length === 0;
@@ -131,6 +136,10 @@ const ProjectForm = () => {
     if (state === "submitting") return;
     if (!validate()) return;
 
+    // validate() 已经保证了非空，这里只是让类型收窄
+    const visibility = form.wallVisibility;
+    if (visibility === null) return;
+
     run(async () => {
       setProgress("正在核对报名记录…");
 
@@ -139,7 +148,7 @@ const ProjectForm = () => {
         contact: form.contact.trim(),
         title: form.title.trim(),
         summary: form.summary.trim(),
-        showCredit: form.showCredit === true,
+        wallVisibility: visibility,
         problem: form.problem.trim() || null,
         groupName: form.groupName.trim() || null,
         members: form.members.trim() || null,
@@ -361,20 +370,21 @@ const ProjectForm = () => {
 
       {/* ---------- 署名同意（必须明确选一次，不给默认值）---------- */}
       <fieldset className="space-y-[var(--s16)] border border-acid/25 bg-acid/[0.03] p-5">
-        <legend className="px-2 text-xs tracking-widest text-acid">作品墙上要不要署你的名字</legend>
+        <legend className="px-2 text-xs tracking-widest text-acid">这件作品要不要公开</legend>
         <p className="text-xs leading-relaxed text-white/45">
-          提交的作品会出现在公开的作品墙上（任何人都能看）。署不署名由你决定，
-          <span className="text-white/70">这一项必须选，没有默认值</span>。
+          作品墙是公开网页，任何人都能看。
+          <span className="text-white/70">这一项必须选，没有默认值</span>，
+          选「不上墙」作品就只在周日现场使用。
           不管选哪个，你的联系方式都不会出现在作品墙上。
         </p>
 
         <ChoiceRow
           label=""
           required
-          options={CreditOptions}
-          value={form.showCredit}
-          error={errors.showCredit}
-          onChange={(v) => set("showCredit", v)}
+          options={VisibilityOptions}
+          value={form.wallVisibility}
+          error={errors.wallVisibility}
+          onChange={(v) => set("wallVisibility", v)}
         />
       </fieldset>
 

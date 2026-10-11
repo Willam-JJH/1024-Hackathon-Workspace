@@ -8,6 +8,7 @@ import type {
   StoredFile,
   Volunteer,
   VolunteerInsert,
+  WallVisibility,
 } from "./types";
 
 /** 免费档 Supabase Storage 的单文件硬上限 */
@@ -33,8 +34,8 @@ export interface ProjectInput {
   contact: string;
   title: string;
   summary: string;
-  /** 是否同意在公开作品墙上署名。必须明确选，不接受 undefined。 */
-  showCredit: boolean;
+  /** 作品墙可见性。必须明确选，不接受 undefined。 */
+  wallVisibility: WallVisibility;
   problem: string | null;
   groupName: string | null;
   members: string | null;
@@ -60,7 +61,7 @@ export async function submitProject(input: ProjectInput): Promise<string> {
     p_contact: input.contact,
     p_title: input.title,
     p_summary: input.summary,
-    p_show_credit: input.showCredit,
+    p_wall_visibility: input.wallVisibility,
     p_problem: input.problem,
     p_group_name: input.groupName,
     p_members: input.members,
@@ -206,8 +207,8 @@ function friendlyError(message: string): string {
   if (message.includes("TITLE_OR_SUMMARY_REQUIRED")) {
     return "项目名和一句话简介都要填。";
   }
-  if (message.includes("SHOW_CREDIT_REQUIRED")) {
-    return "请选择作品墙上要不要展示你的名字。";
+  if (message.includes("VISIBILITY_REQUIRED")) {
+    return "请选择作品要不要公开、要不要署名。";
   }
   if (/row-level security|violates row-level/i.test(message)) {
     return "提交被数据库策略拒绝，请检查填写内容是否完整。";

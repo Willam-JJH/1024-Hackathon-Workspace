@@ -12,6 +12,7 @@ import {
 } from "../lib/api";
 import {
   PARTICIPATION_LABEL,
+  WALL_VISIBILITY_LABEL,
   type Participant,
   type Project,
   type StoredFile,
@@ -190,14 +191,14 @@ const projectColumns: Column<Project>[] = [
   { key: "demo_format", label: "演示形式", render: (r) => r.demo_format || "—" },
   { key: "contact", label: "联系方式", render: (r) => r.contact || "—" },
   {
-    key: "show_credit",
-    label: "同意署名",
+    key: "wall_visibility",
+    label: "作品墙",
     render: (r) => (
-      <span className={r.show_credit ? "text-acid" : "text-white/35"}>
-        {r.show_credit === true ? "同意" : r.show_credit === false ? "不同意" : "未表态"}
+      <span className={r.wall_visibility === "hidden" ? "text-white/35" : "text-acid"}>
+        {r.wall_visibility ? WALL_VISIBILITY_LABEL[r.wall_visibility] : "未表态"}
       </span>
     ),
-    csv: (r) => (r.show_credit === true ? "同意" : r.show_credit === false ? "不同意" : "未表态"),
+    csv: (r) => (r.wall_visibility ? WALL_VISIBILITY_LABEL[r.wall_visibility] : "未表态"),
   },
   {
     key: "files",

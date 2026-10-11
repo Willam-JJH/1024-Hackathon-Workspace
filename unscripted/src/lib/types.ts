@@ -81,11 +81,20 @@ export interface Project {
 
   files: StoredFile[];
 
-  /** 作者是否同意在公开作品墙上署名。null 表示未表态，按不署名处理。 */
-  show_credit: boolean | null;
+  /** 作者选的作品墙可见性。null 表示未表态（早期数据），按 hidden 处理。 */
+  wall_visibility: WallVisibility | null;
 
   participant_id: string | null;
 }
+
+/** 作品在公开作品墙上的可见性 —— 由作者提交时自己选 */
+export type WallVisibility = "named" | "anonymous" | "hidden";
+
+export const WALL_VISIBILITY_LABEL: Record<WallVisibility, string> = {
+  named: "公开 · 署名",
+  anonymous: "公开 · 不署名",
+  hidden: "不上墙",
+};
 
 /**
  * 公开作品墙上能看到的内容 —— 对应数据库里的 public_projects 视图。
