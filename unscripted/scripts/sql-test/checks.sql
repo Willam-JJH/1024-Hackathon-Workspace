@@ -265,6 +265,56 @@ select title, credit_display as 署名, members_display as 成员名单
 from anon_sees order by title;
 \echo ''
 
+-- ============================ 筹备组名单 ============================
+-- 造两个账号：一个加进名单，一个不加。然后以各自身份真的查一次。
+do $$
+begin
+  insert into auth.users (id, email)
+  values ('11111111-1111-1111-1111-111111111111', 'staff-on-list@test')
+  on conflict (id) do nothing;
+  insert into auth.users (id, email)
+  values ('22222222-2222-2222-2222-222222222222', 'stranger@test')
+  on conflict (id) do nothing;
+end $$;
+
+select public.add_staff('staff-on-list@test', '检查用例');
+
+set role authenticated;
+set request.jwt.claim.sub = '11111111-1111-1111-1111-111111111111';
+create temp table on_list_sees as
+  select (select count(*) from public.participants) as participants,
+         (select count(*) from public.volunteers)     as volunteers,
+         (select count(*) from public.projects)       as projects;
+reset role;
+
+set role authenticated;
+set request.jwt.claim.sub = '22222222-2222-2222-2222-222222222222';
+create temp table off_list_sees as
+  select (select count(*) from public.participants) as participants,
+         (select count(*) from public.volunteers)     as volunteers,
+         (select count(*) from public.projects)       as projects;
+reset role;
+
+set request.jwt.claim.sub = '';
+
+do $$
+begin
+  perform public._assert(
+    (select participants from on_list_sees) > 0
+    and (select projects from on_list_sees) > 0,
+    '名单内的账号能读到报名与作品数据');
+
+  perform public._assert(
+    (select participants from off_list_sees) = 0
+    and (select volunteers from off_list_sees) = 0
+    and (select projects from off_list_sees) = 0,
+    '名单外的登录账号读不到任何数据（这道防线不依赖注册开关）');
+
+  perform public._assert(
+    not has_table_privilege('authenticated', 'public.staff', 'select'),
+    '登录用户读不到筹备组名单本身');
+end $$;
+
 -- ============================ 迁移路径 ============================
 do $$
 begin

@@ -41,6 +41,28 @@ begin
 end;
 $$;
 
+-- auth schema：迁移脚本会读 auth.users（初始化筹备组名单）、
+-- 并在策略里调用 auth.uid()
+create schema if not exists auth;
+
+create table if not exists auth.users (
+  id    uuid primary key default gen_random_uuid(),
+  email text unique
+);
+
+-- Supabase 的实现是读 JWT 里的 sub 声明。
+-- 测试里用 set request.jwt.claim.sub = '<uuid>' 来模拟"当前登录的是谁"。
+create or replace function auth.uid()
+returns uuid
+language sql
+stable
+as $$
+  select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;
+$$;
+
+grant usage on schema auth to anon, authenticated;
+grant select on auth.users to postgres;
+
 -- Realtime 的发布通道，迁移脚本会往里加表
 do $$
 begin

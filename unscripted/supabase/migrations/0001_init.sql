@@ -224,7 +224,87 @@ alter table public.volunteers   enable row level security;
 alter table public.projects     enable row level security;
 
 
--- ========================== 5. 策略 ========================================
+-- ========================== 5. 私有 schema =================================
+-- 放"只给数据库内部用、不该暴露成 API"的东西：权限判断、存在性检查。
+-- PostgREST 只暴露 public，所以 private 里的函数不会被 /rest/v1/rpc/ 调用到。
+create schema if not exists private;
+
+grant usage on schema private to anon, authenticated;
+
+
+-- ========================== 6. 筹备组名单 ==================================
+-- 「登录了就能读」是不够的 —— 只要注册开关被误开，任何自助注册的人都会
+-- 变成 authenticated，进而读到全部学生信息。所以再加一道名单：
+-- 只有被显式加进 staff 表的人才是筹备组。
+--
+-- 表本身开了 RLS 且**不建任何策略** —— 只有 SECURITY DEFINER 的
+-- private.is_staff() 能读它，前台和 API 都碰不到名单内容。
+
+create table if not exists public.staff (
+  user_id    uuid primary key,
+  email      text,
+  note       text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.staff enable row level security;
+
+-- 放在 private schema：放 public 会被 PostgREST 暴露成公开 RPC
+create or replace function private.is_staff()
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (select 1 from public.staff s where s.user_id = auth.uid());
+$$;
+
+revoke all on function private.is_staff() from public;
+grant execute on function private.is_staff() to authenticated;
+
+-- 往名单里加人。只能从 Supabase 的 SQL Editor 调用（那里以 postgres 身份连接），
+-- anon / authenticated 都没有执行权限 —— 否则任何人都能把自己加进筹备组。
+create or replace function public.add_staff(p_email text, p_note text default null)
+returns text
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_id uuid;
+begin
+  select id into v_id from auth.users where lower(email) = lower(btrim(p_email));
+
+  if v_id is null then
+    raise exception '找不到邮箱为 % 的账号。请先在 Authentication → Users 里建好账号。', p_email;
+  end if;
+
+  insert into public.staff (user_id, email, note)
+  values (v_id, lower(btrim(p_email)), p_note)
+  on conflict (user_id) do update
+    set email = excluded.email, note = excluded.note;
+
+  return format('已把 %s 加入筹备组名单', p_email);
+end $$;
+
+revoke all on function public.add_staff(text, text) from public, anon, authenticated;
+
+-- 首次迁移时把已有账号全部纳入名单 —— 它们都是管理员手工建的。
+-- 只在名单为空时做一次，避免以后把被移除的人又加回来。
+do $$
+begin
+  if not exists (select 1 from public.staff) then
+    insert into public.staff (user_id, email)
+    select u.id, lower(u.email) from auth.users u
+    on conflict (user_id) do nothing;
+  end if;
+exception when others then
+  raise notice '初始化筹备组名单失败（%）。请手动执行 add_staff 添加成员。', sqlerrm;
+end $$;
+
+
+-- ========================== 7. 策略 ========================================
 
 -- ---- 参加者：匿名可提交，只有筹备组可读 ----
 drop policy if exists "participants: public can submit" on public.participants;
@@ -242,7 +322,7 @@ drop policy if exists "participants: staff can read" on public.participants;
 create policy "participants: staff can read"
   on public.participants for select
   to authenticated
-  using (true);
+  using (private.is_staff());
 
 -- ---- 志愿者 ----
 drop policy if exists "volunteers: public can submit" on public.volunteers;
@@ -259,7 +339,7 @@ drop policy if exists "volunteers: staff can read" on public.volunteers;
 create policy "volunteers: staff can read"
   on public.volunteers for select
   to authenticated
-  using (true);
+  using (private.is_staff());
 
 -- ---- 作品：只允许筹备组读。写入一律走 submit_project() 函数 ----
 -- （不开放匿名 insert，保证每一件作品都关联到一条核对过的报名记录）
@@ -268,10 +348,10 @@ drop policy if exists "projects: staff can read" on public.projects;
 create policy "projects: staff can read"
   on public.projects for select
   to authenticated
-  using (true);
+  using (private.is_staff());
 
 
--- ========================== 6. 表级授权 ====================================
+-- ========================== 8. 表级授权 ====================================
 revoke all on public.participants from anon;
 revoke all on public.volunteers   from anon;
 revoke all on public.projects     from anon;
@@ -284,7 +364,7 @@ grant select on public.volunteers   to authenticated;
 grant select on public.projects     to authenticated;
 
 
--- ========================== 7. 作品归属核对 + 提交 =========================
+-- ========================== 9. 作品归属核对 + 提交 =========================
 
 -- 用于存储策略的辅助函数：判断某个作品 id 是否真实存在。
 -- 必须是 security definer —— 存储策略的表达式是以调用者（匿名）身份求值的，
@@ -496,7 +576,7 @@ grant execute on function public.attach_project_files(uuid, text, text, jsonb)
   to anon, authenticated;
 
 
--- ========================== 8. 作品文件存储 ================================
+-- ========================== 10. 作品文件存储 ===============================
 -- 公开读（任何人都能通过链接看到作品图片），但只有筹备组能列出文件清单。
 -- 单文件上限 50MB。
 
@@ -525,7 +605,7 @@ create policy "project-files: upload"
 drop policy if exists "project-files: staff can list" on storage.objects;
 
 
--- ========================== 9. 公开作品墙的读取权限 ========================
+-- ========================== 11. 公开作品墙的读取权限 =======================
 -- projects 表对匿名是关死的（里面有联系方式）。作品墙要公开，但不能顺手把
 -- 联系方式也放出去。
 --
@@ -579,7 +659,7 @@ exception when others then null;  -- 没勾那个选项时该函数不存在，�
 end $$;
 
 
--- ========================== 10. 实时同步 ===================================
+-- ========================== 12. 实时同步 ===================================
 -- 让筹备组的看板能收到新报名，不用刷新页面
 do $$
 declare
@@ -598,7 +678,7 @@ begin
 end $$;
 
 
--- ========================== 11. 自检 =======================================
+-- ========================== 13. 自检 =======================================
 -- 执行完运行这一段，结果应该是：
 --   tables     3 行、每行 rls_enabled = true
 --   functions  3 个

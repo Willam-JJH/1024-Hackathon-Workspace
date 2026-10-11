@@ -440,6 +440,12 @@ const StaffPage = () => {
         当前查看的是「{active.label}」，共 {active.count} 条。导出 CSV 会把当前这一栏的
         全部字段带上，可以直接给 Tommy 做名单。
       </p>
+
+      <p className="mt-3 text-xs leading-relaxed text-white/25">
+        只有被加进筹备组名单的账号能看到数据。如果你能登录但三栏都是空的，说明账号还没
+        加入名单 —— 让 William 在 Supabase 的 SQL Editor 里执行{" "}
+        <code className="text-white/40">select public.add_staff('你的邮箱');</code>
+      </p>
     </div>
   );
 };

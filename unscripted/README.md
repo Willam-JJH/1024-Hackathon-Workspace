@@ -40,7 +40,20 @@ npm run dev                  # http://127.0.0.1:5180
 | 角色 | 能做什么 |
 | --- | --- |
 | 匿名访客 | 提交报名、提交作品（作品须核对上报名记录）；**读不到任何报名数据** |
-| 筹备组成员（已登录） | 读全部报名与作品、看作品文件 |
+| 筹备组成员 | 读全部报名与作品 —— 且**必须在 `staff` 名单里** |
+| 其他已登录账号 | 什么都读不到 |
+
+两道锁，缺一不可：
+
+1. **关掉注册**（Authentication → Sign In / Providers → Email → 取消
+   「Allow new users to sign up」）。账号只能由管理员在后台手工创建。
+2. **筹备组名单**。光"登录了"不够，还必须在 `public.staff` 表里。
+   就算第 1 条被误开，自助注册的人也不在名单里，读不到任何数据。
+
+> 加人：先在 Authentication → Users 建好账号，再到 SQL Editor 执行
+> `select public.add_staff('邮箱');`
+> 这个函数**只有 postgres 能调**（SQL Editor 就是），anon 和已登录用户都没有执行权限 ——
+> 否则任何人都能把自己加进筹备组。
 
 学生个人信息不公开可读。匿名角色对 `participants`、`volunteers`、`projects` 三张表
 都没有 `select` 权限，这是建表脚本里显式 `revoke` 过的。
