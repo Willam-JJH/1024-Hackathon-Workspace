@@ -94,14 +94,22 @@
      * 它没有汉字字形，一直走的后面几个中文字体）。
      */
     font-family: "Times New Roman", Times, "Noto Sans SC", "PingFang SC",
-      "Microsoft YaHei", sans-serif;
+      "Microsoft YaHei Light", "Microsoft YaHei", sans-serif;
     /*
-     * 汉字在同样字号下比拉丁字母"实"，挤在一起会显得闷，加一点字距让它透气。
-     * 选字距而不是 Light 字重：黑底上细笔画会更难读（深色背景的浅色文字
-     * 本来就会被光学膨胀吃掉一截），字距则是纯收益。
+     * 正文用 Light 字重。
      *
-     * 注意这条对拉丁文也生效 —— 值是折中过的，再大 Times 会显得散。
+     * 字体栈里显式写了 "Microsoft YaHei Light"：Windows 上它是独立字族，
+     * 光写 font-weight: 300 选不中它（那会退回常规字重，看起来没变化）。
+     * macOS / iOS 的 PingFang SC 和安卓的 Noto Sans CJK 都自带 Light，
+     * 靠 font-weight: 300 就能选中。
+     *
+     * 注意 Times New Roman 没有 Light 字面，所以拉丁文仍是常规字重，
+     * 变轻的主要是中文。
+     *
+     * 字距配合字重一起用：汉字在同样字号下比拉丁字母"实"，松开一点更透气。
+     * 这条对拉丁文也生效，值是折中过的，再大 Times 会显得散。
      */
+    font-weight: 300;
     letter-spacing: 0.03em;
     -webkit-font-smoothing: antialiased;
     margin: 0;
