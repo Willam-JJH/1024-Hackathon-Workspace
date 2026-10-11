@@ -1,0 +1,10 @@
+# Cloudflare Pages 的响应头。对应 netlify.toml 里那几个 header。
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# 筹备组看板不对外，也不要进搜索引擎
+/staff
+  X-Robots-Tag: noindex, nofollow

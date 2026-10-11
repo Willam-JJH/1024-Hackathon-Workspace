@@ -178,38 +178,59 @@ bash scripts/sql-test/run.sh --clean            # 删掉容器
 > 容器里的 stub 不是完整复刻 Supabase。如果迁移脚本用到了没 stub 的东西，
 > 测试会报错 —— 那正是我们想提前知道的。
 
-## 部署（Netlify + GitHub）
+## 部署
 
-Netlify 配置在 [`netlify.toml`](netlify.toml)：`npm run build` → `dist`，
-并已配好单页应用的路由重写（否则直接访问 `/register` 会 404）。
+站点是纯静态单页应用，构建产物 `dist/` 可以放到任何静态托管上。仓库里同时备好了
+**两个平台**的配置，任选其一，也可以都部署着对比速度。
 
-### 首次部署
+两个平台都需要：构建命令 `npm run build`、输出目录 `dist`、
+根目录/Base directory `unscripted`、以及两个环境变量（见下）。
 
-1. **Add new site → Import an existing project → Deploy with GitHub**，
-   选 `Alvin0412/hackathon-workspace`。
-   （GitHub 仓库授权只有仓库 owner 能做，协作者需要在 Settings → Applications
-   里让 owner 授予 Netlify 访问权限。）
+### 环境变量（两个平台都要配）
 
-2. 配置页填两项，**其余自动带出**：
+```
+VITE_SUPABASE_URL      = https://<项目>.supabase.co
+VITE_SUPABASE_ANON_KEY = <publishable / anon key>
+```
+
+⚠️ **必须在部署前配好。** Vite 是构建时把这两个值编译进 JS 的 ——
+部署后再补要重新触发一次构建才生效。
+
+⚠️ 只填 **publishable / anon key**。`service_role` / secret key 能绕过所有权限，
+**绝不能用 `VITE_` 前缀** —— 带这个前缀的变量会被打包进浏览器可见的 JS。
+
+### Cloudflare Pages
+
+配置在 [`public/_redirects`](public/_redirects)（单页应用路由重写）和
+[`public/_headers`](public/_headers)（响应头），随构建产物一起发布。
+
+1. dash.cloudflare.com → **Workers & Pages → Create → Pages → Connect to Git**
+2. 授权并选择本仓库
+3. 构建设置：
 
    | 字段 | 值 |
    | --- | --- |
-   | Branch to deploy | 要部署的分支，别留默认的 `main` —— 若代码还没合进 main，那里没有 `unscripted/` 目录，构建会直接失败 |
-   | Base directory | `unscripted` |
+   | Production branch | 要部署的分支 |
+   | **Root directory**（在 Advanced 里） | `unscripted` |
+   | Build command | `npm run build` |
+   | Build output directory | `dist` |
 
-   Build command / Publish directory 会从 `unscripted/netlify.toml` 读出来。
+4. 环境变量加两条（含 `NODE_VERSION = 22`）
+5. Save and Deploy
 
-3. **Environment variables** 加两条：
+### Netlify
 
-   ```
-   VITE_SUPABASE_URL      = https://<项目>.supabase.co
-   VITE_SUPABASE_ANON_KEY = <publishable / anon key>
-   ```
+配置在 [`netlify.toml`](netlify.toml)，Netlify 会从 Base directory 里读它。
 
-   ⚠️ 必须在部署前配好。Vite 是构建时把这两个值编译进 JS 的 ——
-   部署后再补要重新触发一次部署（Deploys → Trigger deploy → Clear cache and deploy site）。
+1. **Add new site → Import an existing project → Deploy with GitHub**
+2. **Base directory 填 `unscripted`**；Branch 选要部署的分支。
+   Build command / Publish directory 会自动从 `netlify.toml` 带出来
+3. 环境变量加两条
+4. Deploy
 
-4. Deploy。之后每次推送到该分支，Netlify 会自动重新构建。
+> Netlify 的 GitHub 授权只有仓库 owner 能做。协作者需要在
+> Settings → Applications 里让 owner 授予 Netlify 访问权限。
+> 用自己名下的仓库可以省掉这一步。
 
 ### 部署后验证
 
@@ -217,16 +238,18 @@ Netlify 配置在 [`netlify.toml`](netlify.toml)：`npm run build` → `dist`，
 - `/register` **没有**黄色的「数据库还没接上」提示（有 = 环境变量没生效）
 - `/projects` 能读到作品
 - `/staff` 能登录并看到数据
-- **用手机流量访问一次**，再用学校网络访问一次 —— 后者才是活动当天的真实条件
+- 直接访问 `/register` 并刷新，**不报 404**（报 404 = 路由重写没生效）
+- 用**手机流量**访问一次，再用**学校网络**访问一次 —— 后者才是活动当天的真实条件
 
 ### 常见问题
 
 | 现象 | 原因 |
 | --- | --- |
-| 构建失败，提示找不到 `package.json` | Base directory 没填 `unscripted` |
+| 构建失败，提示找不到 `package.json` | Base directory / Root directory 没填 `unscripted` |
 | 构建失败，找不到 `unscripted/` 目录 | 分支选错了，选到了不含该目录的 `main` |
-| 页面能开，但报名页显示「数据库还没接上」 | 环境变量没配，或配完没重新部署 |
-| 直接访问 `/register` 404 | `netlify.toml` 的 redirects 没生效，检查 base directory 是否正确 |
+| 页面能开，但报名页显示「数据库还没接上」 | 环境变量没配，或配完没重新构建 |
+| 直接访问 `/register` 或刷新报 404 | 路由重写没生效：Netlify 看 netlify.toml，Cloudflare 看 `_redirects` |
+| 打开网址要求登录 | 托管平台开了访问控制（如 Netlify 的 Edge Access），要改成公开 |
 
-⚠️ 环境变量里只填 **publishable / anon key**。`service_role` / secret key 能绕过所有权限，
-**绝不能用 `VITE_` 前缀** —— 带这个前缀的变量会被打包进浏览器可见的 JS。
+> 国内访问：`*.netlify.app` 和 `*.pages.dev` 都不算稳定。Cloudflare 的优势主要在
+> 绑定自有域名之后走它的 CDN。建议两个平台都部署着，到学校用真实网络各测一次再决定。
