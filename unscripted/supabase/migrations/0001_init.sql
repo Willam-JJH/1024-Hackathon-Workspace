@@ -99,12 +99,31 @@ create table if not exists public.projects (
   wall_visibility text
                   check (wall_visibility in ('named','group_only','anonymous','hidden')),
 
+  -- 下面三个是「写入时算好」的公开字段，专供匿名访客读取。
+  -- 之所以预先算好存起来，而不是查询时现算：
+  --   算它们要 join participants（拿个人姓名）并对图片做筛选，
+  --   而匿名角色对 participants 没有任何权限。放在写入时算，
+  --   读取端就只需要一张表的几个列，可以用列级授权精确控制公开范围，
+  --   不必再依赖 SECURITY DEFINER 视图。
+  credit_display   text,                                 -- 署名行，null = 不署名
+  members_display  text,                                 -- 成员名单，null = 不显示
+  public_images    jsonb not null default '[]'::jsonb,   -- 只含图片类文件
+
   participant_id  uuid references public.participants(id) on delete set null
 );
 
 -- 已经建过表的库，用这句补上（整段脚本可以重复执行）
 alter table public.projects
   add column if not exists wall_visibility text;
+
+alter table public.projects
+  add column if not exists credit_display text;
+
+alter table public.projects
+  add column if not exists members_display text;
+
+alter table public.projects
+  add column if not exists public_images jsonb not null default '[]'::jsonb;
 
 alter table public.projects
   drop constraint if exists projects_wall_visibility_check;
@@ -161,6 +180,38 @@ begin
   exception when others then
     raise notice '未能删除旧列 show_credit（%）。它已无人引用，可以忽略，也可在 Supabase 表编辑器里手动删除。', sqlerrm;
   end;
+end $$;
+
+-- 重算三个公开字段。整体重算而不是只补 null：
+-- 这三个字段是可推导的，全量重算能保证它们和 wall_visibility 永远一致，
+-- 而且幂等 —— 重复执行结果相同。表就这么几十行，代价可以忽略。
+do $$
+begin
+  update public.projects p
+  set credit_display = case
+        when p.wall_visibility = 'named'
+          then coalesce(
+                 nullif(btrim(p.group_name), ''),
+                 (select pa.name from public.participants pa where pa.id = p.participant_id)
+               )
+        when p.wall_visibility = 'group_only'
+          then nullif(btrim(p.group_name), '')
+        else null
+      end,
+      members_display = case
+        when p.wall_visibility = 'named' then nullif(btrim(p.members), '')
+        else null
+      end,
+      public_images = coalesce(
+        (
+          select jsonb_agg(f)
+          from jsonb_array_elements(p.files) f
+          where f->>'type' like 'image/%'
+        ),
+        '[]'::jsonb
+      );
+exception when others then
+  raise notice '重算公开字段失败（%），继续', sqlerrm;
 end $$;
 
 create index if not exists projects_created_at_idx on public.projects (created_at desc);
@@ -286,10 +337,13 @@ security definer
 set search_path = public
 as $$
 declare
-  v_participant uuid;
-  v_project     uuid;
-  v_name        text := lower(btrim(coalesce(p_name, '')));
-  v_contact     text := lower(regexp_replace(btrim(coalesce(p_contact, '')), '\s', '', 'g'));
+  v_participant      uuid;
+  v_participant_name text;
+  v_project          uuid;
+  v_credit           text;
+  v_members          text;
+  v_name             text := lower(btrim(coalesce(p_name, '')));
+  v_contact          text := lower(regexp_replace(btrim(coalesce(p_contact, '')), '\s', '', 'g'));
 begin
   if v_name = '' or v_contact = '' then
     raise exception 'NAME_OR_CONTACT_REQUIRED';
@@ -306,7 +360,7 @@ begin
   end if;
 
   -- 核对归属：姓名 + 报名时填的联系方式，两者都要对上
-  select p.id into v_participant
+  select p.id, p.name into v_participant, v_participant_name
   from public.participants p
   where lower(btrim(p.name)) = v_name
     and lower(regexp_replace(btrim(p.contact), '\s', '', 'g')) = v_contact
@@ -316,6 +370,21 @@ begin
   if v_participant is null then
     raise exception 'NOT_REGISTERED';
   end if;
+
+  -- 把公开展示用的两个字段在这里算好。
+  -- 个人报名没有团体名时回退到本人姓名；匿名/不上墙的一律留空。
+  v_credit := case
+    when p_wall_visibility = 'named'
+      then coalesce(nullif(btrim(p_group_name), ''), v_participant_name)
+    when p_wall_visibility = 'group_only'
+      then nullif(btrim(p_group_name), '')
+    else null
+  end;
+
+  v_members := case
+    when p_wall_visibility = 'named' then nullif(btrim(p_members), '')
+    else null
+  end;
 
   -- 同一个人、同一个项目名 = 修改已有提交
   select pr.id into v_project
@@ -328,11 +397,11 @@ begin
     insert into public.projects (
       title, summary, problem, group_name, members, direction,
       link, instructions, equipment_needs, demo_format,
-      contact, wall_visibility, participant_id
+      contact, wall_visibility, credit_display, members_display, participant_id
     ) values (
       btrim(p_title), btrim(p_summary), p_problem, p_group_name, p_members, p_direction,
       p_link, p_instructions, p_equipment_needs, p_demo_format,
-      btrim(p_contact), p_wall_visibility, v_participant
+      btrim(p_contact), p_wall_visibility, v_credit, v_members, v_participant
     )
     returning id into v_project;
   else
@@ -348,6 +417,8 @@ begin
       demo_format     = p_demo_format,
       contact         = btrim(p_contact),
       wall_visibility = p_wall_visibility,
+      credit_display  = v_credit,
+      members_display = v_members,
       updated_at      = now()
     where id = v_project;
   end if;
@@ -376,10 +447,17 @@ as $$
 declare
   v_name    text := lower(btrim(coalesce(p_name, '')));
   v_contact text := lower(regexp_replace(btrim(coalesce(p_contact, '')), '\s', '', 'g'));
+  v_images  jsonb;
 begin
+  -- 只有图片能上公开作品墙，这里筛好存进 public_images
+  select coalesce(jsonb_agg(f), '[]'::jsonb) into v_images
+  from jsonb_array_elements(coalesce(p_files, '[]'::jsonb)) f
+  where f->>'type' like 'image/%';
+
   update public.projects pr
-  set files = coalesce(p_files, '[]'::jsonb),
-      updated_at = now()
+  set files         = coalesce(p_files, '[]'::jsonb),
+      public_images = v_images,
+      updated_at    = now()
   where pr.id = p_project_id
     and exists (
       select 1 from public.participants p
@@ -427,74 +505,47 @@ create policy "project-files: staff can list"
   using (bucket_id = 'project-files');
 
 
--- ========================== 9. 公开作品墙 ==================================
+-- ========================== 9. 公开作品墙的读取权限 ========================
 -- projects 表对匿名是关死的（里面有联系方式）。作品墙要公开，但不能顺手把
--- 联系方式也放出去 —— RLS 只能管到"行"，管不了"列"。
+-- 联系方式也放出去。
 --
--- 所以用一个视图，只挑该公开的列。视图以属主身份执行，
--- 匿名只被授予这个视图的 select，碰不到原表。
+-- 做法是**列级授权**：匿名角色只被授予下面这几个列的 select，
+-- 其余列（contact、instructions、participant_id 等）连读都不允许。
+-- 行范围由一条 RLS 策略限制，只放行作者选了公开的作品。
 --
--- 可见性规则（作者提交时自己选）：
---   named      上墙，署名行 + 成员名单都显示
---   group_only 上墙，只显示社团／团队名；没有团体名的（个人报名）就等于不署名
---   anonymous  上墙，署名行和成员名单都不显示
---   hidden     完全不上墙，视图里查不到
--- wall_visibility 为 null（早期数据）按 hidden 处理。
+-- 为什么不用 SECURITY DEFINER 视图：那种视图会绕开查询者的 RLS，
+-- Supabase 的安全检查器会持续报「Security Definer View」；
+-- 而且将来有人改动视图定义时，容易在无意间扩大暴露面。
+-- 列级授权把"什么算公开"直接写在授权语句里，改动时一眼就能看见。
+--
+-- 署名和成员名单在写入时就已算好（credit_display / members_display），
+-- 所以这里不需要 join 到 participants —— 匿名角色也从来没有那张表的权限。
 
-create or replace view public.public_projects as
-select
-  p.id,
-  p.title,
-  p.summary,
-  p.problem,
-  p.direction,
-  p.link,
-  p.created_at,
+revoke all on public.projects from anon;
 
-  -- 署名行：团体名优先，个人报名则回退到报名时的姓名
-  case
-    when p.wall_visibility = 'named'
-      then coalesce(nullif(btrim(p.group_name), ''), pa.name)
-    when p.wall_visibility = 'group_only'
-      then nullif(btrim(p.group_name), '')
-    else null
-  end as credit_name,
+grant select (
+  id,
+  title,
+  summary,
+  problem,
+  direction,
+  link,
+  created_at,
+  credit_display,    -- 署名行，null 表示不署名
+  members_display,   -- 成员名单，null 表示不显示
+  public_images      -- 只含图片类文件
+) on public.projects to anon;
 
-  -- 成员名单只在选了完整署名时显示
-  case
-    when p.wall_visibility = 'named' then nullif(btrim(p.members), '')
-    else null
-  end as members,
+-- 行范围：作者选「不上墙」的、以及早期没表态的，匿名一律读不到
+drop policy if exists "projects: public can read published" on public.projects;
+create policy "projects: public can read published"
+  on public.projects for select
+  to anon
+  using (wall_visibility in ('named', 'group_only', 'anonymous'));
 
-  -- 只放图片，别的文件（zip、音频等）不上墙
-  coalesce(
-    (
-      select jsonb_agg(f)
-      from jsonb_array_elements(p.files) as f
-      where f->>'type' like 'image/%'
-    ),
-    '[]'::jsonb
-  ) as images
-
-from public.projects p
-left join public.participants pa on pa.id = p.participant_id
--- 选了"不上墙"的、以及早期没有表态的，一律不出现在视图里
-where p.wall_visibility in ('named', 'group_only', 'anonymous');
-
--- 显式声明视图以属主身份执行。
--- 匿名角色对 projects 表没有 select 权限，如果视图改成以调用者身份执行，
--- 匿名读这个视图会拿到空结果。PG15 起该选项默认就是 false，
--- 这里写死一遍防止不同版本默认值差异。老版本没有这个选项，忽略即可。
-do $$
-begin
-  execute 'alter view public.public_projects set (security_invoker = false)';
-exception
-  when others then null;
-end $$;
-
--- 匿名和筹备组都能读这个视图；原表仍然只有筹备组能读
-revoke all on public.public_projects from anon;
-grant select on public.public_projects to anon, authenticated;
+-- 旧的 SECURITY DEFINER 视图已废弃。第 3 节已经删过一次，这里再兜一次，
+-- 保证从任何历史版本升级上来都不会残留。
+drop view if exists public.public_projects;
 
 
 -- ========================== 10. 实时同步 ===================================
@@ -521,7 +572,8 @@ end $$;
 --   tables     3 行、每行 rls_enabled = true
 --   functions  3 个
 --   bucket     1 行、public = true、file_size_limit = 52428800
---   views      1 行（public_projects）
+--   grants     匿名对 projects 只有 10 个列的 select 权限
+--   views      public_projects 应该查不到（已废弃）
 
 select relname as table_name, relrowsecurity as rls_enabled
 from pg_class
@@ -539,6 +591,16 @@ select id, public, file_size_limit
 from storage.buckets
 where id = 'project-files';
 
+-- 匿名到底能读 projects 的哪些列（应该只有 10 个，且不含 contact）
+select column_name
+from information_schema.column_privileges
+where table_schema = 'public'
+  and table_name = 'projects'
+  and grantee = 'anon'
+  and privilege_type = 'SELECT'
+order by column_name;
+
+-- 已废弃的视图应该不存在（返回 0 行）
 select viewname
 from pg_views
 where schemaname = 'public'

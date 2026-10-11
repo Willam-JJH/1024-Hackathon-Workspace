@@ -9,7 +9,7 @@ import NotConfigured from "../components/NotConfigured";
 /** 卡片：封面 + 缩略图切换 */
 const ProjectCard = ({ project, index }: { project: PublicProject; index: number }) => {
   const [active, setActive] = useState(0);
-  const images = project.images ?? [];
+  const images = project.public_images ?? [];
   const cover = images[active];
 
   return (
@@ -68,8 +68,8 @@ const ProjectCard = ({ project, index }: { project: PublicProject; index: number
         <h3 className="text-lg leading-snug text-white">{project.title}</h3>
 
         {/* 署名 —— 作者没同意时这里什么都没有 */}
-        {project.credit_name ? (
-          <p className="mt-1.5 text-xs text-acid/80">{project.credit_name}</p>
+        {project.credit_display ? (
+          <p className="mt-1.5 text-xs text-acid/80">{project.credit_display}</p>
         ) : (
           <p className="mt-1.5 text-xs text-white/25">未署名</p>
         )}
@@ -87,8 +87,8 @@ const ProjectCard = ({ project, index }: { project: PublicProject; index: number
           <p className="mt-1.5 text-xs text-white/35">方向：{project.direction}</p>
         )}
 
-        {project.members && (
-          <p className="mt-1.5 text-xs text-white/35">成员：{project.members}</p>
+        {project.members_display && (
+          <p className="mt-1.5 text-xs text-white/35">成员：{project.members_display}</p>
         )}
 
         {project.link && (

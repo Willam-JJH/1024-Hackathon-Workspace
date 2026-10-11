@@ -101,8 +101,12 @@ export const WALL_VISIBILITY_LABEL: Record<WallVisibility, string> = {
 };
 
 /**
- * 公开作品墙上能看到的内容 —— 对应数据库里的 public_projects 视图。
- * 刻意不含 contact 等信息：视图只挑该公开的列。
+ * 公开作品墙上能看到的内容。
+ *
+ * 字段名和数据库里被授权给匿名的那几个列一一对应 —— 见
+ * supabase/migrations/0001_init.sql 第 9 节的列级授权。
+ * 刻意不含 contact、instructions、participant_id 等：
+ * 匿名角色对那几列连读权限都没有。
  */
 export interface PublicProject {
   id: string;
@@ -112,12 +116,27 @@ export interface PublicProject {
   direction: string | null;
   link: string | null;
   created_at: string;
-  /** 作者同意署名时才有值，否则为 null */
-  credit_name: string | null;
-  members: string | null;
+  /** 署名行：团体名，或个人姓名；null 表示不署名 */
+  credit_display: string | null;
+  /** 成员名单；null 表示不显示 */
+  members_display: string | null;
   /** 只含图片类文件 */
-  images: StoredFile[];
+  public_images: StoredFile[];
 }
+
+/** 匿名角色被授权读取的列。改这里之前先改数据库的列级授权。 */
+export const PUBLIC_PROJECT_COLUMNS = [
+  "id",
+  "title",
+  "summary",
+  "problem",
+  "direction",
+  "link",
+  "created_at",
+  "credit_display",
+  "members_display",
+  "public_images",
+].join(",");
 
 /** 志愿者可选岗位 —— 来自 05 宣传文案里的四类工作 */
 export const VOLUNTEER_ROLES = [

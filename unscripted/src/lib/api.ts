@@ -1,5 +1,6 @@
 import { requireSupabase } from "./supabase";
 import { compressImage } from "./imageCompress";
+import { PUBLIC_PROJECT_COLUMNS } from "./types";
 import type {
   Participant,
   ParticipantInsert,
@@ -179,16 +180,19 @@ export async function fetchProjects(): Promise<Project[]> {
 }
 
 /**
- * 公开作品墙的数据 —— 读的是 public_projects 视图，不是 projects 表。
- * 匿名也能读，但看不到联系方式等敏感字段。
+ * 公开作品墙的数据。
+ *
+ * 读的是 projects 表，但**必须显式列出列名** —— 匿名角色只有这几列的
+ * select 权限，用 select=* 会被数据库拒绝。行范围由 RLS 策略限制在
+ * 作者选了公开的作品上。
  */
 export async function fetchPublicProjects(): Promise<PublicProject[]> {
   const { data, error } = await requireSupabase()
-    .from("public_projects")
-    .select("*")
+    .from("projects")
+    .select(PUBLIC_PROJECT_COLUMNS)
     .order("created_at", { ascending: false });
   if (error) throw new Error(friendlyError(error.message));
-  return (data ?? []) as PublicProject[];
+  return (data ?? []) as unknown as PublicProject[];
 }
 
 /* ------------------------------------------------------------ 工具 */

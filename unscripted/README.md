@@ -55,6 +55,38 @@ npm run dev                  # http://127.0.0.1:5180
 匿名角色对 `projects` 表没有 `insert` 权限，所有写入必须走这个函数，绕不过去。
 同一人对同一项目名重复提交会覆盖上一条，不会产生重复记录。
 
+### 公开作品墙的权限
+
+作品墙上要展示作品，但 `projects` 表里有提交者联系方式。PostgreSQL 的 RLS
+只能管到「行」、管不到「列」，所以这里用的是**列级授权**：
+
+- 匿名角色只被授予 10 个列的 `select`（`id, title, summary, problem, direction,
+  link, created_at, credit_display, members_display, public_images`），
+  其余列（`contact`、`instructions`、`participant_id`）连读都不允许
+- 行范围由 RLS 策略限制：只放行作者选了公开的作品
+- **署名和成员名单是写入时就算好的**（`credit_display` / `members_display`），
+  所以读取端不需要 join `participants` —— 匿名角色也从来没有那张表的权限
+
+> 前端查这表**必须显式列出列名**，用 `select=*` 会被数据库拒绝。
+> 列清单在 `src/lib/types.ts` 的 `PUBLIC_PROJECT_COLUMNS`。
+
+早先版本用的是 `SECURITY DEFINER` 视图，会让 Supabase 安全检查器持续报
+「Security Definer View」，已废弃改为上面的方案。
+
+### 作品在作品墙上的可见性
+
+作者提交时**必须**四选一，没有默认值：
+
+| 值 | 作品墙上的表现 |
+| --- | --- |
+| `named` | 署名行（团体名，个人则用本人姓名）+ 成员名单 |
+| `group_only` | 只显示社团／团队名，不列成员 |
+| `anonymous` | 都不显示 |
+| `hidden` | 完全不上墙 |
+
+团体名是组织标识、个人姓名是个人信息，分量不同，所以分成两档。
+数据库侧对 `null` 直接报错，绕过前端也提交不了。
+
 ### 作品文件
 
 存在 Supabase Storage 的 `project-files` 桶里，公开读，单文件上限 50MB。
@@ -88,7 +120,7 @@ scripts/                 诊断脚本，见下
 
 ## 诊断脚本
 
-都不需要跑测试框架，直接 `node scripts/<文件>`：
+不需要跑测试框架，直接 `node scripts/<文件>`：
 
 ```sh
 # CSV 导出的编码与转义（纯函数，不连数据库）
@@ -101,6 +133,26 @@ SUPABASE_URL=... SUPABASE_KEY=... STAFF_EMAIL=... STAFF_PASSWORD=... \
 
 ⚠️ `verify-realtime.mjs` 每次运行会**往报名表里插一行**测试数据（姓名带
 `【实时验证-可删】` 前缀）。跑完记得删掉。
+
+## 改数据库之前：先在本地跑一遍
+
+`supabase/migrations/` 里的脚本改动**不要直接往线上试** —— 已经因为这样
+返工过两次。本地有个一次性的 PostgreSQL 容器可以先把脚本跑通：
+
+```sh
+bash scripts/sql-test/run.sh                    # 干净库上跑一遍
+bash scripts/sql-test/run.sh --from-git HEAD~1  # 从旧版本升级，测迁移路径
+bash scripts/sql-test/run.sh --clean            # 删掉容器
+```
+
+它做的事：起一个 `postgres:17` 容器 → 建好 Supabase 才有的东西（`anon` /
+`authenticated` 角色、`storage` schema、`supabase_realtime` 发布通道）→
+应用迁移脚本 → 跑 `checks.sql` 里的断言。
+
+断言里**权限部分是真的 `set role anon` 查一遍**，不是读脚本判断"应该没问题"。
+
+> 容器里的 stub 不是完整复刻 Supabase。如果迁移脚本用到了没 stub 的东西，
+> 测试会报错 —— 那正是我们想提前知道的。
 
 ## 部署
 
