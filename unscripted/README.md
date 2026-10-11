@@ -108,6 +108,17 @@ npm run dev                  # http://127.0.0.1:5180
 
 超过 50MB 的文件会被拦下并提示改用外链。视频不要走这里。
 
+## 会一直挂着的安全检查告警
+
+Supabase 的 Database Linter 里这几条是**预期内的**，不用去"修"：
+
+| 告警 | 为什么保留 |
+| --- | --- |
+| `Public Can Execute SECURITY DEFINER Function` —— `submit_project`、`attach_project_files` | 参赛者本来就必须能匿名提交作品。它们是 `SECURITY DEFINER`，因为匿名角色对 `projects` 表**没有**写权限，归属核对只能在函数内部做。检查器建议的"撤回执行权限"或"改成 SECURITY INVOKER"两条都不适用：撤回就提交不了，改 INVOKER 就什么都写不进去。 |
+| `Leaked Password Protection Disabled` | 这是 **Pro 套餐（$25/月）** 才有的功能，免费档没有。而且它防的"用户自设弱密码"这个风险在本项目里不成立 —— 注册开关是关的，账号只能由管理员创建，密码也是管理员设的。为它升级不划算。 |
+
+改这两处之前，先想清楚上面写的理由是否还成立。
+
 ## 活动信息改哪里
 
 **日期、场地、报名截止、联系方式全部未确认**，筹备文档规定未获学校批准的信息不能
