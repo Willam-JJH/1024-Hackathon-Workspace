@@ -52,7 +52,7 @@ const en: Dict = {
   /* --------------------------------------------------------------- home */
   home: {
     hero: {
-      kicker: "AI-assisted making",
+      kicker: "%%AI%%-assisted making",
       desc: "Bring an idea, or take the project you never finished and keep going. Use AI to build it, and push your own project forward.",
       ctaRegister: "Sign up",
       ctaSubmit: "Submit work",

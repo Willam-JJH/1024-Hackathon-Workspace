@@ -25,8 +25,8 @@ const HomePage = () => {
             transition={{ duration: 0.6 }}
             className="max-w-3xl"
           >
-            <div className="mb-6 font-pixel text-xs tracking-[0.3em] text-acid">
-              {event.parentEvent} · {h.hero.kicker}
+            <div className="mb-6 font-label text-xs tracking-[0.3em] text-acid">
+              {event.parentEvent} · <RichText>{h.hero.kicker}</RichText>
             </div>
 
             <h1 className="font-display text-[2.5rem] leading-[1.05] tracking-wide text-white sm:text-6xl lg:text-7xl">
@@ -86,7 +86,7 @@ const HomePage = () => {
           </div>
 
           <div className="panel flex flex-col justify-center">
-            <div className="font-pixel text-xs tracking-widest text-acid">
+            <div className="font-label text-xs tracking-widest text-acid">
               {h.s01.cardKicker}
             </div>
             <p className="mt-4 text-lg leading-relaxed text-white/80">
@@ -140,7 +140,7 @@ const HomePage = () => {
       <Section index="04" title={h.s04.title}>
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="panel">
-            <div className="font-pixel text-xs tracking-widest text-acid">DAY 1</div>
+            <div className="font-label text-xs tracking-widest text-acid">DAY 1</div>
             <h3 className="mt-3 text-2xl text-white">{h.s04.day1Title}</h3>
             <ul className="mt-6 space-y-3">
               {h.s04.day1.map((item) => (
@@ -153,12 +153,12 @@ const HomePage = () => {
           </div>
 
           <div className="panel">
-            <div className="font-pixel text-xs tracking-widest text-acid">DAY 2</div>
+            <div className="font-label text-xs tracking-widest text-acid">DAY 2</div>
             <h3 className="mt-3 text-2xl text-white">{h.s04.day2Title}</h3>
             <ol className="mt-6 space-y-4">
               {h.s04.day2.map((step, i) => (
                 <li key={step.t} className="flex gap-4 text-sm leading-relaxed">
-                  <span className="font-pixel text-xs text-acid/70">
+                  <span className="font-label text-xs text-acid/70">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span>
@@ -181,7 +181,7 @@ const HomePage = () => {
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {h.s05.cards.map((item) => (
             <div key={item.n} className="panel">
-              <div className="font-pixel text-xs tracking-widest text-acid">{item.n}</div>
+              <div className="font-label text-xs tracking-widest text-acid">{item.n}</div>
               <h3 className="mt-4 text-xl text-white">{item.t}</h3>
               <p className="mt-3 text-sm leading-relaxed text-white/55">{item.d}</p>
             </div>

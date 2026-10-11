@@ -46,7 +46,7 @@ const ProjectCard = ({
         </a>
       ) : (
         <div className="flex aspect-[4/3] items-center justify-center border border-dashed border-white/10 bg-white/[0.02]">
-          <span className="font-pixel text-xs tracking-widest text-white/20">
+          <span className="font-label text-xs tracking-widest text-white/20">
             {p.noImage}
           </span>
         </div>

@@ -6,7 +6,11 @@ export default {
       fontFamily: {
         display: ["TschicholdArchiType", "Noto Sans SC", "sans-serif"],
         body: ["'scr nsevex reg'", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "sans-serif"],
-        pixel: ["Retropix", "monospace"],
+        // 原来叫 pixel，用像素字体渲染小标签。像素字体对拉丁字母可读性不好，
+        // 改成衬线体；末尾的 monospace 是给中文留的回退，行为和以前一致。
+        label: ["'Times New Roman'", "Times", "monospace"],
+        // 像素字体现在只留给 "AI" 这一个词（见 RichText 的 %% 标记）
+        retro: ["Retropix", "monospace"],
       },
       colors: {
         ink: {

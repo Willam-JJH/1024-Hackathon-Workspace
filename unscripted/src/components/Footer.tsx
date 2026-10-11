@@ -20,7 +20,7 @@ const Footer = () => {
           {/* 品牌 */}
           <div>
             <div className="font-display text-2xl tracking-wide text-white">{event.name}</div>
-            <div className="mt-2 font-pixel text-[10px] tracking-widest text-acid/70">
+            <div className="mt-2 font-label text-[10px] tracking-widest text-acid/70">
               {event.parentEvent}
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/50">
@@ -68,7 +68,7 @@ const Footer = () => {
               name: event.name,
             })}
           </span>
-          <span className="font-pixel tracking-widest">{t.footer.motto}</span>
+          <span className="font-label tracking-widest">{t.footer.motto}</span>
         </div>
       </div>
     </footer>

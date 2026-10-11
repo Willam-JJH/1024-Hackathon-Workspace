@@ -15,7 +15,7 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 const RouteFallback = () => (
   <div className="flex min-h-[60vh] items-center justify-center">
-    <span className="font-pixel text-xs tracking-[0.3em] text-acid">LOADING…</span>
+    <span className="font-label text-xs tracking-[0.3em] text-acid">LOADING…</span>
   </div>
 );
 

@@ -100,21 +100,34 @@ export function fill(template: string, vars: Record<string, string | number>): s
  * 之所以不用"前缀 / 高亮 / 后缀"拆成三个键：那样译者要对着两段残句翻译，
  * 很容易译出不通顺的中文或英文。整句在一起，语序怎么调都行。
  */
+const TOKEN = /(\*\*.+?\*\*|%%.+?%%)/g;
+
 export const RichText = ({ children }: { children: string }) => {
-  const parts = children.split("**");
+  // split 带捕获组时会把分隔符本身也留在数组里，正好逐个判断
+  const parts = children.split(TOKEN);
+
   return (
     // whitespace-pre-line 让译文里手写的 \n 变成真正的换行（没有 \n 就没有影响）
     <span className="whitespace-pre-line">
-      {parts.map((part, i) =>
-        // 奇数段是被 ** 包起来的高亮部分
-        i % 2 === 1 ? (
-          <em key={i} className="not-italic text-acid">
-            {part}
-          </em>
-        ) : (
-          <span key={i}>{part}</span>
-        )
-      )}
+      {parts.map((part, i) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+          return (
+            <em key={i} className="not-italic text-acid">
+              {part.slice(2, -2)}
+            </em>
+          );
+        }
+        // %%…%% 保留像素字体。目前只用于 "AI" 这个词 ——
+        // 小标签整体已改用衬线体，只有这个缩写还看得出像素味。
+        if (part.startsWith("%%") && part.endsWith("%%")) {
+          return (
+            <span key={i} className="font-retro">
+              {part.slice(2, -2)}
+            </span>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
     </span>
   );
 };

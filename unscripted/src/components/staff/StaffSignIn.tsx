@@ -35,7 +35,7 @@ const StaffSignIn = () => {
 
   return (
     <div className="mx-auto max-w-md px-5 py-[var(--s120)]">
-      <div className="font-pixel text-xs tracking-[0.3em] text-acid">{s.badge}</div>
+      <div className="font-label text-xs tracking-[0.3em] text-acid">{s.badge}</div>
       <h1 className="mt-4 text-3xl text-white">{s.title}</h1>
       <p className="mt-3 text-sm leading-relaxed text-white/50">{s.intro}</p>
 

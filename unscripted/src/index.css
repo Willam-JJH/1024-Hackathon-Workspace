@@ -142,7 +142,7 @@
 
   /* 区块标题上方的小序号，形如 [ 01 ] */
   .section-index {
-    @apply font-pixel text-xs tracking-widest text-acid;
+    @apply font-label text-xs tracking-widest text-acid;
   }
 
   /* 细分割线 */

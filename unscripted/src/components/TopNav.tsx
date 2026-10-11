@@ -31,7 +31,7 @@ const LanguageSwitch = () => {
             aria-pressed={active}
             aria-label={code === "zh" ? t.nav.switchToZh : t.nav.switchToEn}
             onClick={() => setLang(code)}
-            className={`px-2 py-1 font-pixel text-[10px] tracking-widest transition-colors ${
+            className={`px-2 py-1 font-label text-[10px] tracking-widest transition-colors ${
               active ? "bg-acid text-black" : "text-white/50 hover:text-white"
             }`}
           >
@@ -59,7 +59,7 @@ const TopNav = () => {
           <span className="truncate font-display text-2xl tracking-wide text-white transition-colors group-hover:text-acid">
             {event.name}
           </span>
-          <span className="hidden font-pixel text-[10px] tracking-widest text-acid/70 sm:inline">
+          <span className="hidden font-label text-[10px] tracking-widest text-acid/70 sm:inline">
             {event.parentEvent}
           </span>
         </Link>

@@ -15,7 +15,7 @@ const SubmitBlock = ({ state, message, label, onRetry }: SubmitBlockProps) => {
   if (state === "success") {
     return (
       <div className="border border-acid/40 bg-acid/[0.06] p-6">
-        <div className="font-pixel text-xs tracking-widest text-acid">
+        <div className="font-label text-xs tracking-widest text-acid">
           {t.submitBlock.badge}
         </div>
         <p className="mt-3 text-base text-white">{t.submitBlock.successTitle}</p>
