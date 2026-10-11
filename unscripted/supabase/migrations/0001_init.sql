@@ -287,8 +287,27 @@ grant select on public.projects     to authenticated;
 -- ========================== 7. 作品归属核对 + 提交 =========================
 
 -- 用于存储策略的辅助函数：判断某个作品 id 是否真实存在。
--- 必须是 security definer，否则匿名调用时会被 projects 的 RLS 挡住。
-create or replace function public.project_exists(p_id text)
+-- 必须是 security definer —— 存储策略的表达式是以调用者（匿名）身份求值的，
+-- 而匿名对 projects 表没有权限，不这么写策略根本跑不起来。
+--
+-- 放在 private schema 而不是 public：放在 public 会被 PostgREST 自动暴露成
+-- /rest/v1/rpc/project_exists，任何人都能拿它试探某个 uuid 是不是真实作品。
+-- 它只是存储策略的内部依赖，不该成为一个公开接口。
+
+create schema if not exists private;
+grant usage on schema private to anon, authenticated;
+
+-- 旧策略引用着下面那个函数，先删策略，否则删不掉函数
+do $$
+begin
+  drop policy if exists "project-files: upload" on storage.objects;
+exception when others then null;
+end $$;
+
+-- 清掉早期放在 public 里的那个（会被暴露成公开 RPC）
+drop function if exists public.project_exists(text);
+
+create or replace function private.project_exists(p_id text)
 returns boolean
 language sql
 security definer
@@ -298,7 +317,8 @@ as $$
   select exists (select 1 from public.projects where id::text = p_id);
 $$;
 
-grant execute on function public.project_exists(text) to anon, authenticated;
+revoke all on function private.project_exists(text) from public;
+grant execute on function private.project_exists(text) to anon, authenticated;
 
 
 -- 提交（或更新）一件作品。
@@ -487,22 +507,22 @@ on conflict (id) do update
       file_size_limit = excluded.file_size_limit;
 
 -- 匿名可以上传，但只能传进「已存在的作品文件夹」里
-drop policy if exists "project-files: upload" on storage.objects;
 create policy "project-files: upload"
   on storage.objects for insert
   to anon, authenticated
   with check (
     bucket_id = 'project-files'
     and array_length(storage.foldername(name), 1) >= 1
-    and public.project_exists((storage.foldername(name))[1])
+    and private.project_exists((storage.foldername(name))[1])
   );
 
--- 筹备组可以列出所有作品文件
+-- 这里**故意不建** select 策略。
+--
+-- 桶是公开的，文件通过 /object/public/ 路径访问，本来就不需要 select 策略。
+-- 而任何一条针对 storage.objects 的宽泛 select 策略，都会让调用者能
+-- 「列出桶里所有文件」—— 超出实际需要。Supabase 的安全检查器也会就这一点告警。
+-- 筹备组要看文件，用 Supabase 后台的 Storage 浏览器即可（走 service_role）。
 drop policy if exists "project-files: staff can list" on storage.objects;
-create policy "project-files: staff can list"
-  on storage.objects for select
-  to authenticated
-  using (bucket_id = 'project-files');
 
 
 -- ========================== 9. 公开作品墙的读取权限 ========================
@@ -548,6 +568,17 @@ create policy "projects: public can read published"
 drop view if exists public.public_projects;
 
 
+-- ---- 收紧 Supabase 自建函数的执行权限 ----
+-- 项目创建时若勾了「Enable automatic RLS」，Supabase 会建一个 rls_auto_enable()
+-- 挂在 DDL 事件触发器上。它不需要被 API 调用 —— 触发器是以执行 DDL 的角色
+-- （postgres）运行的，撤回授权不影响触发器本身。
+do $$
+begin
+  revoke execute on function public.rls_auto_enable() from anon, authenticated, public;
+exception when others then null;  -- 没勾那个选项时该函数不存在，忽略
+end $$;
+
+
 -- ========================== 10. 实时同步 ===================================
 -- 让筹备组的看板能收到新报名，不用刷新页面
 do $$
@@ -581,7 +612,9 @@ where relnamespace = 'public'::regnamespace
   and relname in ('participants','volunteers','projects')
 order by relname;
 
-select proname as function_name
+-- public 里应只有 2 个：submit_project、attach_project_files
+-- （project_exists 在 private schema，不暴露给 API）
+select proname as public_function
 from pg_proc
 where pronamespace = 'public'::regnamespace
   and proname in ('submit_project','attach_project_files','project_exists')

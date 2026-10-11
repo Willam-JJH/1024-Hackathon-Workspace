@@ -171,6 +171,41 @@ begin
   perform public._assert(
     not has_table_privilege('anon', 'public.volunteers', 'select'),
     '匿名读不到 volunteers 整张表');
+
+  -- 被 PostgREST 暴露的 public schema 里不该有可被匿名调用的辅助函数
+  perform public._assert(
+    not exists (
+      select 1 from pg_proc
+      where pronamespace = 'public'::regnamespace
+        and proname = 'project_exists'
+    ),
+    'project_exists 不在 public schema（不会暴露成公开 RPC）');
+  perform public._assert(
+    exists (
+      select 1 from pg_proc
+      where pronamespace = 'private'::regnamespace
+        and proname = 'project_exists'
+    ),
+    'project_exists 已挪到 private schema');
+end $$;
+
+-- 存储桶不该有任何 select 策略（否则调用者能列出全部文件）
+do $$
+begin
+  perform public._assert(
+    not exists (
+      select 1 from pg_policies
+      where schemaname = 'storage' and tablename = 'objects'
+        and cmd = 'SELECT'
+    ),
+    'storage.objects 上没有 select 策略（不能列出文件）');
+  perform public._assert(
+    exists (
+      select 1 from pg_policies
+      where schemaname = 'storage' and tablename = 'objects'
+        and cmd = 'INSERT'
+    ),
+    'storage.objects 上的上传策略仍在');
 end $$;
 
 -- 行级：真的以 anon 身份查一次，把结果落进临时表再断言
