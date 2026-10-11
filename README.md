@@ -2,6 +2,27 @@
 
 Hackathon 网站协作仓库，以 [sparkr / teensparkr](https://github.com/teensparkr) 的 TeenAIgers 源码作为起点。
 
+## 仓库远程设置（重要）
+
+这个本地仓库配了**双推** —— `git push` 会同时推到两个 GitHub 仓库：
+
+| 用途 | 仓库 |
+| --- | --- |
+| **主仓库**（fetch 和 Netlify 部署都读这个） | [Willam-JJH/1024-Hackathon-Workspace](https://github.com/Willam-JJH/1024-Hackathon-Workspace) |
+| **镜像**（自动同步，保持一致） | [Alvin0412/hackathon-workspace](https://github.com/Alvin0412/hackathon-workspace) |
+
+所以 `git remote -v` 会看到 **两条 (push) 记录**，这是正常的：
+
+```
+origin  https://github.com/Willam-JJH/1024-Hackathon-Workspace.git (fetch)
+origin  https://github.com/Willam-JJH/1024-Hackathon-Workspace.git (push)
+origin  https://github.com/Alvin0412/hackathon-workspace.git        (push)
+```
+
+⚠️ **只保证「从这里推出去」时两边同步。** 如果有人直接往 Alvin 的仓库提交（比如在
+GitHub 网页上改了文件），本地 fetch 的只有主仓库，看不到那些改动，两边就会分叉。
+要长期保持同步的话，**统一往主仓库推**，把 Alvin 的仓库当只读镜像。
+
 ## 从哪里开始
 
 | 目录 | 内容 | 原仓库 |
