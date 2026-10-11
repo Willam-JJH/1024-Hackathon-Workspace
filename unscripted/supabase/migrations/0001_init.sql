@@ -113,17 +113,37 @@ alter table public.projects
   add constraint projects_wall_visibility_check
   check (wall_visibility in ('named','group_only','anonymous','hidden'));
 
--- 早期版本用的是布尔字段 show_credit（只区分署不署名）。
--- 有就迁移过来再删掉：true→named，false→anonymous，
--- null→hidden（当时没问过"要不要公开"，按最保守处理）。
+-- 早期版本用的是布尔字段 show_credit（只区分署不署名）。迁移到 wall_visibility。
+--
+-- 这一段整体是"尽力而为"：任何一步失败都只记一条 notice，不中断整段脚本。
+-- 理由：中断会让后面的函数和视图都建不出来，站点直接不可用（已经踩过一次）。
+-- 最坏情况只是留下一个没人引用的空列，不影响任何功能。
+--
+-- 顺序说明：必须先删视图再动列 —— 上一版的 public_projects 引用着 show_credit，
+-- PostgreSQL 会拒绝删列。视图在本节后面会重建。不用 CASCADE，那会连带删掉
+-- 没预料到的依赖对象。
 do $$
 begin
-  if exists (
+  -- 1. 先删掉可能引用着 show_credit 的旧视图
+  begin
+    drop view if exists public.public_projects;
+  exception when others then
+    raise notice '删除旧视图失败（%），继续', sqlerrm;
+  end;
+
+  -- 2. 没有 show_credit 字段就没什么可迁移的，直接结束
+  if not exists (
     select 1 from information_schema.columns
     where table_schema = 'public'
       and table_name = 'projects'
       and column_name = 'show_credit'
   ) then
+    return;
+  end if;
+
+  -- 3. 迁移数据：true→named，false→anonymous，null→hidden
+  --    （null 那批当时没问过"要不要公开"，按最保守处理）
+  begin
     update public.projects
     set wall_visibility = case
       when show_credit is true  then 'named'
@@ -131,9 +151,16 @@ begin
       else 'hidden'
     end
     where wall_visibility is null;
+  exception when others then
+    raise notice '迁移 show_credit 数据失败（%），继续', sqlerrm;
+  end;
 
+  -- 4. 删掉旧列。删不掉也无所谓，新代码不再引用它。
+  begin
     alter table public.projects drop column show_credit;
-  end if;
+  exception when others then
+    raise notice '未能删除旧列 show_credit（%）。它已无人引用，可以忽略，也可在 Supabase 表编辑器里手动删除。', sqlerrm;
+  end;
 end $$;
 
 create index if not exists projects_created_at_idx on public.projects (created_at desc);
