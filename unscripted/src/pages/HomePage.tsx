@@ -35,7 +35,7 @@ const HomePage = () => {
 
             <p className="mt-6 text-xl text-acid glow sm:text-2xl">{t.brand.tagline}</p>
 
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60">
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/75">
               <RichText>{h.hero.desc}</RichText>
             </p>
 
@@ -63,7 +63,7 @@ const HomePage = () => {
             { label: t.common.deadline, value: event.registrationDeadline },
           ].map((item) => (
             <div key={item.label} className="bg-black px-2 py-8">
-              <div className="text-xs tracking-widest text-white/40">{item.label}</div>
+              <div className="text-xs tracking-widest text-white/55">{item.label}</div>
               <div className="mt-2 text-lg text-white">
                 <span className="tbd">{orTbd(item.value, t.common.tbd)}</span>
               </div>
@@ -74,8 +74,8 @@ const HomePage = () => {
 
       {/* ============================== 01 主张 ============================== */}
       <Section index="01" title={h.s01.title}>
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr]">
-          <div className="space-y-5 text-base leading-relaxed text-white/65">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <div className="space-y-5 text-base leading-relaxed text-white/80">
             <p>
               <RichText>{fill(h.s01.p1, { parent: event.parentEvent })}</RichText>
             </p>
@@ -89,7 +89,7 @@ const HomePage = () => {
             <div className="font-label text-xs tracking-widest text-acid">
               {h.s01.cardKicker}
             </div>
-            <p className="mt-4 text-lg leading-relaxed text-white/80">
+            <p className="mt-4 text-base leading-relaxed text-white/90">
               <RichText>{h.s01.cardText}</RichText>
             </p>
           </div>
@@ -102,22 +102,22 @@ const HomePage = () => {
           {h.s02.cards.map((card) => (
             <div key={card.label} className="panel">
               <h3 className="text-lg text-white">{card.label}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-white/55">{card.body}</p>
+              <p className="mt-3 text-base leading-relaxed text-white/70">{card.body}</p>
             </div>
           ))}
         </div>
 
-        <p className="mt-8 max-w-3xl text-base leading-relaxed text-white/65">
+        <p className="mt-8 max-w-3xl text-base leading-relaxed text-white/80">
           <RichText>{h.s02.footnote}</RichText>
         </p>
       </Section>
 
       {/* ========================= 03 AI 与创作成果 ========================= */}
       <Section index="03" title={h.s03.title}>
-        <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <ul className="space-y-5">
             {h.s03.points.map((item) => (
-              <li key={item} className="flex gap-4 text-base leading-relaxed text-white/65">
+              <li key={item} className="flex gap-4 text-base leading-relaxed text-white/80">
                 <span className="mt-2.5 h-1.5 w-1.5 shrink-0 bg-acid" />
                 <span>
                   <RichText>{item}</RichText>
@@ -130,10 +130,10 @@ const HomePage = () => {
             <div className="text-xs tracking-widest text-acid/80">
               {h.s03.exampleKicker}
             </div>
-            <p className="mt-4 text-sm leading-relaxed text-white/65">
+            <p className="mt-4 text-base leading-relaxed text-white/80">
               <RichText>{h.s03.exampleBody}</RichText>
             </p>
-            <p className="mt-4 text-xs leading-relaxed text-white/35">{h.s03.exampleNote}</p>
+            <p className="mt-4 text-xs leading-relaxed text-white/50">{h.s03.exampleNote}</p>
           </div>
         </div>
       </Section>
@@ -146,7 +146,7 @@ const HomePage = () => {
             <h3 className="mt-3 text-2xl text-white">{h.s04.day1Title}</h3>
             <ul className="mt-6 space-y-3">
               {h.s04.day1.map((item) => (
-                <li key={item} className="flex gap-3 text-sm leading-relaxed text-white/60">
+                <li key={item} className="flex gap-3 text-base leading-relaxed text-white/75">
                   <span className="text-acid">—</span>
                   <span>{item}</span>
                 </li>
@@ -159,13 +159,13 @@ const HomePage = () => {
             <h3 className="mt-3 text-2xl text-white">{h.s04.day2Title}</h3>
             <ol className="mt-6 space-y-4">
               {h.s04.day2.map((step, i) => (
-                <li key={step.t} className="flex gap-4 text-sm leading-relaxed">
+                <li key={step.t} className="flex gap-4 text-base leading-relaxed">
                   <span className="font-label text-xs text-acid/70">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span>
                     <span className="text-white">{step.t}</span>
-                    <span className="text-white/55"> —— {step.d}</span>
+                    <span className="text-white/70"> —— {step.d}</span>
                   </span>
                 </li>
               ))}
@@ -173,29 +173,29 @@ const HomePage = () => {
           </div>
         </div>
 
-        <p className="mt-8 max-w-3xl text-sm leading-relaxed text-white/40">{h.s04.note}</p>
+        <p className="mt-8 max-w-3xl text-sm leading-relaxed text-white/55">{h.s04.note}</p>
       </Section>
 
       {/* =========================== 05 Pitch 四要素 =========================== */}
       <Section index="05" title={h.s05.title}>
-        <p className="max-w-3xl text-base leading-relaxed text-white/65">{h.s05.intro}</p>
+        <p className="max-w-3xl text-base leading-relaxed text-white/80">{h.s05.intro}</p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {h.s05.cards.map((item) => (
             <div key={item.n} className="panel">
               <div className="font-label text-xs tracking-widest text-acid">{item.n}</div>
               <h3 className="mt-4 text-xl text-white">{item.t}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-white/55">{item.d}</p>
+              <p className="mt-3 text-sm leading-relaxed text-white/70">{item.d}</p>
             </div>
           ))}
         </div>
 
-        <p className="mt-8 text-sm leading-relaxed text-white/40">{h.s05.note}</p>
+        <p className="mt-8 text-sm leading-relaxed text-white/55">{h.s05.note}</p>
       </Section>
 
       {/* ============================ 06 名称的含义 ============================ */}
       <Section index="06" title={h.s06.title}>
-        <div className="max-w-3xl space-y-5 text-base leading-relaxed text-white/65">
+        <div className="max-w-3xl space-y-5 text-base leading-relaxed text-white/80">
           <p>
             <RichText>{h.s06.p1}</RichText>
           </p>
@@ -214,7 +214,7 @@ const HomePage = () => {
           <h2 className="mx-auto max-w-2xl text-3xl leading-tight text-white sm:text-4xl">
             {h.cta.title}
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/60">
+          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/75">
             {h.cta.body}
           </p>
 
@@ -227,7 +227,7 @@ const HomePage = () => {
             </Link>
           </div>
 
-          <p className="mt-8 text-xs text-white/30">
+          <p className="mt-8 text-xs text-white/45">
             {t.common.deadline}{" "}
             <span className="tbd">{orTbd(event.registrationDeadline, t.common.tbd)}</span>
             {" · "}

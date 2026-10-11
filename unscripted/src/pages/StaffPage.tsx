@@ -61,7 +61,7 @@ const participantColumns = (t: Dict): Column<Participant>[] => {
         <span>
           <Bool value={r.has_existing} yes={b.yes} no={b.no} />
           {r.has_existing && r.existing_detail && (
-            <span className="mt-1 block max-w-[18rem] whitespace-pre-wrap text-xs text-white/45">
+            <span className="mt-1 block max-w-[18rem] whitespace-pre-wrap text-xs text-white/60">
               {r.existing_detail}
             </span>
           )}
@@ -233,7 +233,7 @@ const projectColumns = (t: Dict): Column<Project>[] => {
       key: "wall_visibility",
       label: c.wallVisibility,
       render: (r) => (
-        <span className={r.wall_visibility === "hidden" ? "text-white/35" : "text-acid"}>
+        <span className={r.wall_visibility === "hidden" ? "text-white/50" : "text-acid"}>
           {r.wall_visibility ? t.enums.wallVisibility[r.wall_visibility] : t.staff.notStated}
         </span>
       ),
@@ -252,7 +252,7 @@ const projectColumns = (t: Dict): Column<Project>[] => {
 /** 作品文件的公开链接 */
 const FileLinks = ({ files }: { files: StoredFile[] | null }) => {
   const list = files ?? [];
-  if (list.length === 0) return <span className="text-white/30">—</span>;
+  if (list.length === 0) return <span className="text-white/45">—</span>;
 
   return (
     <ul className="space-y-1">
@@ -374,7 +374,7 @@ const StaffDashboard = ({ session }: { session: Session }) => {
         <div>
           <div className="section-index">{s.index}</div>
           <h1 className="mt-4 text-3xl text-white">{s.title}</h1>
-          <p className="mt-2 text-sm text-white/45">
+          <p className="mt-2 text-sm text-white/60">
             {s.subtitle}
             {lastSync > 0 && (
               <span className="ml-2 text-acid">
@@ -391,7 +391,7 @@ const StaffDashboard = ({ session }: { session: Session }) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="hidden text-xs text-white/35 sm:inline">{session.user.email}</span>
+          <span className="hidden text-xs text-white/50 sm:inline">{session.user.email}</span>
           <button
             type="button"
             onClick={() => {
@@ -433,11 +433,11 @@ const StaffDashboard = ({ session }: { session: Session }) => {
               className={`flex items-center gap-2 border px-5 py-3 text-sm transition-colors ${
                 isActive
                   ? "border-acid bg-acid/15 text-acid"
-                  : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
+                  : "border-white/20 text-white/75 hover:border-white/40 hover:text-white"
               }`}
             >
               {item.label}
-              <span className={`text-xs ${isActive ? "text-acid/70" : "text-white/35"}`}>
+              <span className={`text-xs ${isActive ? "text-acid/70" : "text-white/50"}`}>
                 {item.loading ? "…" : item.count}
               </span>
             </button>
@@ -483,11 +483,11 @@ const StaffDashboard = ({ session }: { session: Session }) => {
         )}
       </div>
 
-      <p className="mt-8 text-xs leading-relaxed text-white/30">
+      <p className="mt-8 text-xs leading-relaxed text-white/45">
         {fill(s.footer, { label: active.label, count: active.count })}
       </p>
 
-      <p className="mt-3 text-xs leading-relaxed text-white/25">{s.allowlistNote}</p>
+      <p className="mt-3 text-xs leading-relaxed text-white/40">{s.allowlistNote}</p>
     </div>
   );
 };
@@ -540,14 +540,14 @@ const StaffPage = () => {
     return (
       <div className="mx-auto max-w-screen-2xl px-5 py-[var(--s120)] sm:px-8 lg:px-12">
         <h1 className="text-3xl text-white">{t.staff.notConfiguredTitle}</h1>
-        <p className="mt-4 text-sm text-white/50">{t.staff.notConfiguredBody}</p>
+        <p className="mt-4 text-sm text-white/65">{t.staff.notConfiguredBody}</p>
       </div>
     );
   }
 
   if (!authReady) {
     return (
-      <div className="px-5 py-[var(--s120)] text-sm text-white/40">{t.common.loading}</div>
+      <div className="px-5 py-[var(--s120)] text-sm text-white/55">{t.common.loading}</div>
     );
   }
 

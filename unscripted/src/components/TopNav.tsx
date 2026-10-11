@@ -31,8 +31,8 @@ const LanguageSwitch = () => {
             aria-pressed={active}
             aria-label={code === "zh" ? t.nav.switchToZh : t.nav.switchToEn}
             onClick={() => setLang(code)}
-            className={`px-2 py-1 font-label text-[10px] tracking-widest transition-colors ${
-              active ? "bg-acid text-black" : "text-white/50 hover:text-white"
+            className={`px-2 py-1 font-label text-[11px] tracking-widest transition-colors ${
+              active ? "bg-acid text-black" : "text-white/65 hover:text-white"
             }`}
           >
             {LANG_LABEL[code]}
@@ -59,7 +59,7 @@ const TopNav = () => {
           <span className="truncate font-display text-2xl tracking-wide text-white transition-colors group-hover:text-acid">
             {event.name}
           </span>
-          <span className="hidden font-label text-[10px] tracking-widest text-acid/70 sm:inline">
+          <span className="hidden font-label text-[11px] tracking-widest text-acid/70 sm:inline">
             {event.parentEvent}
           </span>
         </Link>
@@ -123,7 +123,7 @@ const TopNav = () => {
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 `block border-b border-white/5 px-5 py-4 text-base tracking-wider transition-colors ${
-                  isActive ? "bg-acid/10 text-acid" : "text-white/70 hover:text-white"
+                  isActive ? "bg-acid/10 text-acid" : "text-white/85 hover:text-white"
                 }`
               }
             >

@@ -37,11 +37,11 @@ const StaffSignIn = () => {
     <div className="mx-auto max-w-md px-5 py-[var(--s120)]">
       <div className="font-label text-xs tracking-[0.3em] text-acid">{s.badge}</div>
       <h1 className="mt-4 text-3xl text-white">{s.title}</h1>
-      <p className="mt-3 text-sm leading-relaxed text-white/50">{s.intro}</p>
+      <p className="mt-3 text-sm leading-relaxed text-white/65">{s.intro}</p>
 
       <form onSubmit={handleSubmit} className="mt-10 space-y-5">
         <label className="block">
-          <span className="text-sm text-white/80">{s.email}</span>
+          <span className="text-sm text-white/90">{s.email}</span>
           <input
             type="email"
             required
@@ -53,7 +53,7 @@ const StaffSignIn = () => {
         </label>
 
         <label className="block">
-          <span className="text-sm text-white/80">{s.password}</span>
+          <span className="text-sm text-white/90">{s.password}</span>
           <input
             type="password"
             required
@@ -79,7 +79,7 @@ const StaffSignIn = () => {
         </button>
       </form>
 
-      <p className="mt-8 text-xs leading-relaxed text-white/30">{s.accountNote}</p>
+      <p className="mt-8 text-xs leading-relaxed text-white/45">{s.accountNote}</p>
     </div>
   );
 };

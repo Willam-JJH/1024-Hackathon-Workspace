@@ -26,10 +26,10 @@ interface FieldShellProps {
 const FieldShell = ({ label, required, hint, error, htmlFor, children }: FieldShellProps) => (
   <div>
     {label && (
-      <label htmlFor={htmlFor} className="flex items-baseline gap-2 text-sm text-white/80">
+      <label htmlFor={htmlFor} className="flex items-baseline gap-2 text-sm text-white/90">
         {label}
         {required && <span className="text-acid">*</span>}
-        {hint && <span className="text-xs text-white/35">{hint}</span>}
+        {hint && <span className="text-xs text-white/50">{hint}</span>}
       </label>
     )}
     <div className={label ? "mt-2" : ""}>{children}</div>
@@ -53,7 +53,7 @@ export function scrollToFirstError(): void {
 /* --------------------------------------------------------------- 输入框 */
 
 const inputClass =
-  "w-full border border-white/20 bg-white/[0.03] px-3 py-3 text-sm text-white placeholder:text-white/25 outline-none transition-colors focus:border-acid focus:bg-white/[0.05]";
+  "w-full border border-white/20 bg-white/[0.03] px-3 py-3 text-sm text-white placeholder:text-white/40 outline-none transition-colors focus:border-acid focus:bg-white/[0.05]";
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -129,7 +129,7 @@ export function ChoiceRow<T extends string | boolean>({
               className={`flex min-h-[3rem] items-center justify-center border px-2 py-3 text-center text-xs leading-snug transition-colors sm:px-3 sm:text-sm ${
                 active
                   ? "border-acid bg-acid/15 text-acid"
-                  : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
+                  : "border-white/20 text-white/75 hover:border-white/40 hover:text-white"
               }`}
             >
               {option.label}
@@ -138,7 +138,7 @@ export function ChoiceRow<T extends string | boolean>({
         })}
       </div>
       {options.find((o) => o.value === value)?.description && (
-        <p className="mt-2 text-xs text-white/35">
+        <p className="mt-2 text-xs text-white/50">
           {options.find((o) => o.value === value)?.description}
         </p>
       )}
@@ -185,7 +185,7 @@ export const ChipMultiSelect = ({
               className={`border px-4 py-2.5 text-sm transition-colors ${
                 active
                   ? "border-acid bg-acid/15 text-acid"
-                  : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
+                  : "border-white/20 text-white/75 hover:border-white/40 hover:text-white"
               }`}
             >
               {option.label}
@@ -226,7 +226,7 @@ export const DayPicker = ({ label, value, onChange, error }: DayPickerProps) => 
             className={`flex items-center gap-3 border px-4 py-3 text-sm transition-colors ${
               active
                 ? "border-acid bg-acid/15 text-acid"
-                : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
+                : "border-white/20 text-white/75 hover:border-white/40 hover:text-white"
             }`}
           >
             <span
@@ -261,7 +261,7 @@ export const SwitchField = ({ label, value, onChange }: SwitchFieldProps) => (
   <button
     type="button"
     onClick={() => onChange(!value)}
-    className="flex w-full items-center justify-between border border-white/20 bg-white/[0.03] px-4 py-3 text-left text-sm text-white/80 transition-colors hover:border-white/40"
+    className="flex w-full items-center justify-between border border-white/20 bg-white/[0.03] px-4 py-3 text-left text-sm text-white/90 transition-colors hover:border-white/40"
   >
     <span>{label}</span>
     <span

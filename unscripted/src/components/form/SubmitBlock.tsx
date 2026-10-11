@@ -19,7 +19,7 @@ const SubmitBlock = ({ state, message, label, onRetry }: SubmitBlockProps) => {
           {t.submitBlock.badge}
         </div>
         <p className="mt-3 text-base text-white">{t.submitBlock.successTitle}</p>
-        <p className="mt-2 text-sm text-white/50">{t.submitBlock.successBody}</p>
+        <p className="mt-2 text-sm text-white/65">{t.submitBlock.successBody}</p>
         <button type="button" onClick={onRetry} className="btn-ghost mt-6">
           {t.submitBlock.again}
         </button>

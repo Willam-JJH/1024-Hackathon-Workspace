@@ -19,7 +19,7 @@ const RegisterPage = () => {
       <div className="max-w-3xl">
         <div className="section-index">{p.index}</div>
         <h1 className="mt-4 text-4xl text-white">{p.title}</h1>
-        <p className="mt-4 text-base leading-relaxed text-white/60">{p.intro}</p>
+        <p className="mt-4 text-base leading-relaxed text-white/75">{p.intro}</p>
       </div>
 
       {/* 身份切换 */}
@@ -34,7 +34,7 @@ const RegisterPage = () => {
               className={`border px-5 py-3 text-sm tracking-wider transition-colors ${
                 isActive
                   ? "border-acid bg-acid/15 text-acid"
-                  : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
+                  : "border-white/20 text-white/75 hover:border-white/40 hover:text-white"
               }`}
             >
               {p.roles[value].label}
@@ -43,7 +43,7 @@ const RegisterPage = () => {
         })}
       </div>
 
-      <p className="mt-4 text-sm text-white/45">{p.roles[role].blurb}</p>
+      <p className="mt-4 text-sm text-white/60">{p.roles[role].blurb}</p>
 
       <div className="mt-10 max-w-3xl">
         <NotConfigured />
@@ -61,7 +61,7 @@ const RegisterPage = () => {
         </AnimatePresence>
       </div>
 
-      <p className="mt-10 max-w-3xl text-xs leading-relaxed text-white/30">{p.privacy}</p>
+      <p className="mt-10 max-w-3xl text-xs leading-relaxed text-white/45">{p.privacy}</p>
     </div>
   );
 };

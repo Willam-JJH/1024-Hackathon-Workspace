@@ -32,7 +32,7 @@ const StaffTable = <T extends { id: string }>({
 }: StaffTableProps<T>) => {
   if (rows.length === 0) {
     return (
-      <div className="border border-dashed border-white/15 px-6 py-16 text-center text-sm text-white/40">
+      <div className="border border-dashed border-white/15 px-6 py-16 text-center text-sm text-white/55">
         {emptyText}
       </div>
     );
@@ -53,7 +53,7 @@ const StaffTable = <T extends { id: string }>({
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="whitespace-nowrap px-4 py-3 text-xs font-normal tracking-widest text-white/40"
+                  className="whitespace-nowrap px-4 py-3 text-xs font-normal tracking-widest text-white/55"
                 >
                   {col.label}
                 </th>
@@ -67,7 +67,7 @@ const StaffTable = <T extends { id: string }>({
                 className="border-b border-white/[0.06] align-top transition-colors last:border-0 hover:bg-white/[0.03]"
               >
                 {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 text-white/75">
+                  <td key={col.key} className="px-4 py-3 text-white/88">
                     {cell(row, col)}
                   </td>
                 ))}
@@ -91,10 +91,10 @@ const StaffTable = <T extends { id: string }>({
               <dl className="divide-y divide-white/[0.06]">
                 {rest.map((col) => (
                   <div key={col.key} className="flex gap-4 px-4 py-2.5">
-                    <dt className="w-24 shrink-0 text-xs leading-6 text-white/35">
+                    <dt className="w-24 shrink-0 text-xs leading-6 text-white/50">
                       {col.label}
                     </dt>
-                    <dd className="min-w-0 flex-1 text-sm text-white/75">
+                    <dd className="min-w-0 flex-1 text-sm text-white/88">
                       {cell(row, col)}
                     </dd>
                   </div>
@@ -110,14 +110,14 @@ const StaffTable = <T extends { id: string }>({
 
 /** 单元格里显示布尔值。显示文案由调用方从词典传入，不在这里写死。 */
 export const Bool = ({ value, yes, no }: { value: boolean; yes: string; no: string }) => (
-  <span className={value ? "text-acid" : "text-white/30"}>{value ? yes : no}</span>
+  <span className={value ? "text-acid" : "text-white/45"}>{value ? yes : no}</span>
 );
 
 /** 单元格里显示时间。跟随站点语言决定日期格式。 */
 export const Time = ({ value }: { value: string }) => {
   const { lang } = useLang();
   return (
-    <span className="whitespace-nowrap text-xs text-white/45">
+    <span className="whitespace-nowrap text-xs text-white/60">
       {new Date(value).toLocaleString(lang === "zh" ? "zh-CN" : "en-GB", {
         month: "2-digit",
         day: "2-digit",

@@ -46,7 +46,7 @@ const ProjectCard = ({
         </a>
       ) : (
         <div className="flex aspect-[4/3] items-center justify-center border border-dashed border-white/10 bg-white/[0.02]">
-          <span className="font-label text-xs tracking-widest text-white/20">
+          <span className="font-label text-xs tracking-widest text-white/35">
             {p.noImage}
           </span>
         </div>
@@ -83,26 +83,26 @@ const ProjectCard = ({
         {project.credit_display ? (
           <p className="mt-1.5 text-xs text-acid/80">{project.credit_display}</p>
         ) : (
-          <p className="mt-1.5 text-xs text-white/25">{p.uncredited}</p>
+          <p className="mt-1.5 text-xs text-white/40">{p.uncredited}</p>
         )}
 
-        <p className="mt-3 text-sm leading-relaxed text-white/60">{project.summary}</p>
+        <p className="mt-3 text-sm leading-relaxed text-white/75">{project.summary}</p>
 
         {project.problem && (
-          <p className="mt-3 text-xs leading-relaxed text-white/40">
-            <span className="text-white/55">{p.problemLabel}: </span>
+          <p className="mt-3 text-xs leading-relaxed text-white/55">
+            <span className="text-white/70">{p.problemLabel}: </span>
             {project.problem}
           </p>
         )}
 
         {project.direction && (
-          <p className="mt-1.5 text-xs text-white/35">
+          <p className="mt-1.5 text-xs text-white/50">
             {p.directionLabel}: {project.direction}
           </p>
         )}
 
         {project.members_display && (
-          <p className="mt-1.5 text-xs text-white/35">
+          <p className="mt-1.5 text-xs text-white/50">
             {p.membersLabel}: {project.members_display}
           </p>
         )}
@@ -172,11 +172,11 @@ const ProjectsPage = () => {
         <div className="max-w-2xl">
           <div className="section-index">{p.index}</div>
           <h1 className="mt-4 text-4xl text-white">{p.title}</h1>
-          <p className="mt-4 text-base leading-relaxed text-white/60">{p.intro}</p>
+          <p className="mt-4 text-base leading-relaxed text-white/75">{p.intro}</p>
         </div>
 
         <div className="flex items-center gap-4">
-          <span className="text-xs text-white/35">
+          <span className="text-xs text-white/50">
             {loading ? t.common.loading : fill(p.count, { count: projects.length })}
           </span>
           <button
@@ -200,7 +200,7 @@ const ProjectsPage = () => {
 
         {!loading && projects.length === 0 && !error && isSupabaseConfigured && (
           <div className="border border-dashed border-white/15 px-6 py-20 text-center">
-            <p className="text-white/45">{p.empty}</p>
+            <p className="text-white/60">{p.empty}</p>
             <Link to="/submit" className="btn-primary mt-8">
               {p.emptyCta}
             </Link>
@@ -214,7 +214,7 @@ const ProjectsPage = () => {
         </div>
       </div>
 
-      <p className="mt-12 max-w-3xl text-xs leading-relaxed text-white/30">{p.footnote}</p>
+      <p className="mt-12 max-w-3xl text-xs leading-relaxed text-white/45">{p.footnote}</p>
     </div>
   );
 };

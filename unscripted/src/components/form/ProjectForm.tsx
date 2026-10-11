@@ -207,7 +207,7 @@ const ProjectForm = () => {
         <legend className="px-2 text-xs tracking-widest text-acid">
           {p.identityLegend}
         </legend>
-        <p className="text-xs leading-relaxed text-white/45">{p.identityBody}</p>
+        <p className="text-xs leading-relaxed text-white/60">{p.identityBody}</p>
 
         <div className="grid gap-[var(--s20)] sm:grid-cols-2">
           <TextField
@@ -321,9 +321,9 @@ const ProjectForm = () => {
 
       {/* ---------- 文件 ---------- */}
       <div className="space-y-[var(--s16)] border-t border-white/10 pt-[var(--s24)]">
-        <div className="flex flex-wrap items-baseline gap-2 text-sm text-white/80">
+        <div className="flex flex-wrap items-baseline gap-2 text-sm text-white/90">
           {p.files}
-          <span className="text-xs text-white/35">{p.filesHint}</span>
+          <span className="text-xs text-white/50">{p.filesHint}</span>
         </div>
 
         <div
@@ -338,11 +338,11 @@ const ProjectForm = () => {
             dragging ? "border-acid bg-acid/[0.06]" : "border-white/20 hover:border-white/40"
           }`}
         >
-          <p className="text-sm text-white/60">
+          <p className="text-sm text-white/75">
             {p.dropPre}
             <span className="text-acid"> {p.dropAction}</span>
           </p>
-          <p className="mt-2 text-xs text-white/35">{p.dropNote}</p>
+          <p className="mt-2 text-xs text-white/50">{p.dropNote}</p>
         </div>
 
         <input
@@ -365,16 +365,16 @@ const ProjectForm = () => {
                 key={`${file.name}-${file.size}-${index}`}
                 className="flex items-center justify-between gap-4 border border-white/10 bg-white/[0.02] px-4 py-2.5"
               >
-                <span className="min-w-0 flex-1 truncate text-sm text-white/70">
+                <span className="min-w-0 flex-1 truncate text-sm text-white/85">
                   {file.name}
                 </span>
-                <span className="shrink-0 text-xs text-white/35">
+                <span className="shrink-0 text-xs text-white/50">
                   {formatSize(file.size)}
                 </span>
                 <button
                   type="button"
                   onClick={() => setFiles(files.filter((_, i) => i !== index))}
-                  className="shrink-0 text-xs text-white/40 transition-colors hover:text-red-400"
+                  className="shrink-0 text-xs text-white/55 transition-colors hover:text-red-400"
                 >
                   {p.remove}
                 </button>
@@ -389,7 +389,7 @@ const ProjectForm = () => {
         <legend className="px-2 text-xs tracking-widest text-acid">
           {p.visibilityLegend}
         </legend>
-        <p className="text-xs leading-relaxed text-white/45">
+        <p className="text-xs leading-relaxed text-white/60">
           <RichText>{p.visibilityBody}</RichText>
         </p>
 

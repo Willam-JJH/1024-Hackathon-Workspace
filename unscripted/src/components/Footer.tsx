@@ -20,23 +20,23 @@ const Footer = () => {
           {/* 品牌 */}
           <div>
             <div className="font-display text-2xl tracking-wide text-white">{event.name}</div>
-            <div className="mt-2 font-label text-[10px] tracking-widest text-acid/70">
+            <div className="mt-2 font-label text-[11px] tracking-widest text-acid/70">
               {event.parentEvent}
             </div>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/50">
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/65">
               {t.brand.tagline}
             </p>
           </div>
 
           {/* 板块 */}
           <div>
-            <h4 className="mb-4 text-sm tracking-widest text-white/40">{t.footer.sections}</h4>
+            <h4 className="mb-4 text-sm tracking-widest text-white/55">{t.footer.sections}</h4>
             <ul className="space-y-2">
               {SECTIONS.map((section) => (
                 <li key={section.to}>
                   <Link
                     to={section.to}
-                    className="text-sm text-white/70 transition-colors hover:text-acid"
+                    className="text-sm text-white/85 transition-colors hover:text-acid"
                   >
                     {t.nav[section.key]}
                   </Link>
@@ -47,8 +47,8 @@ const Footer = () => {
 
           {/* 信息 */}
           <div>
-            <h4 className="mb-4 text-sm tracking-widest text-white/40">{t.footer.info}</h4>
-            <ul className="space-y-2 text-sm text-white/70">
+            <h4 className="mb-4 text-sm tracking-widest text-white/55">{t.footer.info}</h4>
+            <ul className="space-y-2 text-sm text-white/85">
               {info.map(([label, value]) => (
                 <li key={label}>
                   {label}: <span className="tbd">{value}</span>
@@ -60,7 +60,7 @@ const Footer = () => {
 
         <div className="line my-8" />
 
-        <div className="flex flex-col gap-3 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
           <span>
             {fill(t.footer.copyright, {
               year,

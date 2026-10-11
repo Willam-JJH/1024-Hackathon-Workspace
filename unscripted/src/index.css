@@ -73,11 +73,16 @@
     background-color: #000;
     scroll-behavior: smooth;
     /*
-     * 基准字号 18px（默认是 16px）。Tailwind 的字号都是 rem，
-     * 所以 text-base 变成 18px、text-sm 15.75px、text-xs 13.5px，
-     * 标题和间距也按同比例放大 —— 整体版式保持等比，不会错位。
+     * 基准字号 20px（浏览器默认 16px）。
+     *
+     * Tailwind 的字号全是 rem，所以改这一个数就能把整站文字上调一档：
+     * text-base 从 18px 变 20px、text-sm 17.5px、text-xs 15px，
+     * 标题和间距也按同比例放大 —— 版式保持等比，不会错位。
+     *
+     * 之所以不逐个元素写死 px：那会同时产生几十个需要手动维护的数字，
+     * 而且间距还是 rem，会和字号脱节。
      */
-    font-size: 18px;
+    font-size: 20px;
   }
 
   body {
@@ -135,7 +140,7 @@
 @layer components {
   /* 顶部导航的分栏链接 */
   .nav-link {
-    @apply relative px-3 py-2 text-sm tracking-wider text-white/60 transition-colors duration-200 hover:text-white;
+    @apply relative px-3 py-2 text-sm tracking-wider text-white/75 transition-colors duration-200 hover:text-white;
   }
 
   .nav-link-active {
@@ -149,7 +154,7 @@
 
   /* 次按钮 */
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 border border-white/25 px-6 py-3 text-sm tracking-wider text-white/80 transition-all duration-200 hover:border-acid hover:text-acid;
+    @apply inline-flex items-center justify-center gap-2 border border-white/25 px-6 py-3 text-sm tracking-wider text-white/90 transition-all duration-200 hover:border-acid hover:text-acid;
   }
 
   /* 区块标题上方的小序号，形如 [ 01 ] */
