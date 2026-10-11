@@ -59,10 +59,12 @@ export const event: EventConfig = {
   contact: null,
 };
 
-/** 占位符文案：信息未确认时显示 */
-export const TBD = "待确认";
-
-/** 取一个"已确认才显示"的值，否则回退到占位符 */
-export function orTbd(value: string | null | undefined): string {
-  return value?.trim() ? value : TBD;
+/**
+ * 取一个"已确认才显示"的值，否则回退到占位符。
+ *
+ * 占位文案由调用方从词典传入（t.common.tbd）—— 它是要给用户看的，
+ * 得跟着语言走，所以不写死在这里。
+ */
+export function orTbd(value: string | null | undefined, fallback: string): string {
+  return value?.trim() ? value : fallback;
 }

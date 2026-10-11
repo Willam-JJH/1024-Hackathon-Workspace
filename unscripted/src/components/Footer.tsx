@@ -1,9 +1,17 @@
 import { Link } from "react-router-dom";
 import { event, orTbd } from "../config/event";
 import { SECTIONS } from "./TopNav";
+import { useT, fill } from "../i18n/core";
 
 const Footer = () => {
+  const t = useT();
   const year = new Date().getFullYear();
+
+  const info: [string, string][] = [
+    [t.common.date, orTbd(event.dates?.day1, t.common.tbd)],
+    [t.common.venue, orTbd(event.venue, t.common.tbd)],
+    [t.common.contact, orTbd(event.contact, t.common.tbd)],
+  ];
 
   return (
     <footer className="border-t border-white/10 bg-black">
@@ -16,13 +24,13 @@ const Footer = () => {
               {event.parentEvent}
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/50">
-              {event.tagline}
+              {t.brand.tagline}
             </p>
           </div>
 
           {/* 板块 */}
           <div>
-            <h4 className="mb-4 text-sm tracking-widest text-white/40">板块</h4>
+            <h4 className="mb-4 text-sm tracking-widest text-white/40">{t.footer.sections}</h4>
             <ul className="space-y-2">
               {SECTIONS.map((section) => (
                 <li key={section.to}>
@@ -30,7 +38,7 @@ const Footer = () => {
                     to={section.to}
                     className="text-sm text-white/70 transition-colors hover:text-acid"
                   >
-                    {section.label}
+                    {t.nav[section.key]}
                   </Link>
                 </li>
               ))}
@@ -39,17 +47,13 @@ const Footer = () => {
 
           {/* 信息 */}
           <div>
-            <h4 className="mb-4 text-sm tracking-widest text-white/40">活动信息</h4>
+            <h4 className="mb-4 text-sm tracking-widest text-white/40">{t.footer.info}</h4>
             <ul className="space-y-2 text-sm text-white/70">
-              <li>
-                日期：<span className="tbd">{orTbd(event.dates?.day1)}</span>
-              </li>
-              <li>
-                场地：<span className="tbd">{orTbd(event.venue)}</span>
-              </li>
-              <li>
-                咨询：<span className="tbd">{orTbd(event.contact)}</span>
-              </li>
+              {info.map(([label, value]) => (
+                <li key={label}>
+                  {label}: <span className="tbd">{value}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -58,11 +62,13 @@ const Footer = () => {
 
         <div className="flex flex-col gap-3 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
           <span>
-            © {year} {event.parentEvent} · {event.name}
+            {fill(t.footer.copyright, {
+              year,
+              parent: event.parentEvent,
+              name: event.name,
+            })}
           </span>
-          <span className="font-pixel tracking-widest">
-            做自己的项目，讲别人的作品
-          </span>
+          <span className="font-pixel tracking-widest">{t.footer.motto}</span>
         </div>
       </div>
     </footer>

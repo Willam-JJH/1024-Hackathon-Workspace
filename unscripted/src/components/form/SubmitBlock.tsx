@@ -1,4 +1,5 @@
 import type { SubmitState } from "../../lib/useSubmit";
+import { useT } from "../../i18n/core";
 
 interface SubmitBlockProps {
   state: SubmitState;
@@ -8,17 +9,19 @@ interface SubmitBlockProps {
 }
 
 /** 提交按钮 + 成功／错误反馈 */
-const SubmitBlock = ({ state, message, label = "提交报名", onRetry }: SubmitBlockProps) => {
+const SubmitBlock = ({ state, message, label, onRetry }: SubmitBlockProps) => {
+  const t = useT();
+
   if (state === "success") {
     return (
       <div className="border border-acid/40 bg-acid/[0.06] p-6">
-        <div className="font-pixel text-xs tracking-widest text-acid">SUBMITTED</div>
-        <p className="mt-3 text-base text-white">提交成功，我们已经收到了。</p>
-        <p className="mt-2 text-sm text-white/50">
-          筹备组会跟进你的信息。活动日期、场地确定后会通知你。
-        </p>
+        <div className="font-pixel text-xs tracking-widest text-acid">
+          {t.submitBlock.badge}
+        </div>
+        <p className="mt-3 text-base text-white">{t.submitBlock.successTitle}</p>
+        <p className="mt-2 text-sm text-white/50">{t.submitBlock.successBody}</p>
         <button type="button" onClick={onRetry} className="btn-ghost mt-6">
-          再填一份
+          {t.submitBlock.again}
         </button>
       </div>
     );
@@ -37,7 +40,7 @@ const SubmitBlock = ({ state, message, label = "提交报名", onRetry }: Submit
         disabled={state === "submitting"}
         className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {state === "submitting" ? "提交中…" : label}
+        {state === "submitting" ? t.submitBlock.submitting : (label ?? t.submitBlock.defaultLabel)}
       </button>
     </div>
   );
