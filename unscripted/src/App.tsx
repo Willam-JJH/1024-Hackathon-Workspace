@@ -9,6 +9,7 @@ import Layout from "./components/Layout";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 const SubmitPage = lazy(() => import("./pages/SubmitPage"));
+const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 const StaffPage = lazy(() => import("./pages/StaffPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
@@ -43,6 +44,14 @@ const App = () => (
           element={
             <Suspense fallback={<RouteFallback />}>
               <SubmitPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <ProjectsPage />
             </Suspense>
           }
         />

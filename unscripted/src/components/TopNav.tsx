@@ -2,11 +2,12 @@ import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { event } from "../config/event";
 
-/** 三个板块，按需求做网页顶部分栏 */
+/** 顶部导航的四个分栏 */
 export const SECTIONS = [
   { to: "/", label: "主页", end: true },
   { to: "/register", label: "报名", end: false },
   { to: "/submit", label: "参赛", end: false },
+  { to: "/projects", label: "作品", end: false },
 ] as const;
 
 const TopNav = () => {

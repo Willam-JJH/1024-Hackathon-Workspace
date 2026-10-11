@@ -81,7 +81,29 @@ export interface Project {
 
   files: StoredFile[];
 
+  /** 作者是否同意在公开作品墙上署名。null 表示未表态，按不署名处理。 */
+  show_credit: boolean | null;
+
   participant_id: string | null;
+}
+
+/**
+ * 公开作品墙上能看到的内容 —— 对应数据库里的 public_projects 视图。
+ * 刻意不含 contact 等信息：视图只挑该公开的列。
+ */
+export interface PublicProject {
+  id: string;
+  title: string;
+  summary: string;
+  problem: string | null;
+  direction: string | null;
+  link: string | null;
+  created_at: string;
+  /** 作者同意署名时才有值，否则为 null */
+  credit_name: string | null;
+  members: string | null;
+  /** 只含图片类文件 */
+  images: StoredFile[];
 }
 
 /** 志愿者可选岗位 —— 来自 05 宣传文案里的四类工作 */

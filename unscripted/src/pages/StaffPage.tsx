@@ -190,6 +190,16 @@ const projectColumns: Column<Project>[] = [
   { key: "demo_format", label: "演示形式", render: (r) => r.demo_format || "—" },
   { key: "contact", label: "联系方式", render: (r) => r.contact || "—" },
   {
+    key: "show_credit",
+    label: "同意署名",
+    render: (r) => (
+      <span className={r.show_credit ? "text-acid" : "text-white/35"}>
+        {r.show_credit === true ? "同意" : r.show_credit === false ? "不同意" : "未表态"}
+      </span>
+    ),
+    csv: (r) => (r.show_credit === true ? "同意" : r.show_credit === false ? "不同意" : "未表态"),
+  },
+  {
     key: "files",
     label: "文件",
     render: (r) => <FileLinks files={r.files} />,

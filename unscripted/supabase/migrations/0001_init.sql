@@ -89,8 +89,16 @@ create table if not exists public.projects (
 
   files           jsonb not null default '[]'::jsonb,     -- [{path,name,size,type}]
 
+  -- 作者是否同意在公开的作品墙上署上自己的名字／团队名。
+  -- 故意不给默认值：提交时必须明确选一次，null 一律按"不展示"处理。
+  show_credit     boolean,
+
   participant_id  uuid references public.participants(id) on delete set null
 );
+
+-- 已经建过表的库，用这句补上（整段脚本可以重复执行）
+alter table public.projects
+  add column if not exists show_credit boolean;
 
 create index if not exists projects_created_at_idx on public.projects (created_at desc);
 create index if not exists projects_participant_idx on public.projects (participant_id);
@@ -182,11 +190,19 @@ grant execute on function public.project_exists(text) to anon, authenticated;
 -- 提交（或更新）一件作品。
 -- 参赛者必须提供报名时的姓名 + 联系方式，匹配上才允许写入。
 -- 同一人对同一项目名重复提交视为修改，不会产生重复记录。
+--
+-- 加了 p_show_credit 之后签名变了，create or replace 会变成重载而不是替换，
+-- 所以先把旧的 12 参数版本显式删掉。
+drop function if exists public.submit_project(
+  text, text, text, text, text, text, text, text, text, text, text, text
+);
+
 create or replace function public.submit_project(
   p_name            text,
   p_contact         text,
   p_title           text,
   p_summary         text,
+  p_show_credit     boolean,
   p_problem         text default null,
   p_group_name      text default null,
   p_members         text default null,
@@ -215,6 +231,11 @@ begin
     raise exception 'TITLE_OR_SUMMARY_REQUIRED';
   end if;
 
+  -- 署名同意必须明确选一次，不能靠默认值蒙混过去
+  if p_show_credit is null then
+    raise exception 'SHOW_CREDIT_REQUIRED';
+  end if;
+
   -- 核对归属：姓名 + 报名时填的联系方式，两者都要对上
   select p.id into v_participant
   from public.participants p
@@ -238,11 +259,11 @@ begin
     insert into public.projects (
       title, summary, problem, group_name, members, direction,
       link, instructions, equipment_needs, demo_format,
-      contact, participant_id
+      contact, show_credit, participant_id
     ) values (
       btrim(p_title), btrim(p_summary), p_problem, p_group_name, p_members, p_direction,
       p_link, p_instructions, p_equipment_needs, p_demo_format,
-      btrim(p_contact), v_participant
+      btrim(p_contact), p_show_credit, v_participant
     )
     returning id into v_project;
   else
@@ -257,6 +278,7 @@ begin
       equipment_needs = p_equipment_needs,
       demo_format     = p_demo_format,
       contact         = btrim(p_contact),
+      show_credit     = p_show_credit,
       updated_at      = now()
     where id = v_project;
   end if;
@@ -266,7 +288,7 @@ end;
 $$;
 
 grant execute on function public.submit_project(
-  text, text, text, text, text, text, text, text, text, text, text, text
+  text, text, text, text, boolean, text, text, text, text, text, text, text, text
 ) to anon, authenticated;
 
 
@@ -336,7 +358,64 @@ create policy "project-files: staff can list"
   using (bucket_id = 'project-files');
 
 
--- ========================== 9. 实时同步 ====================================
+-- ========================== 9. 公开作品墙 ==================================
+-- projects 表对匿名是关死的（里面有联系方式）。作品墙要公开，但不能顺手把
+-- 联系方式也放出去 —— RLS 只能管到"行"，管不了"列"。
+--
+-- 所以用一个视图，只挑该公开的列。视图以属主身份执行，
+-- 匿名只被授予这个视图的 select，碰不到原表。
+--
+-- 署名规则：只有作者在提交时明确选了"展示"，才带出名字。
+-- show_credit 为 null 或 false 一律按不展示处理。
+
+create or replace view public.public_projects as
+select
+  p.id,
+  p.title,
+  p.summary,
+  p.problem,
+  p.direction,
+  p.link,
+  p.created_at,
+
+  -- 同意署名的才带名字：团队/社团优先，个人则回退到报名时的姓名
+  case
+    when p.show_credit then coalesce(nullif(btrim(p.group_name), ''), pa.name)
+    else null
+  end as credit_name,
+
+  case when p.show_credit then nullif(btrim(p.members), '') else null end as members,
+
+  -- 只放图片，别的文件（zip、音频等）不上墙
+  coalesce(
+    (
+      select jsonb_agg(f)
+      from jsonb_array_elements(p.files) as f
+      where f->>'type' like 'image/%'
+    ),
+    '[]'::jsonb
+  ) as images
+
+from public.projects p
+left join public.participants pa on pa.id = p.participant_id;
+
+-- 显式声明视图以属主身份执行。
+-- 匿名角色对 projects 表没有 select 权限，如果视图改成以调用者身份执行，
+-- 匿名读这个视图会拿到空结果。PG15 起该选项默认就是 false，
+-- 这里写死一遍防止不同版本默认值差异。老版本没有这个选项，忽略即可。
+do $$
+begin
+  execute 'alter view public.public_projects set (security_invoker = false)';
+exception
+  when others then null;
+end $$;
+
+-- 匿名和筹备组都能读这个视图；原表仍然只有筹备组能读
+revoke all on public.public_projects from anon;
+grant select on public.public_projects to anon, authenticated;
+
+
+-- ========================== 10. 实时同步 ===================================
 -- 让筹备组的看板能收到新报名，不用刷新页面
 do $$
 declare
@@ -355,11 +434,12 @@ begin
 end $$;
 
 
--- ========================== 10. 自检 =======================================
+-- ========================== 11. 自检 =======================================
 -- 执行完运行这一段，结果应该是：
---   tables 3 行、每行 rls_enabled = true
---   functions 3 个
---   bucket 1 行、public = true、file_size_limit = 52428800
+--   tables     3 行、每行 rls_enabled = true
+--   functions  3 个
+--   bucket     1 行、public = true、file_size_limit = 52428800
+--   views      1 行（public_projects）
 
 select relname as table_name, relrowsecurity as rls_enabled
 from pg_class
@@ -376,3 +456,8 @@ order by proname;
 select id, public, file_size_limit
 from storage.buckets
 where id = 'project-files';
+
+select viewname
+from pg_views
+where schemaname = 'public'
+  and viewname = 'public_projects';

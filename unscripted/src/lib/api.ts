@@ -4,6 +4,7 @@ import type {
   Participant,
   ParticipantInsert,
   Project,
+  PublicProject,
   StoredFile,
   Volunteer,
   VolunteerInsert,
@@ -32,6 +33,8 @@ export interface ProjectInput {
   contact: string;
   title: string;
   summary: string;
+  /** 是否同意在公开作品墙上署名。必须明确选，不接受 undefined。 */
+  showCredit: boolean;
   problem: string | null;
   groupName: string | null;
   members: string | null;
@@ -57,6 +60,7 @@ export async function submitProject(input: ProjectInput): Promise<string> {
     p_contact: input.contact,
     p_title: input.title,
     p_summary: input.summary,
+    p_show_credit: input.showCredit,
     p_problem: input.problem,
     p_group_name: input.groupName,
     p_members: input.members,
@@ -173,6 +177,19 @@ export async function fetchProjects(): Promise<Project[]> {
   return (data ?? []) as Project[];
 }
 
+/**
+ * 公开作品墙的数据 —— 读的是 public_projects 视图，不是 projects 表。
+ * 匿名也能读，但看不到联系方式等敏感字段。
+ */
+export async function fetchPublicProjects(): Promise<PublicProject[]> {
+  const { data, error } = await requireSupabase()
+    .from("public_projects")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(friendlyError(error.message));
+  return (data ?? []) as PublicProject[];
+}
+
 /* ------------------------------------------------------------ 工具 */
 
 /** 把数据库的错误信息翻成能看懂的话 */
@@ -188,6 +205,9 @@ function friendlyError(message: string): string {
   }
   if (message.includes("TITLE_OR_SUMMARY_REQUIRED")) {
     return "项目名和一句话简介都要填。";
+  }
+  if (message.includes("SHOW_CREDIT_REQUIRED")) {
+    return "请选择作品墙上要不要展示你的名字。";
   }
   if (/row-level security|violates row-level/i.test(message)) {
     return "提交被数据库策略拒绝，请检查填写内容是否完整。";

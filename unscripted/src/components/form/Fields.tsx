@@ -24,12 +24,14 @@ interface FieldShellProps {
  */
 const FieldShell = ({ label, required, hint, error, htmlFor, children }: FieldShellProps) => (
   <div>
-    <label htmlFor={htmlFor} className="flex items-baseline gap-2 text-sm text-white/80">
-      {label}
-      {required && <span className="text-acid">*</span>}
-      {hint && <span className="text-xs text-white/35">{hint}</span>}
-    </label>
-    <div className="mt-2">{children}</div>
+    {label && (
+      <label htmlFor={htmlFor} className="flex items-baseline gap-2 text-sm text-white/80">
+        {label}
+        {required && <span className="text-acid">*</span>}
+        {hint && <span className="text-xs text-white/35">{hint}</span>}
+      </label>
+    )}
+    <div className={label ? "mt-2" : ""}>{children}</div>
     {error && (
       <span data-field-error className="mt-2 block text-xs text-red-400">
         {error}
@@ -84,17 +86,18 @@ export const TextAreaField = ({ label, hint, error, required, ...rest }: TextAre
 
 /* ------------------------------------------------------------- 单选一行 */
 
-interface ChoiceRowProps<T extends string> {
+interface ChoiceRowProps<T extends string | boolean> {
   label: string;
   required?: boolean;
   hint?: string;
   error?: string;
   options: readonly { value: T; label: string; description?: string }[];
-  value: T;
+  /** 允许为 null —— 用于"必须明确选一次、不给默认值"的场景 */
+  value: T | null;
   onChange: (value: T) => void;
 }
 
-export function ChoiceRow<T extends string>({
+export function ChoiceRow<T extends string | boolean>({
   label,
   required,
   hint,
@@ -110,7 +113,7 @@ export function ChoiceRow<T extends string>({
           const active = option.value === value;
           return (
             <button
-              key={option.value}
+              key={String(option.value)}
               type="button"
               onClick={() => onChange(option.value)}
               className={`border px-4 py-2.5 text-sm transition-colors ${
