@@ -108,7 +108,16 @@ export function ChoiceRow<T extends string | boolean>({
 }: ChoiceRowProps<T>) {
   return (
     <FieldShell label={label} required={required} hint={hint} error={error}>
-      <div className="flex flex-wrap gap-3">
+      {/* 等宽格子铺满整行，而不是让按钮宽度跟着文字长短走。
+          4 个及以上时窄屏折成两列 —— 否则每个格子太窄，长标签会挤成竖条。 */}
+      <div
+        className={`grid gap-3 ${options.length >= 4 ? "grid-cols-2 sm:grid-cols-4" : ""}`}
+        style={
+          options.length >= 4
+            ? undefined
+            : { gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }
+        }
+      >
         {options.map((option) => {
           const active = option.value === value;
           return (
@@ -116,7 +125,7 @@ export function ChoiceRow<T extends string | boolean>({
               key={String(option.value)}
               type="button"
               onClick={() => onChange(option.value)}
-              className={`border px-4 py-2.5 text-sm transition-colors ${
+              className={`flex min-h-[3rem] items-center justify-center border px-2 py-3 text-center text-xs leading-snug transition-colors sm:px-3 sm:text-sm ${
                 active
                   ? "border-acid bg-acid/15 text-acid"
                   : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
@@ -199,7 +208,7 @@ interface DayPickerProps {
 
 export const DayPicker = ({ label, value, onChange, error }: DayPickerProps) => (
   <FieldShell label={label} required hint="两天都可选，按实际情况勾" error={error}>
-    <div className="flex flex-wrap gap-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {(
         [
           { key: "day1" as const, text: "周六 · 集中制作" },
@@ -212,7 +221,7 @@ export const DayPicker = ({ label, value, onChange, error }: DayPickerProps) => 
             key={day.key}
             type="button"
             onClick={() => onChange({ ...value, [day.key]: !active })}
-            className={`flex items-center gap-3 border px-4 py-2.5 text-sm transition-colors ${
+            className={`flex items-center gap-3 border px-4 py-3 text-sm transition-colors ${
               active
                 ? "border-acid bg-acid/15 text-acid"
                 : "border-white/20 text-white/60 hover:border-white/40 hover:text-white"
