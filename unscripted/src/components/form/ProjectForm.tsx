@@ -8,16 +8,22 @@ import { DEMO_FORMATS, type WallVisibility } from "../../lib/types";
 
 const demoOptions = DEMO_FORMATS.map((f) => ({ value: f, label: f }));
 
+/** 选项顺序即展示顺序。group_only 只在填了团体名时才出现，见下面的 visibleOptions */
 const VisibilityOptions = [
   {
     value: "named" as const,
     label: "公开 + 署名",
-    description: "放上作品墙，并署上你的团队／社团名；个人参加则用你的名字。",
+    description: "放上作品墙，显示署名和成员名单。",
+  },
+  {
+    value: "group_only" as const,
+    label: "公开 + 只显示社团／团队名",
+    description: "放上作品墙，只挂着团体名，不列成员姓名。",
   },
   {
     value: "anonymous" as const,
     label: "公开 + 不署名",
-    description: "放上作品墙，但不署名 —— 成员名单也不会显示。",
+    description: "放上作品墙，但署名和成员名单都不显示。",
   },
   {
     value: "hidden" as const,
@@ -117,6 +123,12 @@ const ProjectForm = () => {
     addFiles(event.dataTransfer.files);
   };
 
+  // 没填团体名的（个人参加）不显示"只显示团体名"那一项 —— 选了也没东西可显示
+  const hasGroupName = form.groupName.trim().length > 0;
+  const visibleOptions = hasGroupName
+    ? VisibilityOptions
+    : VisibilityOptions.filter((option) => option.value !== "group_only");
+
   const validate = (): boolean => {
     const next: Record<string, string> = {};
     if (!form.name.trim()) next.name = "请填写姓名";
@@ -125,7 +137,13 @@ const ProjectForm = () => {
     }
     if (!form.title.trim()) next.title = "请填写项目名";
     if (!form.summary.trim()) next.summary = "用一句话说清这个作品是做什么的";
-    if (form.wallVisibility === null) next.wallVisibility = "请选一项";
+    // 也要挡住"先选了只显示团体名、又把团体名清空"的情况
+    if (
+      form.wallVisibility === null ||
+      !visibleOptions.some((option) => option.value === form.wallVisibility)
+    ) {
+      next.wallVisibility = "请选一项";
+    }
     setErrors(next);
     if (Object.keys(next).length > 0) scrollToFirstError();
     return Object.keys(next).length === 0;
@@ -381,7 +399,7 @@ const ProjectForm = () => {
         <ChoiceRow
           label=""
           required
-          options={VisibilityOptions}
+          options={visibleOptions}
           value={form.wallVisibility}
           error={errors.wallVisibility}
           onChange={(v) => set("wallVisibility", v)}

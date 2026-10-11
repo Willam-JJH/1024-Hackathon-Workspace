@@ -87,11 +87,15 @@ export interface Project {
   participant_id: string | null;
 }
 
-/** 作品在公开作品墙上的可见性 —— 由作者提交时自己选 */
-export type WallVisibility = "named" | "anonymous" | "hidden";
+/**
+ * 作品在公开作品墙上的可见性 —— 由作者提交时自己选。
+ * group_only 是单独一档：团体名是组织标识，个人姓名是个人信息，分量不同。
+ */
+export type WallVisibility = "named" | "group_only" | "anonymous" | "hidden";
 
 export const WALL_VISIBILITY_LABEL: Record<WallVisibility, string> = {
   named: "公开 · 署名",
+  group_only: "公开 · 只显示团体名",
   anonymous: "公开 · 不署名",
   hidden: "不上墙",
 };

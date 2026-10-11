@@ -90,12 +90,14 @@ create table if not exists public.projects (
   files           jsonb not null default '[]'::jsonb,     -- [{path,name,size,type}]
 
   -- 作品在公开作品墙上的可见性，由作者提交时自己选：
-  --   'named'     公开，署名
-  --   'anonymous' 公开，不署名
-  --   'hidden'    不上墙
+  --   'named'      公开，署名（团体名或个人姓名）+ 成员名单
+  --   'group_only' 公开，只显示社团／团队名，不列成员
+  --   'anonymous'  公开，完全不署名
+  --   'hidden'     不上墙
+  -- 团体名是组织标识、个人姓名是个人信息，分量不同，所以分成两档。
   -- 故意不给默认值：提交时必须明确选一次，null 一律按最保守的 hidden 处理。
   wall_visibility text
-                  check (wall_visibility in ('named','anonymous','hidden')),
+                  check (wall_visibility in ('named','group_only','anonymous','hidden')),
 
   participant_id  uuid references public.participants(id) on delete set null
 );
@@ -109,7 +111,7 @@ alter table public.projects
 
 alter table public.projects
   add constraint projects_wall_visibility_check
-  check (wall_visibility in ('named','anonymous','hidden'));
+  check (wall_visibility in ('named','group_only','anonymous','hidden'));
 
 -- 早期版本用的是布尔字段 show_credit（只区分署不署名）。
 -- 有就迁移过来再删掉：true→named，false→anonymous，
@@ -272,7 +274,7 @@ begin
 
   -- 可见性必须明确选一次，不能靠默认值蒙混过去
   if p_wall_visibility is null
-     or p_wall_visibility not in ('named','anonymous','hidden') then
+     or p_wall_visibility not in ('named','group_only','anonymous','hidden') then
     raise exception 'VISIBILITY_REQUIRED';
   end if;
 
@@ -406,9 +408,10 @@ create policy "project-files: staff can list"
 -- 匿名只被授予这个视图的 select，碰不到原表。
 --
 -- 可见性规则（作者提交时自己选）：
---   named     上墙并署名
---   anonymous 上墙但不署名（成员名单也一并隐去，否则等于变相点名）
---   hidden    完全不上墙，视图里查不到
+--   named      上墙，署名行 + 成员名单都显示
+--   group_only 上墙，只显示社团／团队名；没有团体名的（个人报名）就等于不署名
+--   anonymous  上墙，署名行和成员名单都不显示
+--   hidden     完全不上墙，视图里查不到
 -- wall_visibility 为 null（早期数据）按 hidden 处理。
 
 create or replace view public.public_projects as
@@ -421,14 +424,16 @@ select
   p.link,
   p.created_at,
 
-  -- 只有选了署名的才带名字：团队/社团优先，个人则回退到报名时的姓名
+  -- 署名行：团体名优先，个人报名则回退到报名时的姓名
   case
     when p.wall_visibility = 'named'
       then coalesce(nullif(btrim(p.group_name), ''), pa.name)
+    when p.wall_visibility = 'group_only'
+      then nullif(btrim(p.group_name), '')
     else null
   end as credit_name,
 
-  -- 匿名展示时成员名字也隐去
+  -- 成员名单只在选了完整署名时显示
   case
     when p.wall_visibility = 'named' then nullif(btrim(p.members), '')
     else null
@@ -447,7 +452,7 @@ select
 from public.projects p
 left join public.participants pa on pa.id = p.participant_id
 -- 选了"不上墙"的、以及早期没有表态的，一律不出现在视图里
-where p.wall_visibility in ('named', 'anonymous');
+where p.wall_visibility in ('named', 'group_only', 'anonymous');
 
 -- 显式声明视图以属主身份执行。
 -- 匿名角色对 projects 表没有 select 权限，如果视图改成以调用者身份执行，
