@@ -77,6 +77,14 @@ if [[ -n "$FROM_GIT" ]]; then
         select '旧-不署名','s','迁移测试', false, id from public.participants where contact='migrate-001'
         union all
         select '旧-未表态','s','迁移测试', null,  id from public.participants where contact='migrate-001';
+
+        -- 带文件的旧数据：迁移要能把图片回填进 public_images，并滤掉非图片
+        insert into public.projects (title, summary, contact, show_credit, files, participant_id)
+        select '旧-带图', 's', '迁移测试', true,
+               '[{\"path\":\"p/a.webp\",\"name\":\"a.webp\",\"size\":1000,\"type\":\"image/webp\"},
+                 {\"path\":\"p/b.zip\", \"name\":\"b.zip\", \"size\":2000,\"type\":\"application/zip\"}]'::jsonb,
+               id
+        from public.participants where contact='migrate-001';
       end if;
     end \$\$;
   "

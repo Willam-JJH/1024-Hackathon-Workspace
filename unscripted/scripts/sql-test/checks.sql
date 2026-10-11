@@ -134,6 +134,45 @@ begin
     'named + 无团体名：回退到报名时的个人姓名');
 end $$;
 
+-- ============================ 作品文件与公开图片 ============================
+-- 这一段是补的：改成列级授权之后一直没测过"带文件"的路径，
+-- 之前所有用例都是不带文件的提交，等于 public_images 那段逻辑完全没被覆盖。
+do $$
+declare
+  v_pid   uuid;
+  v_files jsonb := '[
+    {"path":"p/a.webp","name":"a.webp","size":1000,"type":"image/webp"},
+    {"path":"p/b.png", "name":"b.png", "size":2000,"type":"image/png"},
+    {"path":"p/c.zip", "name":"c.zip", "size":3000,"type":"application/zip"},
+    {"path":"p/d.mp3", "name":"d.mp3", "size":4000,"type":"audio/mpeg"}
+  ]'::jsonb;
+begin
+  v_pid := public.submit_project('检查用例', 'check-001', '带图作品', 's', 'named');
+
+  -- 新提交的作品，public_images 一开始是空的
+  perform public._assert(
+    jsonb_array_length((select public_images from public.projects where id = v_pid)) = 0,
+    '新作品在传文件之前 public_images 为空');
+
+  perform public.attach_project_files(v_pid, '检查用例', 'check-001', v_files);
+
+  perform public._assert(
+    (select files from public.projects where id = v_pid) = v_files,
+    'attach_project_files 把完整文件清单写进 files（筹备组看得到全部）');
+
+  perform public._assert(
+    jsonb_array_length((select public_images from public.projects where id = v_pid)) = 2,
+    'public_images 只留下图片（webp + png），过滤掉 zip 和 mp3');
+
+  perform public._assert(
+    not exists (
+      select 1
+      from jsonb_array_elements((select public_images from public.projects where id = v_pid)) f
+      where f->>'type' not like 'image/%'
+    ),
+    'public_images 里没有任何非图片类型');
+end $$;
+
 -- ============================ 匿名能看到什么 ============================
 -- 列权限用 has_column_privilege 判断（声明式，不用切角色）
 do $$
@@ -344,6 +383,14 @@ begin
       where table_schema = 'public' and table_name = 'projects' and column_name = 'show_credit'
     ),
     '旧列 show_credit 已清除');
+
+  -- 旧数据里已经传过图的，迁移要把图片回填进 public_images
+  perform public._assert(
+    jsonb_array_length((select public_images from public.projects where title = '旧-带图')) = 1,
+    '迁移：回填 public_images 只留图片，滤掉 zip');
+  perform public._assert(
+    (select public_images -> 0 ->> 'name' from public.projects where title = '旧-带图') = 'a.webp',
+    '迁移：回填的正是那张图片');
 end $$;
 
 select '全部通过' as result;
