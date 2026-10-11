@@ -77,7 +77,13 @@
   body {
     background-color: #000;
     color: #fff;
-    font-family: "scr nsevex reg", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    /*
+     * 拉丁文字用衬线体。原先这里排在最前的是 "scr nsevex reg"，
+     * 那是个像素风字体，英文正文看起来很不正经（中文不受影响 ——
+     * 它没有汉字字形，一直走的后面几个中文字体）。
+     */
+    font-family: "Times New Roman", Times, "Noto Sans SC", "PingFang SC",
+      "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
     margin: 0;
     min-height: 100dvh;
