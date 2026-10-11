@@ -89,11 +89,11 @@ const en: Dict = {
     s03: {
       title: "%%AI%% is a tool. You still have to explain the work.",
       points: [
-        "%%AI%% can assist with planning, coding, producing content and testing, so that an idea becomes a working piece.",
+        "%%AI%% can assist with planning, coding, producing content and testing, turning an idea into a working piece.",
         "The finished product need not contain an %%AI%% model, nor be entirely code-free.",
         "But you must understand what you made, and explain how it answers the problem you chose.",
         "The result can be a website, a tool, a game, an interactive piece, or any prototype that demonstrates the key part working.",
-        "It may still be early. What matters is that someone else can try the core idea and discuss it.",
+        "It may still be early. Someone else has to be able to try the core idea and discuss it.",
       ],
       exampleKicker: "For example",
       exampleBody:
@@ -155,7 +155,7 @@ const en: Dict = {
     s06: {
       title: "Unscripted: no script written in advance",
       p1: "You choose the problem and work out your own approach. And once your work is in someone else's hands, it produces **understandings and reactions you didn't plan for**.",
-      p2: "The event leaves room for those discoveries, so that making and discussion can move the project forward together.",
+      p2: "The event leaves room for those discoveries. Making and discussion carry the project forward together.",
     },
 
     cta: {
@@ -257,7 +257,7 @@ const en: Dict = {
     project: {
       identityLegend: "First, confirm this project is yours",
       identityBody:
-        "Enter the name and contact details you used when you signed up — we check them against the registration list. If they don't match, the submission won't go through, which is what stops someone else adding things to your project.",
+        "Enter the name and contact details you used when you signed up. We check them against the registration list. If they do not match, the submission will not go through, so nobody else can add anything to your project.",
       namePlaceholder: "Exactly as you signed up",
       contactHint: "The one you signed up with",
       contactPlaceholder: "WeChat ID or phone number",
@@ -282,7 +282,7 @@ const en: Dict = {
       link: "Link or entry point",
       linkHint: "Optional, but strongly recommended",
       instructions: "What someone needs to know to use it",
-      instructionsHint: "Another team gets this on Sunday — they need to open it themselves",
+      instructionsHint: "Another team receives this on Sunday, and must be able to open it themselves",
       instructionsPlaceholder:
         "How to open it, what to install, what to do first, where people get stuck.",
       equipment: "Equipment or materials needed",
@@ -294,13 +294,13 @@ const en: Dict = {
       dropPre: "Drag files here, or",
       dropAction: "choose files",
       dropNote:
-        "Photos of a physical build, screenshots or recordings of something running locally — all fine. For video and anything large, link out instead.",
+        "Photographs of a physical build, or screenshots and recordings of something running locally, are all acceptable. For video and anything large, link out instead.",
       remove: "Remove",
       errFiles: "These files are over 50MB and weren't added: {names}. For large files, link out instead.",
 
       visibilityLegend: "Should this project be published?",
       visibilityBody:
-        "The gallery is a public page anyone can open. **You have to choose — there's no default.** Pick \"not published\" and the project is only used at the event on Sunday. Whichever you pick, your contact details never appear on the gallery.",
+        "The gallery is a public page anyone can open. **You must choose; there is no default.** Choose \"not published\" and the project is used only at the event on Sunday. Whichever you choose, your contact details never appear on the gallery.",
       errVisibility: "Please choose one",
       visibilityOptions: {
         named: { label: "Public + credited", desc: "Goes on the gallery with your credit line and member list." },
@@ -336,7 +336,7 @@ const en: Dict = {
         volunteer: {
           label: "I want to volunteer",
           blurb:
-            "Front desk, preparing the swap, setup and pack-down, tool support — shifts around the hours you can make.",
+            "Front desk, preparing the swap, setup and pack-down, tool support. Shifts are arranged around the hours you can make.",
         },
       },
       privacy:
@@ -351,7 +351,7 @@ const en: Dict = {
       checklistTitle: "Before you submit",
       checklist: [
         "You cannot submit without signing up first. We need to know who you are before a project can be credited to you.",
-        "The project may still be at an early stage. What matters is that someone else can try the core idea.",
+        "The project may still be at an early stage. Someone else has to be able to try the core idea.",
         "Submitting again with the same project name overwrites the previous entry rather than creating a second one.",
       ],
     },
@@ -396,7 +396,7 @@ const en: Dict = {
 
     index: "[ STAFF ]",
     title: "Organising console",
-    subtitle: "Registrations sync live — new submissions appear here on their own.",
+    subtitle: "Registrations sync live. New submissions appear here on their own.",
     lastSync: "Updated {time}",
     reload: "Reload",
     exportCsv: "Export CSV",
@@ -450,7 +450,7 @@ const en: Dict = {
     notStated: "Not stated",
     hasExistingPrefix: "Yes: ",
 
-    footer: "Showing {label} — {count} in total. Exporting the CSV includes every field in this tab.",
+    footer: "Showing {label}, {count} in total. Exporting the CSV includes every field in this tab.",
     allowlistNote:
       "Only accounts on the staff list can see this data. If you can sign in but all three tabs are empty, your account hasn't been added yet — ask William to run select public.add_staff('your@email') in the Supabase SQL editor.",
 
@@ -462,7 +462,7 @@ const en: Dict = {
   /* ------------------------------------------------------------ errors */
   errors: {
     notRegistered:
-      "No matching sign-up was found. Check that the name and contact details match exactly what you signed up with — and if you haven't signed up yet, do that first.",
+      "No matching sign-up was found. Check that the name and contact details match exactly what you signed up with. If you have not signed up yet, do that first.",
     notOwner: "That project was submitted by someone else, so it can't be changed here.",
     nameOrContactRequired:
       "Enter your name and the contact details from your sign-up, so the project can be credited to you.",
