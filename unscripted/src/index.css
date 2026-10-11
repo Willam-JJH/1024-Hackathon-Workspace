@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   字体：全部本地加载，不依赖任何外部图床
+   中文交给系统字体（像素字体做中文不可读），像素字体只用于拉丁显示字
+------------------------------------------------------------------ */
+@font-face {
+  font-family: "TschicholdArchiType";
+  src: url("/fonts/TschicholdArchiType-Normal.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "scr nsevex reg";
+  src: url("/fonts/scr-nsevex-reg.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Retropix";
+  src: url("/fonts/retropix.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------------
+   设计令牌
+------------------------------------------------------------------ */
+@layer base {
+  :root {
+    /* 荧光绿主色 —— 1024 / 黑客松气质 */
+    --primary: 82 94% 56%;
+    --primary-dim: 82 60% 34%;
+    --primary-glow: 82 94% 56%;
+
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --radius: 0.5rem;
+
+    /* 竖向节奏（rem）——沿用既有设计语言的刻度 */
+    --s4: 0.25rem;
+    --s8: 0.5rem;
+    --s12: 0.75rem;
+    --s16: 1rem;
+    --s20: 1.25rem;
+    --s24: 1.5rem;
+    --s28: 1.75rem;
+    --s32: 2rem;
+    --s40: 2.5rem;
+    --s48: 3rem;
+    --s56: 3.5rem;
+    --s64: 4rem;
+    --s80: 5rem;
+    --s96: 6rem;
+    --s120: 7.5rem;
+    --s160: 10rem;
+    --s200: 12.5rem;
+  }
+
+  * {
+    border-color: hsl(var(--primary) / 0.15);
+  }
+
+  html {
+    background-color: #000;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #000;
+    color: #fff;
+    font-family: "scr nsevex reg", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "TschicholdArchiType", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  ::selection {
+    background-color: hsl(var(--primary) / 0.3);
+    color: #fff;
+  }
+
+  /* 滚动条 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.35);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.6);
+  }
+}
+
+@layer components {
+  /* 顶部导航的分栏链接 */
+  .nav-link {
+    @apply relative px-3 py-2 text-sm tracking-wider text-white/60 transition-colors duration-200 hover:text-white;
+  }
+
+  .nav-link-active {
+    @apply text-white;
+  }
+
+  /* 主按钮 */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 border border-acid bg-acid px-6 py-3 text-sm tracking-wider text-black transition-all duration-200 hover:bg-transparent hover:text-acid;
+  }
+
+  /* 次按钮 */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 border border-white/25 px-6 py-3 text-sm tracking-wider text-white/80 transition-all duration-200 hover:border-acid hover:text-acid;
+  }
+
+  /* 区块标题上方的小序号，形如 [ 01 ] */
+  .section-index {
+    @apply font-pixel text-xs tracking-widest text-acid;
+  }
+
+  /* 细分割线 */
+  .line {
+    @apply h-px w-full bg-white/10;
+  }
+
+  /* 卡片 */
+  .panel {
+    @apply border border-white/10 bg-white/[0.02] p-6 transition-colors duration-200;
+  }
+
+  .panel:hover {
+    @apply border-acid/40;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* 未确认信息的占位标记，确认后由配置替换 */
+  .tbd {
+    @apply border-b border-dashed border-acid/60 text-acid/70;
+  }
+
+  .glow {
+    text-shadow: 0 0 18px hsl(var(--primary) / 0.45);
+  }
+}

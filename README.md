@@ -6,11 +6,15 @@ Hackathon 网站协作仓库，以 [sparkr / teensparkr](https://github.com/teen
 
 | 目录 | 内容 | 原仓库 |
 | --- | --- | --- |
+| [unscripted/](unscripted/) | **本次活动的官网**：主页、报名、参赛三个板块 | 新建，不是导入 |
 | [website/](website/) | 活动官网：首页、介绍、FAQ、时间线、学生／教师报名 | [teenaigers-web](https://github.com/teensparkr/teenaigers-web) |
 | [registration/](registration/) | 独立的学校／教师报名页 | [teenaigers-form](https://github.com/teensparkr/teenaigers-form) |
 | [legacy/teenAIgers/](legacy/teenAIgers/) | 较早的 Vue / uni-app H5、小程序项目，保留供参考 | [teenAIgers](https://github.com/teensparkr/teenAIgers) |
 
-官网开发优先从 `website/` 开始。三个项目各自安装依赖和运行，仓库根目录没有统一构建命令。
+当前在开发的是 [unscripted/](unscripted/)（1024 Challenge 的 Unscripted 活动），
+它有自己的 [README](unscripted/README.md)，用 npm 运行：`npm install && npm run dev`。
+
+其余三个目录是从 sparkr/teensparkr 导入的历史项目，保留供参考。它们各自安装依赖和运行，仓库根目录没有统一构建命令。
 
 本次导入保留源码文件内容，新增此说明、来源记录、根目录忽略规则和两份环境变量示例。来源提交见 [sources.json](sources.json)；原仓库的 Git 历史仍保留在上面的链接中。
 

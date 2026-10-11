@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# 筹备组看板不对外，也不要进搜索引擎
+Disallow: /staff

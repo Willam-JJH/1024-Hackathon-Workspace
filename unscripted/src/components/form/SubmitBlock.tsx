@@ -1,0 +1,46 @@
+import type { SubmitState } from "../../lib/useSubmit";
+
+interface SubmitBlockProps {
+  state: SubmitState;
+  message: string;
+  label?: string;
+  onRetry: () => void;
+}
+
+/** 提交按钮 + 成功／错误反馈 */
+const SubmitBlock = ({ state, message, label = "提交报名", onRetry }: SubmitBlockProps) => {
+  if (state === "success") {
+    return (
+      <div className="border border-acid/40 bg-acid/[0.06] p-6">
+        <div className="font-pixel text-xs tracking-widest text-acid">SUBMITTED</div>
+        <p className="mt-3 text-base text-white">提交成功，我们已经收到了。</p>
+        <p className="mt-2 text-sm text-white/50">
+          筹备组会跟进你的信息。活动日期、场地确定后会通知你。
+        </p>
+        <button type="button" onClick={onRetry} className="btn-ghost mt-6">
+          再填一份
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {state === "error" && (
+        <div className="mb-4 border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {message}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={state === "submitting"}
+        className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {state === "submitting" ? "提交中…" : label}
+      </button>
+    </div>
+  );
+};
+
+export default SubmitBlock;
