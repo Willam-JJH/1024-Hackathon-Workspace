@@ -110,7 +110,7 @@
      * 这条对拉丁文也生效，值是折中过的，再大 Times 会显得散。
      */
     font-weight: 300;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     -webkit-font-smoothing: antialiased;
     margin: 0;
     min-height: 100dvh;

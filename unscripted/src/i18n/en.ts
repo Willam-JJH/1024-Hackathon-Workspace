@@ -51,16 +51,16 @@ const en: Dict = {
   home: {
     hero: {
       kicker: "%%AI%%-assisted making",
-      desc: "Bring an idea, or take the project you never finished and keep going. Use %%AI%% to build it, and push your own project forward.",
+      desc: "Bring an idea, or continue a project you have already started. Use %%AI%% to build it, and take it further.",
       ctaRegister: "Sign up",
       ctaSubmit: "Submit work",
     },
 
     s01: {
       title: "Pick a problem. Build a possible answer.",
-      p1: "Unscripted is an %%AI%%-assisted making and exchange event within **{parent}**. You choose a problem you care about and think is worth turning into a product, build a possible solution, let other people try it, then pitch why it might work.",
+      p1: "Unscripted is an %%AI%%-assisted making and exchange event within **{parent}**. You choose a problem you care about and think worth turning into a product, build a solution, let others try it, then pitch why it might work.",
       p2: "Problems can come from **study, personal life, a club, or campus life**. They can be small. You decide what makes yours worth solving.",
-      p3: "The event is about the whole arc — noticing a problem, forming an idea, making it, and explaining it — and bringing the difficulties you hit, along with what users understood and fed back, into the conversation.",
+      p3: "Over the weekend you notice a problem, shape an idea, build it and explain it. What you got stuck on, and what people understood or missed when they tried it, join the conversation.",
       cardKicker: "WHY UNSCRIPTED",
       cardText:
         "Not homework set by someone else.\nYou pick the problem, then make the case that it matters.",
@@ -71,7 +71,7 @@ const en: Dict = {
       cards: [
         {
           label: "Start from an idea",
-          body: "A small tool you've wanted to try, or a game you never finished — bring it. If you don't have a direction yet, you can choose from the prompts the organising team has put together.",
+          body: "Bring a small tool you've wanted to try, or a game you never finished. If you don't have a direction yet, the organising team has a list of prompts you can pick from.",
         },
         {
           label: "Continue something already started",
@@ -83,21 +83,21 @@ const en: Dict = {
         },
       ],
       footnote:
-        "One project can involve working out the problem, coding, design, making content, testing, and presenting — **students with different interests and skills can build it together**.",
+        "One project can cover working out the problem, coding, design, content, testing and presenting. **Students with different interests and skills can build it together**.",
     },
 
     s03: {
-      title: "%%AI%% is a tool — but you have to explain the work yourself",
+      title: "%%AI%% is a tool. You still have to explain the work.",
       points: [
-        "%%AI%% can help with ideation, coding, making content, and testing — it helps you get an idea into a working state.",
-        "Your final product doesn't have to contain an %%AI%% model, and it doesn't have to be entirely code-free.",
-        "You need to understand what you made, and be able to explain how it answers the problem you chose.",
-        "It can be a website, a small tool, a game, an interactive piece, or any other prototype that shows the key part working.",
-        "It can be early and rough. What matters is that other people can try the core idea and talk about it.",
+        "%%AI%% can assist with planning, coding, producing content and testing, so that an idea becomes a working piece.",
+        "The finished product need not contain an %%AI%% model, nor be entirely code-free.",
+        "But you must understand what you made, and explain how it answers the problem you chose.",
+        "The result can be a website, a tool, a game, an interactive piece, or any prototype that demonstrates the key part working.",
+        "It may still be early. What matters is that someone else can try the core idea and discuss it.",
       ],
       exampleKicker: "For example",
       exampleBody:
-        "A club wants to make it less painful to find a time everyone is free. They could build a small tool that **collects available slots and shows where they overlap**. At the event, other students enter their times and see the result; the team then explains which part of the problem this solves, and what it still doesn't.",
+        "A club wants to make it less painful to find a time everyone is free. They build a small tool that **collects available slots and shows where they overlap**. At the event, other students enter their times and see the result. The team then explains what this solves, and what it still doesn't.",
       exampleNote:
         "The example only shows how a problem turns into a project. You choose your own.",
     },
@@ -117,7 +117,7 @@ const en: Dict = {
         { t: "Try it first-hand", d: "The receiving team uses the work themselves and forms their own understanding." },
         {
           t: "They present it",
-          d: "They explain what it does, what's interesting, and how they'd use it — no need to restate the author's intent.",
+          d: "They explain what it does, what's interesting and how they'd use it. They don't have to repeat what the author meant.",
         },
         {
           t: "The authors respond",
@@ -128,20 +128,20 @@ const en: Dict = {
           d: "Questions, discussion, and feedback based on the trial, the presentation, and the authors' answers.",
         },
       ],
-      note: "Dates, times, and venue are subject to confirmation by the school. Scoring and awards are still being discussed — nothing on this page is a commitment.",
+      note: "Dates, times and venue remain subject to confirmation by the school. Scoring and awards are still under discussion; nothing on this page is a commitment.",
     },
 
     s05: {
       title: "Pitch why it might work",
       intro:
-        "A pitch pairs a demo with an explanation, so other participants and teachers can follow the problem, the approach, and where you have got to. Four things to cover:",
+        "A pitch combines a demo with an explanation, so others can follow the problem, your approach and how far you have got. Four things to cover:",
       cards: [
         { n: "01", t: "Problem", d: "What you care about, who runs into it, and why you think it's worth solving." },
         { n: "02", t: "Approach", d: "What you made and how to use it. Show the key part working." },
         {
           n: "03",
           t: "Evidence",
-          d: "Which features, results, or hands-on experiences suggest this could work — and what other people found when they tried it.",
+          d: "Which features, results or real experiences suggest this could work, and what other people found when they tried it.",
         },
         {
           n: "04",
@@ -155,12 +155,12 @@ const en: Dict = {
     s06: {
       title: "Unscripted: no script written in advance",
       p1: "You choose the problem and work out your own approach. And once your work is in someone else's hands, it produces **understandings and reactions you didn't plan for**.",
-      p2: "The event leaves room for those discoveries, so that making and talking move the project forward together.",
+      p2: "The event leaves room for those discoveries, so that making and discussion can move the project forward together.",
     },
 
     cta: {
       title: "Give a weekend to your own project",
-      body: "An idea on its own is enough to sign up, and an unfinished project can carry on. Write down your direction, who's taking part, which of the two days you can make, and any equipment or tools you need.",
+      body: "An idea alone is enough to sign up, and an unfinished project can continue. Tell us your direction, who is taking part, which days you can attend, and any equipment you need.",
     },
   },
 
@@ -207,7 +207,7 @@ const en: Dict = {
       email: "Email",
       optional: "Optional",
       days: "Which days you can attend",
-      daysHint: "Tick whichever apply — both is fine",
+      daysHint: "Tick whichever apply, both is fine",
       day1: "Saturday · Make",
       day2: "Sunday · Exchange and discuss",
       timeNote: "Anything to add about timing",
@@ -238,7 +238,7 @@ const en: Dict = {
       existingDetailPlaceholder: "How far along it is, and what's still missing.",
       equipment: "Equipment or tool needs",
       equipmentPlaceholder:
-        "A laptop to borrow, wifi, a projector — or early access to a particular tool.",
+        "A laptop to borrow, wifi, a projector, or early access to a particular tool.",
       errDirection: "Say a sentence about your direction or what you already have",
       errGroupName: "Please enter a team or club name",
       errExistingDetail: "Tell us briefly what you already have",
@@ -326,7 +326,7 @@ const en: Dict = {
       index: "[ 02 ]",
       title: "Sign up",
       intro:
-        "An idea on its own is enough, and an unfinished project can carry on. Tell us your direction, who's taking part, which of the two days you can make, and any equipment or tools you need.",
+        "An idea alone is enough, and an unfinished project can continue. Tell us your direction, who is taking part, which days you can attend, and any equipment you need.",
       roles: {
         participant: {
           label: "I want to take part",
@@ -347,11 +347,11 @@ const en: Dict = {
       index: "[ 03 ]",
       title: "Submit",
       intro:
-        "Set out where your project lives, the instructions someone needs, and what materials it takes. On Sunday this project goes to another team — they have to be able to open it, try it, and explain it in their own words.",
+        "Set out where your project lives, the instructions someone needs, and what materials it requires. On Sunday this project goes to another team. They need to be able to open it, try it, and explain it in their own words.",
       checklistTitle: "Before you submit",
       checklist: [
-        "You can't submit without signing up first — we need to know who you are before a project can be credited to you.",
-        "It's fine for the project to be early. What matters is that someone else can try the core idea.",
+        "You cannot submit without signing up first. We need to know who you are before a project can be credited to you.",
+        "The project may still be at an early stage. What matters is that someone else can try the core idea.",
         "Submitting again with the same project name overwrites the previous entry rather than creating a second one.",
       ],
     },
@@ -360,7 +360,7 @@ const en: Dict = {
       index: "[ 04 ]",
       title: "Gallery",
       intro:
-        "Projects submitted to Unscripted so far. They can be early and rough — what matters is that someone else can try the core idea.",
+        "Projects submitted to Unscripted so far. They may still be at an early stage; what matters is that someone else can try the core idea.",
       count: "{count} projects",
       refresh: "Reload",
       empty: "No projects submitted yet.",
@@ -374,7 +374,7 @@ const en: Dict = {
       imageAlt: "View image {n}",
       errLoad: "Couldn't load",
       footnote:
-        "Authors choose their own credit when they submit; projects that opted out show the work alone. No contact details ever appear on the gallery.",
+        "Authors choose their own credit when they submit. Projects that opted out appear without a name. No contact details appear on the gallery.",
     },
   },
 
