@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
+import { RichText } from "../i18n/core";
 
 interface SectionProps {
   index: string;
@@ -26,7 +27,8 @@ const Section = ({ index, title, kicker, children, divided = true }: SectionProp
           <div className="mt-3 text-xs tracking-[0.25em] text-white/35">{kicker}</div>
         )}
         <h2 className="mt-3 max-w-3xl text-3xl leading-tight text-white sm:text-4xl">
-          {title}
+          {/* 标题里可能带 %%AI%% 这类标记，交给 RichText 解析 */}
+          <RichText>{title}</RichText>
         </h2>
         <div className="mt-10">{children}</div>
       </motion.div>

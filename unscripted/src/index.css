@@ -72,6 +72,12 @@
   html {
     background-color: #000;
     scroll-behavior: smooth;
+    /*
+     * 基准字号 18px（默认是 16px）。Tailwind 的字号都是 rem，
+     * 所以 text-base 变成 18px、text-sm 15.75px、text-xs 13.5px，
+     * 标题和间距也按同比例放大 —— 整体版式保持等比，不会错位。
+     */
+    font-size: 18px;
   }
 
   body {

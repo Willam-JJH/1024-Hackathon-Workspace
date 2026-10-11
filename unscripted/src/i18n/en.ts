@@ -14,8 +14,6 @@ const en: Dict = {
   /* ------------------------------------------------------------- brand */
   brand: {
     tagline: "Build your own project. Present someone else's.",
-    summary:
-      "An AI-assisted making event within 1024 Challenge. Bring an idea, or pick up the project you never finished.",
   },
 
   /* ------------------------------------------------------------- common */
@@ -53,14 +51,14 @@ const en: Dict = {
   home: {
     hero: {
       kicker: "%%AI%%-assisted making",
-      desc: "Bring an idea, or take the project you never finished and keep going. Use AI to build it, and push your own project forward.",
+      desc: "Bring an idea, or take the project you never finished and keep going. Use %%AI%% to build it, and push your own project forward.",
       ctaRegister: "Sign up",
       ctaSubmit: "Submit work",
     },
 
     s01: {
       title: "Pick a problem. Build a possible answer.",
-      p1: "Unscripted is an AI-assisted making and exchange event within **{parent}**. You choose a problem you care about and think is worth turning into a product, build a possible solution, let other people try it, then pitch why it might work.",
+      p1: "Unscripted is an %%AI%%-assisted making and exchange event within **{parent}**. You choose a problem you care about and think is worth turning into a product, build a possible solution, let other people try it, then pitch why it might work.",
       p2: "Problems can come from **study, personal life, a club, or campus life**. They can be small. You decide what makes yours worth solving.",
       p3: "The event is about the whole arc — noticing a problem, forming an idea, making it, and explaining it — and bringing the difficulties you hit, along with what users understood and fed back, into the conversation.",
       cardKicker: "WHY UNSCRIPTED",
@@ -89,10 +87,10 @@ const en: Dict = {
     },
 
     s03: {
-      title: "AI is a tool — but you have to explain the work yourself",
+      title: "%%AI%% is a tool — but you have to explain the work yourself",
       points: [
-        "AI can help with ideation, coding, making content, and testing — it helps you get an idea into a working state.",
-        "Your final product doesn't have to contain an AI model, and it doesn't have to be entirely code-free.",
+        "%%AI%% can help with ideation, coding, making content, and testing — it helps you get an idea into a working state.",
+        "Your final product doesn't have to contain an %%AI%% model, and it doesn't have to be entirely code-free.",
         "You need to understand what you made, and be able to explain how it answers the problem you chose.",
         "It can be a website, a small tool, a game, an interactive piece, or any other prototype that shows the key part working.",
         "It can be early and rough. What matters is that other people can try the core idea and talk about it.",

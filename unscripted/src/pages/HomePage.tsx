@@ -36,7 +36,7 @@ const HomePage = () => {
             <p className="mt-6 text-xl text-acid glow sm:text-2xl">{t.brand.tagline}</p>
 
             <p className="mt-6 max-w-xl text-base leading-relaxed text-white/60">
-              {h.hero.desc}
+              <RichText>{h.hero.desc}</RichText>
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4">
@@ -119,7 +119,9 @@ const HomePage = () => {
             {h.s03.points.map((item) => (
               <li key={item} className="flex gap-4 text-base leading-relaxed text-white/65">
                 <span className="mt-2.5 h-1.5 w-1.5 shrink-0 bg-acid" />
-                <span>{item}</span>
+                <span>
+                  <RichText>{item}</RichText>
+                </span>
               </li>
             ))}
           </ul>
