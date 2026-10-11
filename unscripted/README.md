@@ -178,11 +178,55 @@ bash scripts/sql-test/run.sh --clean            # 删掉容器
 > 容器里的 stub 不是完整复刻 Supabase。如果迁移脚本用到了没 stub 的东西，
 > 测试会报错 —— 那正是我们想提前知道的。
 
-## 部署
+## 部署（Netlify + GitHub）
 
 Netlify 配置在 [`netlify.toml`](netlify.toml)：`npm run build` → `dist`，
 并已配好单页应用的路由重写（否则直接访问 `/register` 会 404）。
-环境变量在 Netlify 后台配 `VITE_SUPABASE_URL` 和 `VITE_SUPABASE_ANON_KEY`。
 
-⚠️ 只填 **anon key**。`service_role` key 能绕过所有权限，绝不能用 `VITE_` 前缀暴露 ——
-带这个前缀的变量会被打包进浏览器可见的 JS。
+### 首次部署
+
+1. **Add new site → Import an existing project → Deploy with GitHub**，
+   选 `Alvin0412/hackathon-workspace`。
+   （GitHub 仓库授权只有仓库 owner 能做，协作者需要在 Settings → Applications
+   里让 owner 授予 Netlify 访问权限。）
+
+2. 配置页填两项，**其余自动带出**：
+
+   | 字段 | 值 |
+   | --- | --- |
+   | Branch to deploy | 要部署的分支，别留默认的 `main` —— 若代码还没合进 main，那里没有 `unscripted/` 目录，构建会直接失败 |
+   | Base directory | `unscripted` |
+
+   Build command / Publish directory 会从 `unscripted/netlify.toml` 读出来。
+
+3. **Environment variables** 加两条：
+
+   ```
+   VITE_SUPABASE_URL      = https://<项目>.supabase.co
+   VITE_SUPABASE_ANON_KEY = <publishable / anon key>
+   ```
+
+   ⚠️ 必须在部署前配好。Vite 是构建时把这两个值编译进 JS 的 ——
+   部署后再补要重新触发一次部署（Deploys → Trigger deploy → Clear cache and deploy site）。
+
+4. Deploy。之后每次推送到该分支，Netlify 会自动重新构建。
+
+### 部署后验证
+
+- 主页能打开
+- `/register` **没有**黄色的「数据库还没接上」提示（有 = 环境变量没生效）
+- `/projects` 能读到作品
+- `/staff` 能登录并看到数据
+- **用手机流量访问一次**，再用学校网络访问一次 —— 后者才是活动当天的真实条件
+
+### 常见问题
+
+| 现象 | 原因 |
+| --- | --- |
+| 构建失败，提示找不到 `package.json` | Base directory 没填 `unscripted` |
+| 构建失败，找不到 `unscripted/` 目录 | 分支选错了，选到了不含该目录的 `main` |
+| 页面能开，但报名页显示「数据库还没接上」 | 环境变量没配，或配完没重新部署 |
+| 直接访问 `/register` 404 | `netlify.toml` 的 redirects 没生效，检查 base directory 是否正确 |
+
+⚠️ 环境变量里只填 **publishable / anon key**。`service_role` / secret key 能绕过所有权限，
+**绝不能用 `VITE_` 前缀** —— 带这个前缀的变量会被打包进浏览器可见的 JS。
