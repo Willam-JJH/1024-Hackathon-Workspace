@@ -2,6 +2,10 @@
   command = "npm run build"
   publish = "dist"
 
+# 钉住 Node 版本，免得 Netlify 默认版本和本地不一致导致构建行为不同
+[build.environment]
+  NODE_VERSION = "22"
+
 # 单页应用：刷新 /register、/submit、/staff 这些路径时不能让服务器去找同名文件
 [[redirects]]
   from = "/*"
