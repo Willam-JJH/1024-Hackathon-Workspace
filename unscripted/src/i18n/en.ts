@@ -13,7 +13,7 @@ import type { Dict } from "./zh";
 const en: Dict = {
   /* ------------------------------------------------------------- brand */
   brand: {
-    tagline: "Build your own project. Present someone else's.",
+    tagline: "Build my project. Tell your story.",
   },
 
   /* ------------------------------------------------------------- common */
@@ -44,7 +44,7 @@ const en: Dict = {
     sections: "Sections",
     info: "Event details",
     copyright: "© {year} {parent} · {name}",
-    motto: "Build your own project. Present someone else's.",
+    motto: "Build my project. Tell your story.",
   },
 
   /* --------------------------------------------------------------- home */
@@ -59,11 +59,11 @@ const en: Dict = {
     s01: {
       title: "Pick a problem. Build a possible answer.",
       p1: "Unscripted is an %%AI%%-assisted making and exchange event within **{parent}**. You choose a problem you care about and think worth turning into a product, build a solution, let others try it, then pitch why it might work.",
-      p2: "Problems can come from **study, personal life, a club, or campus life**. They can be small. You decide what makes yours worth solving.",
-      p3: "Over the weekend you notice a problem, shape an idea, build it and explain it. What you got stuck on, and what people understood or missed when they tried it, join the conversation.",
+      p2: "Problems can come from **study, personal or school life, a club, or campus life**. Their scope and meaning are yours to define.",
+      p3: "You move through the full arc: noticing a problem, forming an idea, making it, presenting it. What you got stuck on, and what people understood or asked when they tried it, are all open for discussion.",
       cardKicker: "WHY UNSCRIPTED",
       cardText:
-        "Not homework set by someone else.\nYou pick the problem, then make the case that it matters.",
+        "Not answering to a fixed formula.\nYou choose the problem, and you prove it matters.",
     },
 
     s02: {
@@ -71,15 +71,15 @@ const en: Dict = {
       cards: [
         {
           label: "Start from an idea",
-          body: "Bring a small tool you've wanted to try, or a game you never finished. If you don't have a direction yet, the organising team has a list of prompts you can pick from.",
+          body: "Bring any project you want to build or finish. If you haven't settled on a direction, the organising team has a list of prompts to draw from.",
         },
         {
           label: "Continue something already started",
-          body: "If you already have a CS project, a personal project, or something unfinished, bring it and keep working on it.",
+          body: "If you already have a CS project, a half-built tool, or a personal project, you can keep working on it.",
         },
         {
           label: "Come as a club",
-          body: "A club can gather its members around a problem it cares about and turn that direction into something people can try.",
+          body: "A club can organise its members around a problem it cares about, and turn it into something people can try.",
         },
       ],
       footnote:
@@ -87,23 +87,23 @@ const en: Dict = {
     },
 
     s03: {
-      title: "%%AI%% is a tool. You still have to explain the work.",
+      title: "%%AI%% is the tool, but the work needs a real person to present it.",
       points: [
-        "%%AI%% can assist with planning, coding, producing content and testing, turning an idea into a working piece.",
+        "%%AI%% can assist with planning, coding, producing content and testing, turning an idea into a working product.",
         "The finished product need not contain an %%AI%% model, nor be entirely code-free.",
-        "But you must understand what you made, and explain how it answers the problem you chose.",
-        "The result can be a website, a tool, a game, an interactive piece, or any prototype that demonstrates the key part working.",
-        "It may still be early. Someone else has to be able to try the core idea and discuss it.",
+        "But you must understand your product, and explain how it solves the problem.",
+        "The finished product can be a website, a tool, a game, an interactive piece, or any other form that demonstrates the key process working.",
+        "The work need not be polished. The point is for others to grasp the values you want to put across, and your independent thinking, and discuss from there.",
       ],
       exampleKicker: "For example",
       exampleBody:
-        "A club wants to make it less painful to find a time everyone is free. They build a small tool that **collects available slots and shows where they overlap**. At the event, other students enter their times and see the result. The team then explains what this solves, and what it still doesn't.",
+        "A club wants to coordinate its team's schedule. It could build a tool that **collects available slots and shows where they overlap**. At the event, other students enter their times and see the result; the club then explains which problems this solves, and where its limits still are.",
       exampleNote:
         "The example only shows how a problem turns into a project. You choose your own.",
     },
 
     s04: {
-      title: "One weekend, two halves",
+      title: "1 weekend, ∞ ideas",
       day1Title: "Saturday · Make",
       day1: [
         "Arrive, register, and hear how the weekend works",
@@ -117,11 +117,11 @@ const en: Dict = {
         { t: "Try it first-hand", d: "The receiving team uses the work themselves and forms their own understanding." },
         {
           t: "They present it",
-          d: "They explain what it does, what's interesting and how they'd use it. They don't have to repeat what the author meant.",
+          d: "They explain what it does, what's interesting and how they'd use it, without deferring to the author's original intent.",
         },
         {
           t: "The authors respond",
-          d: "They add the background, how it was built, what went wrong along the way, and answer questions.",
+          d: "They add the background, how it was built, what went wrong along the way, answer questions, and lay out their own intent.",
         },
         {
           t: "Judges respond",
@@ -146,10 +146,10 @@ const en: Dict = {
         {
           n: "04",
           t: "Next",
-          d: "What's unfinished in this version, and what you'd improve or try next.",
+          d: "What still needs polishing in this version, and what you'd improve or try next.",
         },
       ],
-      note: "You can present with a live demo, diagrams, a short video, or just by talking it through.",
+      note: "You can present with a live demo, diagrams, or a short video.",
     },
 
     s06: {
@@ -232,7 +232,7 @@ const en: Dict = {
       direction: "Your direction, or what you already have",
       directionHint: "A few sentences is plenty",
       directionPlaceholder:
-        "E.g. a small tool that helps a club find a time everyone is free.",
+        "E.g. a tool that helps a club find a time everyone is free.",
       hasExisting: "I'm bringing a project I've already started",
       existingDetail: "What you already have",
       existingDetailPlaceholder: "How far along it is, and what's still missing.",
@@ -249,7 +249,7 @@ const en: Dict = {
       rolesHint: "Choose any",
       experience: "Tools you know, or relevant experience",
       experiencePlaceholder:
-        "E.g. you've used a programming language, edited video, or run a projector before.",
+        "E.g. you've used a programming language or a particular AI tool.",
       submit: "Submit volunteer sign-up",
       errRoles: "Pick at least one thing you'd like to do",
     },
@@ -391,7 +391,7 @@ const en: Dict = {
       submitting: "Signing in…",
       errCredentials: "That email or password isn't right.",
       accountNote:
-        "Accounts are created by William in the Supabase dashboard. Ask him if you've forgotten your password or need a new account.",
+        "Accounts are created by William in the garden behind the back door. If you've forgotten your password or need a new account, ask William.",
     },
 
     index: "[ STAFF ]",
