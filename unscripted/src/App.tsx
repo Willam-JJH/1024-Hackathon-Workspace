@@ -10,6 +10,7 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 const SubmitPage = lazy(() => import("./pages/SubmitPage"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
+const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage"));
 const StaffPage = lazy(() => import("./pages/StaffPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
@@ -52,6 +53,14 @@ const App = () => (
           element={
             <Suspense fallback={<RouteFallback />}>
               <ProjectsPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/projects/:id"
+          element={
+            <Suspense fallback={<RouteFallback />}>
+              <ProjectDetailPage />
             </Suspense>
           }
         />

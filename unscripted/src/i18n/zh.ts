@@ -194,6 +194,13 @@ const zh = {
       video: "短视频",
       spoken: "口头讲述",
     },
+    category: {
+      website: "网站",
+      tool: "小工具",
+      game: "小游戏",
+      interactive: "交互作品",
+      other: "其他",
+    },
   },
 
   /* ------------------------------------------------------------ 表单 */
@@ -283,6 +290,11 @@ const zh = {
       equipment: "需要的设备或材料",
       equipmentPlaceholder: "比如需要一台能联网的电脑、要投影、需要音箱。",
       demo: "打算怎么展示",
+      category: "作品类型",
+      errCategory: "请选择作品类型",
+      videoUrl: "演示视频链接",
+      videoUrlHint: "选填 · B站 / YouTube / itch.io 等外链",
+      videoUrlPlaceholder: "https://…",
 
       files: "作品文件",
       filesHint: "选填 · 单个文件不超过 50MB · 图片会自动压缩",
@@ -368,6 +380,23 @@ const zh = {
       errLoad: "读取失败",
       footnote:
         "署名由作者在提交时自己选择，没同意的作品只展示作品本身。作品墙上不出现任何联系方式。",
+      filter: {
+        all: "全部",
+        category: "作品类型",
+        club: "社团",
+        empty: "没有符合筛选条件的作品。",
+      },
+      detail: {
+        category: "作品类型",
+        club: "社团",
+        view: "查看详情",
+        video: "演示视频",
+        download: "体验 / 下载",
+        instructions: "操作说明",
+        equipment: "设备需求",
+        back: "返回作品墙",
+        notFound: "找不到这个作品，它可能还没公开，或已被删除。",
+      },
     },
   },
 
@@ -424,6 +453,7 @@ const zh = {
       roles: "岗位意愿",
       experience: "经验",
       projectTitle: "项目名",
+      category: "作品类型",
       projectSummary: "一句话简介",
       problem: "关注的问题",
       members: "成员",

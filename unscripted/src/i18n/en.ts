@@ -196,6 +196,13 @@ const en: Dict = {
       video: "Short video",
       spoken: "Talk it through",
     },
+    category: {
+      website: "Website",
+      tool: "Tool",
+      game: "Game",
+      interactive: "Interactive",
+      other: "Other",
+    },
   },
 
   /* -------------------------------------------------------------- forms */
@@ -288,6 +295,11 @@ const en: Dict = {
       equipment: "Equipment or materials needed",
       equipmentPlaceholder: "E.g. a laptop with wifi, a projector, a speaker.",
       demo: "How you plan to present it",
+      category: "Project type",
+      errCategory: "Please choose a project type",
+      videoUrl: "Demo video link",
+      videoUrlHint: "Optional · Bilibili / YouTube / itch.io or similar",
+      videoUrlPlaceholder: "https://…",
 
       files: "Project files",
       filesHint: "Optional · up to 50MB each · images are compressed automatically",
@@ -375,6 +387,23 @@ const en: Dict = {
       errLoad: "Couldn't load",
       footnote:
         "Authors choose their own credit when they submit. Projects that opted out appear without a name. No contact details appear on the gallery.",
+      filter: {
+        all: "All",
+        category: "Type",
+        club: "Club",
+        empty: "No projects match these filters.",
+      },
+      detail: {
+        category: "Type",
+        club: "Club",
+        view: "View details",
+        video: "Demo video",
+        download: "Try / download",
+        instructions: "How to run it",
+        equipment: "Equipment",
+        back: "Back to gallery",
+        notFound: "This project can't be found. It may not be published yet, or it has been removed.",
+      },
     },
   },
 
@@ -431,6 +460,7 @@ const en: Dict = {
       roles: "Roles",
       experience: "Experience",
       projectTitle: "Project",
+      category: "Type",
       projectSummary: "Summary",
       problem: "Problem",
       members: "Members",

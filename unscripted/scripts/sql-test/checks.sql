@@ -54,34 +54,41 @@ begin
   perform public._assert(v_participant is not null, '能插入报名记录');
 
   begin
-    perform public.submit_project('查无此人', 'nope', '标题', '简介', 'named');
+    perform public.submit_project('查无此人', 'nope', '标题', '简介', 'named', 'website');
     perform public._assert(false, '不存在的身份应被拒绝');
   exception when others then
     perform public._assert(sqlerrm like '%NOT_REGISTERED%', '不存在的身份被 NOT_REGISTERED 拒绝');
   end;
 
   begin
-    perform public.submit_project('检查用例', 'check-001', '标题', '简介', null);
+    perform public.submit_project('检查用例', 'check-001', '标题', '简介', null, 'website');
     perform public._assert(false, '可见性为 null 应被拒绝');
   exception when others then
     perform public._assert(sqlerrm like '%VISIBILITY_REQUIRED%', '可见性为 null 被拒绝');
   end;
 
   begin
-    perform public.submit_project('检查用例', 'check-001', '标题', '简介', '乱填');
+    perform public.submit_project('检查用例', 'check-001', '标题', '简介', '乱填', 'website');
     perform public._assert(false, '非法可见性应被拒绝');
   exception when others then
     perform public._assert(sqlerrm like '%VISIBILITY_REQUIRED%', '非法可见性被拒绝');
   end;
 
+  begin
+    perform public.submit_project('检查用例', 'check-001', '标题', '简介', 'named', null);
+    perform public._assert(false, '作品类型为 null 应被拒绝');
+  exception when others then
+    perform public._assert(sqlerrm like '%CATEGORY_REQUIRED%', '作品类型为 null 被拒绝');
+  end;
+
   v_project := public.submit_project(
-    '检查用例', 'check-001', '测试作品', '一句话简介', 'named',
+    '检查用例', 'check-001', '测试作品', '一句话简介', 'named', 'website',
     p_group_name => '测试社团', p_members => '甲、乙'
   );
   perform public._assert(v_project is not null, '正常提交作品成功');
 
   perform public.submit_project(
-    '检查用例', 'check-001', '测试作品', '改过的简介', 'anonymous',
+    '检查用例', 'check-001', '测试作品', '改过的简介', 'anonymous', 'tool',
     p_group_name => '测试社团', p_members => '甲、乙'
   );
   perform public._assert(
@@ -98,13 +105,13 @@ begin
   insert into public.participants (name, contact, direction)
   values (v_name, v_cont, '测试');
 
-  perform public.submit_project(v_name, v_cont, '命名作品', 's', 'named',
+  perform public.submit_project(v_name, v_cont, '命名作品', 's', 'named', 'website',
     p_group_name => '某社团', p_members => '张三、李四');
-  perform public.submit_project(v_name, v_cont, '团体作品', 's', 'group_only',
+  perform public.submit_project(v_name, v_cont, '团体作品', 's', 'group_only', 'website',
     p_group_name => '某社团', p_members => '张三、李四');
-  perform public.submit_project(v_name, v_cont, '匿名作品', 's', 'anonymous',
+  perform public.submit_project(v_name, v_cont, '匿名作品', 's', 'anonymous', 'game',
     p_group_name => '某社团', p_members => '张三、李四');
-  perform public.submit_project(v_name, v_cont, '隐藏作品', 's', 'hidden',
+  perform public.submit_project(v_name, v_cont, '隐藏作品', 's', 'hidden', 'game',
     p_group_name => '某社团', p_members => '张三、李四');
 
   perform public._assert(
@@ -126,8 +133,20 @@ begin
     (select credit_display from public.projects where title = '隐藏作品') is null,
     'hidden：署名也为空');
 
+  -- group_display：社团/团队名只在公开可见时非空，用于作品墙筛选
+  perform public._assert(
+    (select group_display from public.projects where title = '命名作品') = '某社团',
+    'named 的 group_display 是社团名');
+  perform public._assert(
+    (select group_display from public.projects where title = '团体作品') = '某社团',
+    'group_only 的 group_display 也是社团名');
+  perform public._assert(
+    (select group_display from public.projects where title = '匿名作品') is null
+    and (select group_display from public.projects where title = '隐藏作品') is null,
+    'anonymous / hidden 的 group_display 为空');
+
   -- 个人报名（没有团体名）选了署名时，回退到本人姓名
-  perform public.submit_project(v_name, v_cont, '个人署名作品', 's', 'named',
+  perform public.submit_project(v_name, v_cont, '个人署名作品', 's', 'named', 'website',
     p_group_name => null, p_members => null);
   perform public._assert(
     (select credit_display from public.projects where title = '个人署名作品') = v_name,
@@ -144,15 +163,19 @@ declare
     {"path":"p/a.webp","name":"a.webp","size":1000,"type":"image/webp"},
     {"path":"p/b.png", "name":"b.png", "size":2000,"type":"image/png"},
     {"path":"p/c.zip", "name":"c.zip", "size":3000,"type":"application/zip"},
-    {"path":"p/d.mp3", "name":"d.mp3", "size":4000,"type":"audio/mpeg"}
+    {"path":"p/d.mp3", "name":"d.mp3", "size":4000,"type":"audio/mpeg"},
+    {"path":"p/e.mp4", "name":"e.mp4", "size":5000,"type":"video/mp4"}
   ]'::jsonb;
 begin
-  v_pid := public.submit_project('检查用例', 'check-001', '带图作品', 's', 'named');
+  v_pid := public.submit_project('检查用例', 'check-001', '带图作品', 's', 'named', 'game');
 
-  -- 新提交的作品，public_images 一开始是空的
+  -- 新提交的作品，公开媒体字段一开始是空的
   perform public._assert(
     jsonb_array_length((select public_images from public.projects where id = v_pid)) = 0,
     '新作品在传文件之前 public_images 为空');
+  perform public._assert(
+    jsonb_array_length((select public_videos from public.projects where id = v_pid)) = 0,
+    '新作品在传文件之前 public_videos 为空');
 
   perform public.attach_project_files(v_pid, '检查用例', 'check-001', v_files);
 
@@ -171,6 +194,14 @@ begin
       where f->>'type' not like 'image/%'
     ),
     'public_images 里没有任何非图片类型');
+
+  perform public._assert(
+    jsonb_array_length((select public_videos from public.projects where id = v_pid)) = 1,
+    'public_videos 只留下视频（mp4），过滤掉图片/zip/mp3');
+
+  perform public._assert(
+    (select public_videos -> 0 ->> 'name' from public.projects where id = v_pid) = 'e.mp4',
+    'public_videos 里是那个 mp4');
 end $$;
 
 -- ============================ 匿名能看到什么 ============================
@@ -188,21 +219,28 @@ begin
     not has_column_privilege('anon', 'public.projects', 'contact', 'select'),
     '匿名读不到 contact（联系方式）');
   perform public._assert(
-    not has_column_privilege('anon', 'public.projects', 'instructions', 'select'),
-    '匿名读不到 instructions（操作说明）');
-  perform public._assert(
     not has_column_privilege('anon', 'public.projects', 'participant_id', 'select'),
     '匿名读不到 participant_id');
   perform public._assert(
     not has_column_privilege('anon', 'public.projects', 'wall_visibility', 'select'),
     '匿名读不到 wall_visibility');
   perform public._assert(
-    has_column_privilege('anon', 'public.projects', 'credit_display', 'select'),
-    '匿名能读 credit_display');
+    not has_column_privilege('anon', 'public.projects', 'files', 'select'),
+    '匿名读不到 files（含 zip/音频等完整清单）');
   perform public._assert(
-    granted = array['created_at','credit_display','direction','id','link','members_display',
-                    'problem','public_images','summary','title'],
-    '匿名被授权的正好是这 10 个列');
+    has_column_privilege('anon', 'public.projects', 'instructions', 'select'),
+    '匿名能读 instructions（操作说明，下载运行需要）');
+  perform public._assert(
+    has_column_privilege('anon', 'public.projects', 'equipment_needs', 'select'),
+    '匿名能读 equipment_needs（设备需求）');
+  perform public._assert(
+    has_column_privilege('anon', 'public.projects', 'category', 'select'),
+    '匿名能读 category（作品类型）');
+  perform public._assert(
+    granted = array['category','created_at','credit_display','direction','equipment_needs',
+                    'group_display','id','instructions','link','members_display','problem',
+                    'public_images','public_videos','summary','title','video_url'],
+    '匿名被授权的正好是这 16 个列');
 
   perform public._assert(
     not has_table_privilege('anon', 'public.participants', 'select'),

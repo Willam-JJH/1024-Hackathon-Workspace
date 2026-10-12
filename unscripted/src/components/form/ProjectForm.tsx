@@ -10,8 +10,10 @@ import {
 } from "../../lib/api";
 import { compressImage } from "../../lib/imageCompress";
 import {
+  CATEGORY_VALUES,
   DEMO_FORMATS,
   WALL_VISIBILITY_VALUES,
+  type Category,
   type WallVisibility,
 } from "../../lib/types";
 import { useT, fill, RichText } from "../../i18n/core";
@@ -31,6 +33,9 @@ interface FormState {
   instructions: string;
   equipmentNeeds: string;
   demoFormat: string;
+  /** null = 还没选。提交前必须明确选一次 */
+  category: Category | null;
+  videoUrl: string;
 }
 
 const initialState: FormState = {
@@ -47,6 +52,8 @@ const initialState: FormState = {
   instructions: "",
   equipmentNeeds: "",
   demoFormat: DEMO_FORMATS[0],
+  category: null,
+  videoUrl: "",
 };
 
 const formatSize = (bytes: number): string =>
@@ -127,12 +134,18 @@ const ProjectForm = () => {
     label: t.enums.demoFormat[value],
   }));
 
+  const categoryOptions = CATEGORY_VALUES.map((value) => ({
+    value,
+    label: t.enums.category[value],
+  }));
+
   const validate = (): boolean => {
     const next: Record<string, string> = {};
     if (!form.name.trim()) next.name = t.forms.shared.errName;
     if (!form.contact.trim()) next.contact = p.errContact;
     if (!form.title.trim()) next.title = p.errTitle;
     if (!form.summary.trim()) next.summary = p.errSummary;
+    if (form.category === null) next.category = p.errCategory;
     // 也要挡住"先选了只显示团体名、又把团体名清空"的情况
     if (
       form.wallVisibility === null ||
@@ -152,7 +165,8 @@ const ProjectForm = () => {
 
     // validate() 已经保证了非空，这里只是让类型收窄
     const visibility = form.wallVisibility;
-    if (visibility === null) return;
+    const category = form.category;
+    if (visibility === null || category === null) return;
 
     run(async () => {
       setProgress(p.progressVerify);
@@ -163,6 +177,7 @@ const ProjectForm = () => {
         title: form.title.trim(),
         summary: form.summary.trim(),
         wallVisibility: visibility,
+        category,
         problem: form.problem.trim() || null,
         groupName: form.groupName.trim() || null,
         members: form.members.trim() || null,
@@ -171,6 +186,7 @@ const ProjectForm = () => {
         instructions: form.instructions.trim() || null,
         equipmentNeeds: form.equipmentNeeds.trim() || null,
         demoFormat: form.demoFormat || null,
+        videoUrl: form.videoUrl.trim() || null,
       });
 
       if (files.length > 0) {
@@ -251,6 +267,15 @@ const ProjectForm = () => {
           onChange={(e) => set("summary", e.target.value)}
         />
 
+        <ChoiceRow
+          label={p.category}
+          required
+          options={categoryOptions}
+          value={form.category}
+          error={errors.category}
+          onChange={(v) => set("category", v)}
+        />
+
         <TextAreaField
           label={p.problem}
           hint={t.forms.shared.optional}
@@ -293,6 +318,14 @@ const ProjectForm = () => {
           placeholder="https://…"
           value={form.link}
           onChange={(e) => set("link", e.target.value)}
+        />
+
+        <TextField
+          label={p.videoUrl}
+          hint={p.videoUrlHint}
+          placeholder={p.videoUrlPlaceholder}
+          value={form.videoUrl}
+          onChange={(e) => set("videoUrl", e.target.value)}
         />
 
         <TextAreaField

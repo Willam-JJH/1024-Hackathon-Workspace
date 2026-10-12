@@ -85,6 +85,9 @@ create table if not exists public.projects (
   instructions    text,                                   -- 必要操作说明（周日交接用）
   equipment_needs text,                                   -- 需要的设备与材料
   demo_format     text,                                   -- 演示形式
+  category        text not null default 'other'
+                  check (category in ('website','tool','game','interactive','other')),  -- 作品类型
+  video_url       text,                                   -- 演示视频外链（可选）
   contact         text,                                   -- 提交者联系方式
 
   files           jsonb not null default '[]'::jsonb,     -- [{path,name,size,type}]
@@ -99,15 +102,17 @@ create table if not exists public.projects (
   wall_visibility text
                   check (wall_visibility in ('named','group_only','anonymous','hidden')),
 
-  -- 下面三个是「写入时算好」的公开字段，专供匿名访客读取。
+  -- 下面是「写入时算好」的公开字段，专供匿名访客读取。
   -- 之所以预先算好存起来，而不是查询时现算：
-  --   算它们要 join participants（拿个人姓名）并对图片做筛选，
+  --   算它们要 join participants（拿个人姓名）并对文件做筛选，
   --   而匿名角色对 participants 没有任何权限。放在写入时算，
   --   读取端就只需要一张表的几个列，可以用列级授权精确控制公开范围，
   --   不必再依赖 SECURITY DEFINER 视图。
   credit_display   text,                                 -- 署名行，null = 不署名
   members_display  text,                                 -- 成员名单，null = 不显示
+  group_display    text,                                 -- 社团/团队名（仅公开可见时），用于筛选
   public_images    jsonb not null default '[]'::jsonb,   -- 只含图片类文件
+  public_videos    jsonb not null default '[]'::jsonb,   -- 只含视频类文件
 
   participant_id  uuid references public.participants(id) on delete set null
 );
@@ -131,6 +136,25 @@ alter table public.projects
 alter table public.projects
   add constraint projects_wall_visibility_check
   check (wall_visibility in ('named','group_only','anonymous','hidden'));
+
+alter table public.projects
+  add column if not exists category text not null default 'other';
+
+alter table public.projects
+  add column if not exists video_url text;
+
+alter table public.projects
+  add column if not exists group_display text;
+
+alter table public.projects
+  add column if not exists public_videos jsonb not null default '[]'::jsonb;
+
+alter table public.projects
+  drop constraint if exists projects_category_check;
+
+alter table public.projects
+  add constraint projects_category_check
+  check (category in ('website','tool','game','interactive','other'));
 
 -- 早期版本用的是布尔字段 show_credit（只区分署不署名）。迁移到 wall_visibility。
 --
@@ -202,11 +226,23 @@ begin
         when p.wall_visibility = 'named' then nullif(btrim(p.members), '')
         else null
       end,
+      group_display = case
+        when p.wall_visibility in ('named','group_only') then nullif(btrim(p.group_name), '')
+        else null
+      end,
       public_images = coalesce(
         (
           select jsonb_agg(f)
           from jsonb_array_elements(p.files) f
           where f->>'type' like 'image/%'
+        ),
+        '[]'::jsonb
+      ),
+      public_videos = coalesce(
+        (
+          select jsonb_agg(f)
+          from jsonb_array_elements(p.files) f
+          where f->>'type' like 'video/%'
         ),
         '[]'::jsonb
       );
@@ -416,12 +452,18 @@ drop function if exists public.submit_project(
   text, text, text, text, boolean, text, text, text, text, text, text, text, text
 );
 
+-- 加了 category 之前的 13 参数版本也清掉
+drop function if exists public.submit_project(
+  text, text, text, text, text, text, text, text, text, text, text, text, text
+);
+
 create or replace function public.submit_project(
   p_name            text,
   p_contact         text,
   p_title           text,
   p_summary         text,
   p_wall_visibility text,
+  p_category        text,
   p_problem         text default null,
   p_group_name      text default null,
   p_members         text default null,
@@ -429,7 +471,8 @@ create or replace function public.submit_project(
   p_link            text default null,
   p_instructions    text default null,
   p_equipment_needs text default null,
-  p_demo_format     text default null
+  p_demo_format     text default null,
+  p_video_url       text default null
 )
 returns uuid
 language plpgsql
@@ -442,6 +485,7 @@ declare
   v_project          uuid;
   v_credit           text;
   v_members          text;
+  v_group            text;
   v_name             text := lower(btrim(coalesce(p_name, '')));
   v_contact          text := lower(regexp_replace(btrim(coalesce(p_contact, '')), '\s', '', 'g'));
 begin
@@ -457,6 +501,12 @@ begin
   if p_wall_visibility is null
      or p_wall_visibility not in ('named','group_only','anonymous','hidden') then
     raise exception 'VISIBILITY_REQUIRED';
+  end if;
+
+  -- 作品类型必须明确给，且是合法枚举
+  if p_category is null
+     or p_category not in ('website','tool','game','interactive','other') then
+    raise exception 'CATEGORY_REQUIRED';
   end if;
 
   -- 核对归属：姓名 + 报名时填的联系方式，两者都要对上
@@ -486,6 +536,12 @@ begin
     else null
   end;
 
+  -- 社团/团队名只在作者选了公开署名时才对观众可见，用于作品墙的社团筛选
+  v_group := case
+    when p_wall_visibility in ('named','group_only') then nullif(btrim(p_group_name), '')
+    else null
+  end;
+
   -- 同一个人、同一个项目名 = 修改已有提交
   select pr.id into v_project
   from public.projects pr
@@ -496,12 +552,12 @@ begin
   if v_project is null then
     insert into public.projects (
       title, summary, problem, group_name, members, direction,
-      link, instructions, equipment_needs, demo_format,
-      contact, wall_visibility, credit_display, members_display, participant_id
+      link, instructions, equipment_needs, demo_format, category, video_url,
+      contact, wall_visibility, credit_display, members_display, group_display, participant_id
     ) values (
       btrim(p_title), btrim(p_summary), p_problem, p_group_name, p_members, p_direction,
-      p_link, p_instructions, p_equipment_needs, p_demo_format,
-      btrim(p_contact), p_wall_visibility, v_credit, v_members, v_participant
+      p_link, p_instructions, p_equipment_needs, p_demo_format, p_category, p_video_url,
+      btrim(p_contact), p_wall_visibility, v_credit, v_members, v_group, v_participant
     )
     returning id into v_project;
   else
@@ -515,10 +571,13 @@ begin
       instructions    = p_instructions,
       equipment_needs = p_equipment_needs,
       demo_format     = p_demo_format,
+      category        = p_category,
+      video_url       = p_video_url,
       contact         = btrim(p_contact),
       wall_visibility = p_wall_visibility,
       credit_display  = v_credit,
       members_display = v_members,
+      group_display   = v_group,
       updated_at      = now()
     where id = v_project;
   end if;
@@ -528,7 +587,7 @@ end;
 $$;
 
 grant execute on function public.submit_project(
-  text, text, text, text, text, text, text, text, text, text, text, text, text
+  text, text, text, text, text, text, text, text, text, text, text, text, text, text, text
 ) to anon, authenticated;
 
 
@@ -548,15 +607,21 @@ declare
   v_name    text := lower(btrim(coalesce(p_name, '')));
   v_contact text := lower(regexp_replace(btrim(coalesce(p_contact, '')), '\s', '', 'g'));
   v_images  jsonb;
+  v_videos  jsonb;
 begin
-  -- 只有图片能上公开作品墙，这里筛好存进 public_images
+  -- 图片和视频分别筛好，供公开作品墙和详情页读取
   select coalesce(jsonb_agg(f), '[]'::jsonb) into v_images
   from jsonb_array_elements(coalesce(p_files, '[]'::jsonb)) f
   where f->>'type' like 'image/%';
 
+  select coalesce(jsonb_agg(f), '[]'::jsonb) into v_videos
+  from jsonb_array_elements(coalesce(p_files, '[]'::jsonb)) f
+  where f->>'type' like 'video/%';
+
   update public.projects pr
   set files         = coalesce(p_files, '[]'::jsonb),
       public_images = v_images,
+      public_videos = v_videos,
       updated_at    = now()
   where pr.id = p_project_id
     and exists (
@@ -610,7 +675,7 @@ drop policy if exists "project-files: staff can list" on storage.objects;
 -- 联系方式也放出去。
 --
 -- 做法是**列级授权**：匿名角色只被授予下面这几个列的 select，
--- 其余列（contact、instructions、participant_id 等）连读都不允许。
+-- 其余列（contact、participant_id、files 等）连读都不允许。
 -- 行范围由一条 RLS 策略限制，只放行作者选了公开的作品。
 --
 -- 为什么不用 SECURITY DEFINER 视图：那种视图会绕开查询者的 RLS，
@@ -631,9 +696,15 @@ grant select (
   direction,
   link,
   created_at,
+  category,          -- 作品类型（筛选用）
+  group_display,     -- 社团/团队名（仅公开可见时非空，筛选用）
   credit_display,    -- 署名行，null 表示不署名
   members_display,   -- 成员名单，null 表示不显示
-  public_images      -- 只含图片类文件
+  public_images,     -- 只含图片类文件
+  public_videos,     -- 只含视频类文件
+  video_url,         -- 演示视频外链
+  instructions,      -- 操作说明（下载运行需要）
+  equipment_needs    -- 设备需求（下载运行需要）
 ) on public.projects to anon;
 
 -- 行范围：作者选「不上墙」的、以及早期没表态的，匿名一律读不到
@@ -683,7 +754,7 @@ end $$;
 --   tables     3 行、每行 rls_enabled = true
 --   functions  3 个
 --   bucket     1 行、public = true、file_size_limit = 52428800
---   grants     匿名对 projects 只有 10 个列的 select 权限
+--   grants     匿名对 projects 只有 16 个列的 select 权限
 --   views      public_projects 应该查不到（已废弃）
 
 select relname as table_name, relrowsecurity as rls_enabled
@@ -704,7 +775,7 @@ select id, public, file_size_limit
 from storage.buckets
 where id = 'project-files';
 
--- 匿名到底能读 projects 的哪些列（应该只有 10 个，且不含 contact）
+-- 匿名到底能读 projects 的哪些列（应该只有 16 个，且不含 contact / files）
 select column_name
 from information_schema.column_privileges
 where table_schema = 'public'

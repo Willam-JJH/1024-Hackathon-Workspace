@@ -167,6 +167,12 @@ const projectColumns = (t: Dict): Column<Project>[] => {
     { key: "created_at", label: c.createdAt, render: (r) => <Time value={r.created_at} /> },
     { key: "title", label: c.projectTitle, primary: true },
     {
+      key: "category",
+      label: c.category,
+      render: (r) => t.enums.category[r.category] ?? "—",
+      csv: (r) => t.enums.category[r.category] ?? "",
+    },
+    {
       key: "summary",
       label: c.projectSummary,
       render: (r) => (

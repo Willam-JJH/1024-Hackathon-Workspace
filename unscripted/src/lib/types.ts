@@ -78,6 +78,8 @@ export interface Project {
   instructions: string | null;
   equipment_needs: string | null;
   demo_format: string | null;
+  category: Category;
+  video_url: string | null;
   contact: string | null;
 
   files: StoredFile[];
@@ -106,9 +108,8 @@ export const WALL_VISIBILITY_VALUES = [
  * 公开作品墙上能看到的内容。
  *
  * 字段名和数据库里被授权给匿名的那几个列一一对应 —— 见
- * supabase/migrations/0001_init.sql 第 9 节的列级授权。
- * 刻意不含 contact、instructions、participant_id 等：
- * 匿名角色对那几列连读权限都没有。
+ * supabase/migrations/0001_init.sql 的列级授权。
+ * 刻意不含 contact、files、participant_id：匿名角色对那几列连读权限都没有。
  */
 export interface PublicProject {
   id: string;
@@ -118,12 +119,23 @@ export interface PublicProject {
   direction: string | null;
   link: string | null;
   created_at: string;
+  category: Category;
   /** 署名行：团体名，或个人姓名；null 表示不署名 */
   credit_display: string | null;
   /** 成员名单；null 表示不显示 */
   members_display: string | null;
+  /** 社团/团队名（仅公开可见时非空），用于筛选 */
+  group_display: string | null;
   /** 只含图片类文件 */
   public_images: StoredFile[];
+  /** 只含视频类文件 */
+  public_videos: StoredFile[];
+  /** 演示视频外链 */
+  video_url: string | null;
+  /** 操作说明（下载运行需要） */
+  instructions: string | null;
+  /** 设备需求（下载运行需要） */
+  equipment_needs: string | null;
 }
 
 /** 匿名角色被授权读取的列。改这里之前先改数据库的列级授权。 */
@@ -135,9 +147,15 @@ export const PUBLIC_PROJECT_COLUMNS = [
   "direction",
   "link",
   "created_at",
+  "category",
+  "group_display",
   "credit_display",
   "members_display",
   "public_images",
+  "public_videos",
+  "video_url",
+  "instructions",
+  "equipment_needs",
 ].join(",");
 
 /** 志愿者可选岗位 —— 来自 05 宣传文案里的四类工作 */
@@ -147,6 +165,16 @@ export type VolunteerRole = (typeof VOLUNTEER_ROLES)[number];
 /** 作品演示形式 —— 来自活动构想"表达方式"一节 */
 export const DEMO_FORMATS = ["live", "diagram", "video", "spoken"] as const;
 export type DemoFormat = (typeof DEMO_FORMATS)[number];
+
+/** 作品类型 —— 用于作品墙筛选，提交时必填 */
+export type Category = "website" | "tool" | "game" | "interactive" | "other";
+export const CATEGORY_VALUES = [
+  "website",
+  "tool",
+  "game",
+  "interactive",
+  "other",
+] as const satisfies readonly Category[];
 
 export const PARTICIPATION_VALUES = [
   "individual",

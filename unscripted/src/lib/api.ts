@@ -2,6 +2,7 @@ import { requireSupabase } from "./supabase";
 import { compressImage } from "./imageCompress";
 import { PUBLIC_PROJECT_COLUMNS } from "./types";
 import type {
+  Category,
   Participant,
   ParticipantInsert,
   Project,
@@ -37,6 +38,8 @@ export interface ProjectInput {
   summary: string;
   /** 作品墙可见性。必须明确选，不接受 undefined。 */
   wallVisibility: WallVisibility;
+  /** 作品类型，必须明确给。 */
+  category: Category;
   problem: string | null;
   groupName: string | null;
   members: string | null;
@@ -45,6 +48,7 @@ export interface ProjectInput {
   instructions: string | null;
   equipmentNeeds: string | null;
   demoFormat: string | null;
+  videoUrl: string | null;
 }
 
 /**
@@ -63,6 +67,7 @@ export async function submitProject(input: ProjectInput): Promise<string> {
     p_title: input.title,
     p_summary: input.summary,
     p_wall_visibility: input.wallVisibility,
+    p_category: input.category,
     p_problem: input.problem,
     p_group_name: input.groupName,
     p_members: input.members,
@@ -71,6 +76,7 @@ export async function submitProject(input: ProjectInput): Promise<string> {
     p_instructions: input.instructions,
     p_equipment_needs: input.equipmentNeeds,
     p_demo_format: input.demoFormat,
+    p_video_url: input.videoUrl,
   });
 
   if (error) throw new Error(error.message);
@@ -193,6 +199,20 @@ export async function fetchPublicProjects(): Promise<PublicProject[]> {
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return (data ?? []) as unknown as PublicProject[];
+}
+
+/**
+ * 详情页按 id 取单件公开作品。匿名角色只能读到已公开的列，
+ * 行范围同样被 RLS 限制在作者选了公开的作品上 —— 没公开的会返回空。
+ */
+export async function fetchPublicProject(id: string): Promise<PublicProject | null> {
+  const { data, error } = await requireSupabase()
+    .from("projects")
+    .select(PUBLIC_PROJECT_COLUMNS)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as PublicProject | null) ?? null;
 }
 
 /* ------------------------------------------------------------ 工具 */
